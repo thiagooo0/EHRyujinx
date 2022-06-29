@@ -168,6 +168,7 @@ namespace ARMeilleure.Translation
 
             Statistics.StartTimer();
 
+            context.ResetCallDepth();
             ulong nextAddr = func.Execute(Stubs.ContextWrapper, context);
 
             Statistics.StopTimer(address);
@@ -239,6 +240,7 @@ namespace ARMeilleure.Translation
 
             Logger.StartPass(PassName.Translation);
 
+            InstEmitFlowHelper.EmitCallDepthCheckAndIncrement(context, Const(address));
             EmitSynchronization(context);
 
             if (blocks[0].Address != address)
