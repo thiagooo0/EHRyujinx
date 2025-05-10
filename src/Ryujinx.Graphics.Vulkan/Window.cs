@@ -14,9 +14,9 @@ namespace Ryujinx.Graphics.Vulkan
         private const int SurfaceHeight = 720;
 
         private readonly VulkanRenderer _gd;
-        private readonly SurfaceKHR _surface;
         private readonly PhysicalDevice _physicalDevice;
         private readonly Device _device;
+        private SurfaceKHR _surface;
         private SwapchainKHR _swapchain;
 
         private Image[] _swapchainImages;
@@ -84,6 +84,12 @@ namespace Ryujinx.Graphics.Vulkan
             CreateSwapchain();
         }
 
+        internal void SetSurface(SurfaceKHR surface)
+        {
+            _surface = surface;
+            RecreateSwapchain();
+        }
+
         private unsafe void CreateSwapchain()
         {
             _gd.SurfaceApi.GetPhysicalDeviceSurfaceCapabilities(_physicalDevice, _surface, out var capabilities);
@@ -126,6 +132,8 @@ namespace Ryujinx.Graphics.Vulkan
 
             var oldSwapchain = _swapchain;
 
+            CurrentTransform = capabilities.CurrentTransform;
+
             var swapchainCreateInfo = new SwapchainCreateInfoKHR
             {
                 SType = StructureType.SwapchainCreateInfoKhr,
@@ -134,10 +142,10 @@ namespace Ryujinx.Graphics.Vulkan
                 ImageFormat = surfaceFormat.Format,
                 ImageColorSpace = surfaceFormat.ColorSpace,
                 ImageExtent = extent,
-                ImageUsage = ImageUsageFlags.ColorAttachmentBit | ImageUsageFlags.TransferDstBit | ImageUsageFlags.StorageBit,
+                ImageUsage = ImageUsageFlags.ColorAttachmentBit | ImageUsageFlags.TransferDstBit | (Ryujinx.Common.PlatformInfo.IsBionic ? 0 : ImageUsageFlags.StorageBit),
                 ImageSharingMode = SharingMode.Exclusive,
                 ImageArrayLayers = 1,
-                PreTransform = capabilities.CurrentTransform,
+                PreTransform = Ryujinx.Common.PlatformInfo.IsBionic ? SurfaceTransformFlagsKHR.IdentityBitKhr : capabilities.CurrentTransform,
                 CompositeAlpha = ChooseCompositeAlpha(capabilities.SupportedCompositeAlpha),
                 PresentMode = ChooseSwapPresentMode(presentModes, _vSyncMode),
                 Clipped = true,
@@ -332,6 +340,10 @@ namespace Ryujinx.Graphics.Vulkan
                     RecreateSwapchain();
                     semaphoreIndex = (_frameIndex - 1) % _imageAvailableSemaphores.Length;
                 }
+                else if(acquireResult == Result.ErrorSurfaceLostKhr)
+                {
+                    _gd.RecreateSurface();
+                }
                 else
                 {
                     acquireResult.ThrowOnError();
@@ -393,7 +405,7 @@ namespace Ryujinx.Graphics.Vulkan
                     _gd.CommandBufferPool.Return(
                         cbs,
                         null,
-                        [PipelineStageFlags.ColorAttachmentOutputBit],
+                        stackalloc[] { PipelineStageFlags.ColorAttachmentOutputBit },
                         null);
                     _gd.FlushAllCommands();
                     cbs.GetFence().Wait();
@@ -456,9 +468,9 @@ namespace Ryujinx.Graphics.Vulkan
 
             _gd.CommandBufferPool.Return(
                 cbs,
-                [_imageAvailableSemaphores[semaphoreIndex]],
-                [PipelineStageFlags.ColorAttachmentOutputBit],
-                [_renderFinishedSemaphores[semaphoreIndex]]);
+                stackalloc[] { _imageAvailableSemaphores[semaphoreIndex] },
+                stackalloc[] { PipelineStageFlags.ColorAttachmentOutputBit },
+                stackalloc[] { _renderFinishedSemaphores[semaphoreIndex] });
 
             // TODO: Present queue.
             var semaphore = _renderFinishedSemaphores[semaphoreIndex];
@@ -481,6 +493,9 @@ namespace Ryujinx.Graphics.Vulkan
             {
                 _gd.SwapchainApi.QueuePresent(_gd.Queue, in presentInfo);
             }
+
+            //While this does nothing in most cases, it's useful to notify the end of the frame, and is used to handle native window in Android.
+            swapBuffersCallback?.Invoke();
         }
 
         public override void SetAntiAliasing(AntiAliasing effect)

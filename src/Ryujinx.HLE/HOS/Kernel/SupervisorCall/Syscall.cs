@@ -1988,10 +1988,10 @@ namespace Ryujinx.HLE.HOS.Kernel.SupervisorCall
                                 break;
 
                             case InfoType.AslrRegionAddress:
-                                value = process.MemoryManager.GetAddrSpaceBaseAddr();
+                                value = process.MemoryManager.AslrRegionStart;
                                 break;
                             case InfoType.AslrRegionSize:
-                                value = process.MemoryManager.GetAddrSpaceSize();
+                                value = process.MemoryManager.AslrRegionEnd - process.MemoryManager.AslrRegionStart;
                                 break;
 
                             case InfoType.StackRegionAddress:
@@ -2683,7 +2683,7 @@ namespace Ryujinx.HLE.HOS.Kernel.SupervisorCall
                     return KernelResult.InvalidCombination;
                 }
 
-                if ((uint)preferredCore > KScheduler.CpuCoresCount - 1)
+                if ((uint)preferredCore > 3)
                 {
                     if ((preferredCore | 2) != -1)
                     {
@@ -2813,7 +2813,7 @@ namespace Ryujinx.HLE.HOS.Kernel.SupervisorCall
             {
                 KProcess currentProcess = KernelStatic.GetCurrentProcess();
 
-                if (currentProcess.MemoryManager.AddrSpaceStart > handlesPtr)
+                if (currentProcess.MemoryManager.AddressSpaceStart > handlesPtr)
                 {
                     return KernelResult.UserCopyFailed;
                 }
@@ -2825,7 +2825,7 @@ namespace Ryujinx.HLE.HOS.Kernel.SupervisorCall
                     return KernelResult.UserCopyFailed;
                 }
 
-                if (handlesPtr + (ulong)handlesSize - 1 > currentProcess.MemoryManager.AddrSpaceEnd - 1)
+                if (handlesPtr + (ulong)handlesSize - 1 > currentProcess.MemoryManager.AddressSpaceEnd - 1)
                 {
                     return KernelResult.UserCopyFailed;
                 }

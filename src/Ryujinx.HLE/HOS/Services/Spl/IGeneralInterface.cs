@@ -51,6 +51,14 @@ namespace Ryujinx.HLE.HOS.Services.Spl
 
             context.ResponseData.Write(configValue);
 
+            if(Ryujinx.Common.PlatformInfo.IsBionic)
+            {
+                if (result == SmcResult.Success)
+                {
+                    return ResultCode.Success;
+                }
+            }
+
             return (ResultCode)((int)result << 9) | ResultCode.ModuleId;
         }
 

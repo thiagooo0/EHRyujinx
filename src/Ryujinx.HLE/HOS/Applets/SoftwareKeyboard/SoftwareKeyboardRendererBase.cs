@@ -63,7 +63,7 @@ namespace Ryujinx.HLE.HOS.Applets.SoftwareKeyboard
         {
             int ryujinxLogoSize = 32;
 
-            string ryujinxIconPath = "Ryujinx.HLE.HOS.Applets.SoftwareKeyboard.Resources.Logo_Ryujinx.png";
+            string ryujinxIconPath = "Ryujinx.HLE.HOS.Applets.SoftwareKeyboard.Resources.Logo_Kenjinx.png";
             _ryujinxLogo = LoadResource(typeof(SoftwareKeyboardRendererBase).Assembly, ryujinxIconPath, ryujinxLogoSize, ryujinxLogoSize);
 
             string padAcceptIconPath = "Ryujinx.HLE.HOS.Applets.SoftwareKeyboard.Resources.Icon_BtnA.png";

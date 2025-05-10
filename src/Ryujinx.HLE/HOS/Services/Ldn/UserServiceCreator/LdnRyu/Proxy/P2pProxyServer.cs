@@ -130,7 +130,7 @@ namespace Ryujinx.HLE.HOS.Services.Ldn.UserServiceCreator.LdnRyu.Proxy
             {
                 try
                 {
-                    _portMapping = new Mapping(Protocol.Tcp, PrivatePort, _publicPort, PortLeaseLength, "Ryujinx Local Multiplayer");
+                    _portMapping = new Mapping(Protocol.Tcp, PrivatePort, _publicPort, PortLeaseLength, "Kenji-NX Local Multiplayer");
 
                     await device.CreatePortMapAsync(_portMapping);
 
@@ -364,7 +364,7 @@ namespace Ryujinx.HLE.HOS.Services.Ldn.UserServiceCreator.LdnRyu.Proxy
 
             try
             {
-                Task delete = _natDevice?.DeletePortMapAsync(new Mapping(Protocol.Tcp, PrivatePort, _publicPort, 60, "Ryujinx Local Multiplayer"));
+                Task delete = _natDevice?.DeletePortMapAsync(new Mapping(Protocol.Tcp, PrivatePort, _publicPort, 60, "Kenji-NX Local Multiplayer"));
 
                 // Just absorb any exceptions.
                 delete?.ContinueWith((task) => { });

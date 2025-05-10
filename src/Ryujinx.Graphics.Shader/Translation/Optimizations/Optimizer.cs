@@ -9,11 +9,6 @@ namespace Ryujinx.Graphics.Shader.Translation.Optimizations
     {
         public static void RunPass(TransformContext context)
         {
-            for (int blkIndex = 0; blkIndex < context.Blocks.Length; blkIndex++)
-            {
-                XmadOptimizer.RunPass(context.Blocks[blkIndex]);
-            }
-
             RunOptimizationPasses(context.Blocks, context.ResourceManager);
 
             // TODO: Some of those are not optimizations and shouldn't be here.

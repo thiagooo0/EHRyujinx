@@ -17,7 +17,7 @@ namespace Ryujinx.UI.Common.Helper
             string titleIdSection = $" ({activeProcess.ProgramIdText.ToUpper()})";
             string titleArchSection = activeProcess.Is64Bit ? " (64-bit)" : " (32-bit)";
 
-            string appTitle = $"Ryujinx {applicationVersion} -{titleNameSection}{titleVersionSection}{titleIdSection}{titleArchSection}";
+            string appTitle = $"Kenji-NX {applicationVersion} -{titleNameSection}{titleVersionSection}{titleIdSection}{titleArchSection}";
 
             if (!string.IsNullOrEmpty(pauseString))
             {

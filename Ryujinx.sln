@@ -5,6 +5,8 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.Tests", "src\Ryujinx.Tests\Ryujinx.Tests.csproj", "{EBB55AEA-C7D7-4DEB-BF96-FA1789E225E9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibKenjinx", "src\LibKenjinx\LibKenjinx.csproj", "{AF58C1D5-DE16-429B-B155-7CE83B4E8FA6}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.Tests.Unicorn", "src\Ryujinx.Tests.Unicorn\Ryujinx.Tests.Unicorn.csproj", "{D8F72938-78EF-4E8C-BAFE-531C9C3C8F15}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.HLE", "src\Ryujinx.HLE\Ryujinx.HLE.csproj", "{CB92CFF9-1D62-4D4F-9E88-8130EF61E351}"
@@ -63,11 +65,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.SDL2.Common", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.Audio.Backends.SDL2", "src\Ryujinx.Audio.Backends.SDL2\Ryujinx.Audio.Backends.SDL2.csproj", "{D99A395A-8569-4DB0-B336-900647890052}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.Headless.SDL2", "src\Ryujinx.Headless.SDL2\Ryujinx.Headless.SDL2.csproj", "{390DC343-5CB4-4C79-A5DD-E3ED235E4C49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kenjinx.Headless.SDL2", "src\Kenjinx.Headless.SDL2\Kenjinx.Headless.SDL2.csproj", "{390DC343-5CB4-4C79-A5DD-E3ED235E4C49}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.Graphics.Nvdec.FFmpeg", "src\Ryujinx.Graphics.Nvdec.FFmpeg\Ryujinx.Graphics.Nvdec.FFmpeg.csproj", "{BEE1C184-C9A4-410B-8DFC-FB74D5C93AEB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx", "src\Ryujinx\Ryujinx.csproj", "{7C1B2721-13DA-4B62-B046-C626605ECCE6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kenjinx", "src\Kenjinx\Kenjinx.csproj", "{7C1B2721-13DA-4B62-B046-C626605ECCE6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryujinx.UI.Common", "src\Ryujinx.UI.Common\Ryujinx.UI.Common.csproj", "{BA161CA0-CD65-4E6E-B644-51C8D1E542DC}"
 EndProject
@@ -97,6 +99,10 @@ Global
 		{EBB55AEA-C7D7-4DEB-BF96-FA1789E225E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBB55AEA-C7D7-4DEB-BF96-FA1789E225E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBB55AEA-C7D7-4DEB-BF96-FA1789E225E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF58C1D5-DE16-429B-B155-7CE83B4E8FA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF58C1D5-DE16-429B-B155-7CE83B4E8FA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF58C1D5-DE16-429B-B155-7CE83B4E8FA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF58C1D5-DE16-429B-B155-7CE83B4E8FA6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D8F72938-78EF-4E8C-BAFE-531C9C3C8F15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D8F72938-78EF-4E8C-BAFE-531C9C3C8F15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8F72938-78EF-4E8C-BAFE-531C9C3C8F15}.Release|Any CPU.ActiveCfg = Release|Any CPU
