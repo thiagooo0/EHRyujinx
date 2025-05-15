@@ -2,7 +2,7 @@ using System;
 
 namespace ARMeilleure.Translation
 {
-    class DelegateInfo
+    public class DelegateInfo
     {
         public IntPtr FuncPtr { get; }
 
