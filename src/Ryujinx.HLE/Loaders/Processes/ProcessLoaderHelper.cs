@@ -22,6 +22,7 @@ using Ryujinx.HLE.Loaders.Processes.Extensions;
 using Ryujinx.Horizon.Common;
 using Ryujinx.Horizon.Sdk.Arp;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using ApplicationId = LibHac.Ncm.ApplicationId;
@@ -181,7 +182,7 @@ namespace Ryujinx.HLE.Loaders.Processes
 
             KProcess process = new(context);
 
-            var processContextFactory = new ArmProcessContextFactory(
+            ArmProcessContextFactory processContextFactory = new(
                 context.Device.System.TickSource,
                 context.Device.Gpu,
                 string.Empty,
@@ -238,7 +239,7 @@ namespace Ryujinx.HLE.Loaders.Processes
         {
             context.Device.System.ServiceTable.WaitServicesReady();
 
-            LibHac.Result resultCode = metaLoader.GetNpdm(out var npdm);
+            LibHac.Result resultCode = metaLoader.GetNpdm(out LibHac.Loader.Npdm npdm);
 
             if (resultCode.IsFailure())
             {
@@ -247,18 +248,18 @@ namespace Ryujinx.HLE.Loaders.Processes
                 return ProcessResult.Failed;
             }
 
-            ref readonly var meta = ref npdm.Meta;
+            ref readonly Meta meta = ref npdm.Meta;
 
             ulong argsStart = 0;
             uint argsSize = 0;
             ulong codeStart = ((meta.Flags & 1) != 0 ? 0x8000000UL : 0x200000UL) + CodeStartOffset;
             ulong codeSize = 0;
 
-            var buildIds = executables.Select(e => (e switch
+            IEnumerable<string> buildIds = executables.Select(e => (e switch
             {
-                NsoExecutable nso => Convert.ToHexString(nso.BuildId.ItemsRo.ToArray()),
+                NsoExecutable nso => Convert.ToHexString(nso.BuildId),
                 NroExecutable nro => Convert.ToHexString(nro.Header.BuildId),
-                _ => "",
+                _ => string.Empty,
             }).ToUpper());
 
             NceCpuCodePatch[] nsoPatch = new NceCpuCodePatch[executables.Length];
@@ -382,7 +383,7 @@ namespace Ryujinx.HLE.Loaders.Processes
                 displayVersion = device.System.ContentManager.GetCurrentFirmwareVersion()?.VersionString ?? string.Empty;
             }
 
-            var processContextFactory = new ArmProcessContextFactory(
+            ArmProcessContextFactory processContextFactory = new(
                 context.Device.System.TickSource,
                 context.Device.Gpu,
                 $"{programId:x16}",
