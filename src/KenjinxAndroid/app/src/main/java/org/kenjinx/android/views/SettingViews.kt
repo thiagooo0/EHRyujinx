@@ -46,6 +46,8 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -95,13 +97,13 @@ class SettingViews {
             val enableLowPowerPptc = remember { mutableStateOf(false) }
             val enableJitCacheEviction = remember { mutableStateOf(false) }
             var enableFsIntegrityChecks = remember { mutableStateOf(false) }
-            var fsGlobalAccessLogMode = remember { mutableStateOf(0) }
+            var fsGlobalAccessLogMode = remember { mutableIntStateOf(0) }
             val ignoreMissingServices = remember { mutableStateOf(false) }
             val enableShaderCache = remember { mutableStateOf(false) }
             val enableTextureRecompression = remember { mutableStateOf(false) }
             val enableMacroHLE = remember { mutableStateOf(false) }
-            val resScale = remember { mutableStateOf(1f) }
-            val maxAnisotropy = remember { mutableStateOf(0f) }
+            val resScale = remember { mutableFloatStateOf(1f) }
+            val maxAnisotropy = remember { mutableFloatStateOf(0f) }
             val useVirtualController = remember { mutableStateOf(true) }
             val showKeyDialog = remember { mutableStateOf(false) }
             val keyInstallState = remember { mutableStateOf(KeyInstallState.File) }
@@ -117,7 +119,7 @@ class SettingViews {
             val useSwitchLayout = remember { mutableStateOf(true) }
             val enableMotion = remember { mutableStateOf(true) }
             val enablePerformanceMode = remember { mutableStateOf(true) }
-            val controllerStickSensitivity = remember { mutableStateOf(1.0f) }
+            val controllerStickSensitivity = remember { mutableFloatStateOf(1.0f) }
             val enableStubLogs = remember { mutableStateOf(true) }
             val enableInfoLogs = remember { mutableStateOf(true) }
             val enableWarningLogs = remember { mutableStateOf(true) }
@@ -578,7 +580,6 @@ class SettingViews {
                                         }
                                     }
                                 }
-                                else -> {}
                             }
                         }
                     }
@@ -803,7 +804,6 @@ class SettingViews {
                                         }
                                     }
                                 }
-                                else -> {}
                             }
                         }
                     }
@@ -1116,8 +1116,8 @@ class SettingViews {
                                     text = "Controller Stick Sensitivity",
                                     modifier = Modifier.align(Alignment.CenterVertically)
                                 )
-                                Slider(modifier = Modifier.width(250.dp), value = controllerStickSensitivity.value, onValueChange = {
-                                    controllerStickSensitivity.value = it
+                                Slider(modifier = Modifier.width(250.dp), value = controllerStickSensitivity.floatValue, onValueChange = {
+                                    controllerStickSensitivity.floatValue = it
                                 }, valueRange = 0.1f..2f,
                                     steps = 20,
                                     interactionSource = interactionSource,
@@ -1127,7 +1127,7 @@ class SettingViews {
                                                 PlainTooltip(modifier = Modifier
                                                     .sizeIn(45.dp, 25.dp)
                                                     .wrapContentWidth()) {
-                                                    Text("%.2f".format(controllerStickSensitivity.value))
+                                                    Text("%.2f".format(controllerStickSensitivity.floatValue))
                                                 }
                                             },
                                             interactionSource = interactionSource
@@ -1169,12 +1169,12 @@ class SettingViews {
                             enablePerformanceMode.SwitchSelector(label = "Performance Mode")
                         }
                     }
-                    ExpandableView(onCardArrowClick = { }, title = "Cpu", icon = Icons.Outlined.Memory) {
+                    ExpandableView(onCardArrowClick = { }, title = "CPU", icon = Icons.Outlined.Memory) {
                         Column(modifier = Modifier.fillMaxWidth()) {
-                            useNce.SwitchSelector(label = "Enable NCE (Native Code Execution)")
-                            enablePptc.SwitchSelector(label = "Enable PPTC (Profiled Persistent Translation Cache)")
-                            enableLowPowerPptc.SwitchSelector(label = "Enable Low-Power PPTC")
-                            enableJitCacheEviction.SwitchSelector(label = "Enable Jit Cache Eviction")
+                            useNce.SwitchSelector(label = "NCE (Native Code Execution)")
+                            enablePptc.SwitchSelector(label = "PPTC (Profiled Persistent Translation Cache)")
+                            enableLowPowerPptc.SwitchSelector(label = "Low-Power PPTC")
+                            enableJitCacheEviction.SwitchSelector(label = "Jit Cache Eviction")
                             MemoryModeDropdown(
                                 selectedMemoryManagerMode = memoryManagerMode.value,
                                 onModeSelected = { mode ->
@@ -1185,19 +1185,19 @@ class SettingViews {
                     }
                     ExpandableView(onCardArrowClick = { }, title = "Graphics", icon = Icons.Outlined.Panorama) {
                         Column(modifier = Modifier.fillMaxWidth()) {
-                            enableShaderCache.SwitchSelector(label = "Enable Shader Cache")
-                            enableTextureRecompression.SwitchSelector(label = "Enable Texture Recompression")
-                            enableMacroHLE.SwitchSelector(label = "Enable Macro HLE")
+                            enableShaderCache.SwitchSelector(label = "Shader Cache")
+                            enableTextureRecompression.SwitchSelector(label = "Texture Recompression")
+                            enableMacroHLE.SwitchSelector(label = "Macro HLE")
                             ResolutionScaleDropdown(
-                                selectedScale = resScale.value,
+                                selectedScale = resScale.floatValue,
                                 onScaleSelected = { scale ->
-                                    resScale.value = scale
+                                    resScale.floatValue = scale
                                 }
                             )
                             AnisotropicFilteringDropdown(
-                                selectedAnisotropy = maxAnisotropy.value,
+                                selectedAnisotropy = maxAnisotropy.floatValue,
                                 onAnisotropySelected = { anisotropy ->
-                                    maxAnisotropy.value = anisotropy
+                                    maxAnisotropy.floatValue = anisotropy
                                 }
                             )
 
@@ -1234,19 +1234,19 @@ class SettingViews {
 
                     ExpandableView(onCardArrowClick = { }, title = "Logging", icon = Icons.Outlined.FileOpen) {
                         Column(modifier = Modifier.fillMaxWidth()) {
-                            enableStubLogs.SwitchSelector(label = "Enable Stub Logs")
-                            enableInfoLogs.SwitchSelector(label = "Enable Info Logs")
-                            enableWarningLogs.SwitchSelector(label = "Enable Warning Logs")
-                            enableErrorLogs.SwitchSelector(label = "Enable Error Logs")
-                            enableGuestLogs.SwitchSelector(label = "Enable Guest Logs")
-                            enableTraceLogs.SwitchSelector(label = "Enable Trace Logs")
-                            enableFsAccessLogs.SwitchSelector(label = "Enable Fs Access Logs")
-                            enableDebugLogs.SwitchSelector(label = "Enable Debug Logs")
-                            enableGraphicsLogs.SwitchSelector(label = "Enable Graphics Logs")
+                            enableStubLogs.SwitchSelector(label = "Stub Logs")
+                            enableInfoLogs.SwitchSelector(label = "Info Logs")
+                            enableWarningLogs.SwitchSelector(label = "Warning Logs")
+                            enableErrorLogs.SwitchSelector(label = "Error Logs")
+                            enableGuestLogs.SwitchSelector(label = "Guest Logs")
+                            enableTraceLogs.SwitchSelector(label = "Trace Logs")
+                            enableFsAccessLogs.SwitchSelector(label = "Fs Access Logs")
+                            enableDebugLogs.SwitchSelector(label = "Debug Logs")
+                            enableGraphicsLogs.SwitchSelector(label = "Graphics Logs")
                             FsGlobalAccessLogModeDropdown(
-                                selectedFsGlobalAccess = fsGlobalAccessLogMode.value,
+                                selectedFsGlobalAccess = fsGlobalAccessLogMode.intValue,
                                 onFsGlobalAccessSelected = { fsGlobalAccess ->
-                                    fsGlobalAccessLogMode.value = fsGlobalAccess
+                                    fsGlobalAccessLogMode.intValue = fsGlobalAccess
                                 }
                             )
 
@@ -1276,10 +1276,9 @@ class SettingViews {
         @Composable
         fun MemoryModeDropdown(
             selectedMemoryManagerMode: MemoryManagerMode,
-            onModeSelected: (MemoryManagerMode) -> Unit,
-            modifier: Modifier = Modifier
+            onModeSelected: (MemoryManagerMode) -> Unit
         ) {
-            val modes = MemoryManagerMode.values()
+            val modes = MemoryManagerMode.entries.toTypedArray()
 
             DropdownSelector(
                 label = "Memory Manager Mode",
@@ -1292,18 +1291,16 @@ class SettingViews {
                         MemoryManagerMode.HostMappedUnsafe -> "Host Unchecked (fastest, unsafe)"
                     }
                 },
-                onOptionSelected = onModeSelected,
-                modifier = modifier
+                onOptionSelected = onModeSelected
             )
         }
 
         @Composable
         fun VSyncDropdown(
             selectedVSyncMode: VSyncMode,
-            onModeSelected: (VSyncMode) -> Unit,
-            modifier: Modifier = Modifier
+            onModeSelected: (VSyncMode) -> Unit
         ) {
-            val modes = VSyncMode.values()
+            val modes = VSyncMode.entries.toTypedArray()
 
             DropdownSelector(
                 label = "VSync",
@@ -1315,42 +1312,38 @@ class SettingViews {
                         VSyncMode.Unbounded -> "Unbounded"
                     }
                 },
-                onOptionSelected = onModeSelected,
-                modifier = modifier
+                onOptionSelected = onModeSelected
             )
         }
 
         @Composable
         fun MemoryDropdown(
             selectedMemoryConfiguration: MemoryConfiguration,
-            onConfigurationSelected: (MemoryConfiguration) -> Unit,
-            modifier: Modifier = Modifier
+            onConfigurationSelected: (MemoryConfiguration) -> Unit
         ) {
-            val modes = MemoryConfiguration.values()
+            val modes = MemoryConfiguration.entries.toTypedArray()
 
             DropdownSelector(
-                label = "Dram Size",
+                label = "DRAM Size",
                 selectedValue = selectedMemoryConfiguration,
                 options = modes.toList(),
                 getDisplayText = { configuration ->
                     when(configuration) {
-                        MemoryConfiguration.MemoryConfiguration4GiB -> "4GB"
-                        MemoryConfiguration.MemoryConfiguration6GiB -> "6GB"
-                        MemoryConfiguration.MemoryConfiguration8GiB -> "8GB"
-                        MemoryConfiguration.MemoryConfiguration10GiB -> "10GB"
-                        MemoryConfiguration.MemoryConfiguration12GiB -> "12GB"
+                        MemoryConfiguration.MemoryConfiguration4GiB -> "4GiB"
+                        MemoryConfiguration.MemoryConfiguration6GiB -> "6GiB"
+                        MemoryConfiguration.MemoryConfiguration8GiB -> "8GiB"
+                        MemoryConfiguration.MemoryConfiguration10GiB -> "10GiB"
+                        MemoryConfiguration.MemoryConfiguration12GiB -> "12GiB"
                     }
                 },
-                onOptionSelected = onConfigurationSelected,
-                modifier = modifier
+                onOptionSelected = onConfigurationSelected
             )
         }
 
         @Composable
         fun ResolutionScaleDropdown(
             selectedScale: Float,
-            onScaleSelected: (Float) -> Unit,
-            modifier: Modifier = Modifier
+            onScaleSelected: (Float) -> Unit
         ) {
             val scaleOptions = listOf(
                 0.5f to "0.5x (360p/540p)",
@@ -1367,16 +1360,14 @@ class SettingViews {
                 getDisplayText = { scale ->
                     scaleOptions.find { it.first == scale }?.second ?: "${scale}x"
                 },
-                onOptionSelected = onScaleSelected,
-                modifier = modifier
+                onOptionSelected = onScaleSelected
             )
         }
 		
         @Composable
         fun AnisotropicFilteringDropdown(
             selectedAnisotropy: Float,
-            onAnisotropySelected: (Float) -> Unit,
-            modifier: Modifier = Modifier
+            onAnisotropySelected: (Float) -> Unit
         ) {
             val anisotropyOptions = listOf(
                 0.0f to "0x",
@@ -1393,16 +1384,14 @@ class SettingViews {
                 getDisplayText = { anisotropy ->
                     anisotropyOptions.find { it.first == anisotropy }?.second ?: "${anisotropy}x"
                 },
-                onOptionSelected = onAnisotropySelected,
-                modifier = modifier
+                onOptionSelected = onAnisotropySelected
             )
         }
 
         @Composable
         fun FsGlobalAccessLogModeDropdown(
             selectedFsGlobalAccess: Int,
-            onFsGlobalAccessSelected: (Int) -> Unit,
-            modifier: Modifier = Modifier
+            onFsGlobalAccessSelected: (Int) -> Unit
         ) {
             val fsGlobalAccessOptions = listOf(
                 0 to "0",
@@ -1418,8 +1407,7 @@ class SettingViews {
                 getDisplayText = { fsGlobalAccess ->
                     fsGlobalAccessOptions.find { it.first == fsGlobalAccess }?.second ?: "${fsGlobalAccess}x"
                 },
-                onOptionSelected = onFsGlobalAccessSelected,
-                modifier = modifier
+                onOptionSelected = onFsGlobalAccessSelected
             )
         }
     }

@@ -27,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -73,7 +72,7 @@ class DlcViews {
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Column {
-                    Text(text = "DLC for ${name}", textAlign = TextAlign.Center)
+                    Text(text = "DLC for $name", textAlign = TextAlign.Center)
                     Box(
                         modifier = Modifier
                             .padding(8.dp)

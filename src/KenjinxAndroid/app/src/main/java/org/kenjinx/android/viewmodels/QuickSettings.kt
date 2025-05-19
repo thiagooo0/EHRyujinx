@@ -2,6 +2,7 @@ package org.kenjinx.android.viewmodels
 
 import android.app.Activity
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 
 class QuickSettings(val activity: Activity) {
@@ -40,10 +41,10 @@ class QuickSettings(val activity: Activity) {
     private var sharedPref: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
 
     init {
-        memoryManagerMode = MemoryManagerMode.values()[sharedPref.getInt("memoryManagerMode", MemoryManagerMode.HostMappedUnsafe.ordinal)]
+        memoryManagerMode = MemoryManagerMode.entries.toTypedArray()[sharedPref.getInt("memoryManagerMode", MemoryManagerMode.HostMappedUnsafe.ordinal)]
         useNce = sharedPref.getBoolean("useNce", false)
-        memoryConfiguration = MemoryConfiguration.values()[sharedPref.getInt("memoryConfiguration", MemoryConfiguration.MemoryConfiguration4GiB.ordinal)]
-        vSyncMode = VSyncMode.values()[sharedPref.getInt("vSyncMode", VSyncMode.Switch.ordinal)]
+        memoryConfiguration = MemoryConfiguration.entries.toTypedArray()[sharedPref.getInt("memoryConfiguration", MemoryConfiguration.MemoryConfiguration4GiB.ordinal)]
+        vSyncMode = VSyncMode.entries.toTypedArray()[sharedPref.getInt("vSyncMode", VSyncMode.Switch.ordinal)]
         enableDocked = sharedPref.getBoolean("enableDocked", true)
         enablePptc = sharedPref.getBoolean("enablePptc", true)
         enableLowPowerPptc = sharedPref.getBoolean("enableLowPowerPptc", false)
@@ -74,53 +75,53 @@ class QuickSettings(val activity: Activity) {
     }
 
     fun save() {
-        val editor = sharedPref.edit()
+        sharedPref.edit {
 
-        editor.putInt("memoryManagerMode", memoryManagerMode.ordinal)
-        editor.putBoolean("useNce", useNce)
-        editor.putInt("memoryConfiguration", memoryConfiguration.ordinal)
-        editor.putInt("vSyncMode", vSyncMode.ordinal)
-        editor.putBoolean("enableDocked", enableDocked)
-        editor.putBoolean("enablePptc", enablePptc)
-        editor.putBoolean("enableLowPowerPptc", enableLowPowerPptc)
-        editor.putBoolean("enableJitCacheEviction", enableJitCacheEviction)
-        editor.putBoolean("enableFsIntegrityChecks", enableFsIntegrityChecks)
-        editor.putInt("fsGlobalAccessLogMode", fsGlobalAccessLogMode)
-        editor.putBoolean("ignoreMissingServices", ignoreMissingServices)
-        editor.putBoolean("enableShaderCache", enableShaderCache)
-        editor.putBoolean("enableTextureRecompression", enableTextureRecompression)
-        editor.putBoolean("enableMacroHLE",enableMacroHLE)
-        editor.putFloat("resScale", resScale)
-        editor.putFloat("maxAnisotropy", maxAnisotropy)
-        editor.putBoolean("useVirtualController", useVirtualController)
-        editor.putBoolean("isGrid", isGrid)
-        editor.putBoolean("useSwitchLayout", useSwitchLayout)
-        editor.putBoolean("enableMotion", enableMotion)
-        editor.putBoolean("enablePerformanceMode", enablePerformanceMode)
-        editor.putFloat("controllerStickSensitivity", controllerStickSensitivity)
-        editor.putBoolean("enableStubLogs", enableStubLogs)
-        editor.putBoolean("enableInfoLogs", enableInfoLogs)
-        editor.putBoolean("enableWarningLogs", enableWarningLogs)
-        editor.putBoolean("enableErrorLogs", enableErrorLogs)
-        editor.putBoolean("enableGuestLogs", enableGuestLogs)
-        editor.putBoolean("enableFsAccessLogs", enableFsAccessLogs)
-        editor.putBoolean("enableTraceLogs", enableTraceLogs)
-        editor.putBoolean("enableDebugLogs", enableDebugLogs)
-        editor.putBoolean("enableGraphicsLogs", enableGraphicsLogs)
-        editor.apply()
+            putInt("memoryManagerMode", memoryManagerMode.ordinal)
+            putBoolean("useNce", useNce)
+            putInt("memoryConfiguration", memoryConfiguration.ordinal)
+            putInt("vSyncMode", vSyncMode.ordinal)
+            putBoolean("enableDocked", enableDocked)
+            putBoolean("enablePptc", enablePptc)
+            putBoolean("enableLowPowerPptc", enableLowPowerPptc)
+            putBoolean("enableJitCacheEviction", enableJitCacheEviction)
+            putBoolean("enableFsIntegrityChecks", enableFsIntegrityChecks)
+            putInt("fsGlobalAccessLogMode", fsGlobalAccessLogMode)
+            putBoolean("ignoreMissingServices", ignoreMissingServices)
+            putBoolean("enableShaderCache", enableShaderCache)
+            putBoolean("enableTextureRecompression", enableTextureRecompression)
+            putBoolean("enableMacroHLE", enableMacroHLE)
+            putFloat("resScale", resScale)
+            putFloat("maxAnisotropy", maxAnisotropy)
+            putBoolean("useVirtualController", useVirtualController)
+            putBoolean("isGrid", isGrid)
+            putBoolean("useSwitchLayout", useSwitchLayout)
+            putBoolean("enableMotion", enableMotion)
+            putBoolean("enablePerformanceMode", enablePerformanceMode)
+            putFloat("controllerStickSensitivity", controllerStickSensitivity)
+            putBoolean("enableStubLogs", enableStubLogs)
+            putBoolean("enableInfoLogs", enableInfoLogs)
+            putBoolean("enableWarningLogs", enableWarningLogs)
+            putBoolean("enableErrorLogs", enableErrorLogs)
+            putBoolean("enableGuestLogs", enableGuestLogs)
+            putBoolean("enableFsAccessLogs", enableFsAccessLogs)
+            putBoolean("enableTraceLogs", enableTraceLogs)
+            putBoolean("enableDebugLogs", enableDebugLogs)
+            putBoolean("enableGraphicsLogs", enableGraphicsLogs)
+        }
     }
 
     fun overrideSettings(forceNceAndPptc: Boolean?)
     {
         if(forceNceAndPptc == true)
         {
-            enablePptc = true;
-            useNce = true;
+            enablePptc = true
+            useNce = true
         }
         else
         {
-            enablePptc = false;
-            useNce = false;
+            enablePptc = false
+            useNce = false
         }
     }
 }

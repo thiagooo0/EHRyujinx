@@ -7,20 +7,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -310,10 +305,10 @@ class GameViews {
                 CompositionLocalProvider(LocalTextStyle provides TextStyle(fontSize = 10.sp)) {
                     Column {
                         var gameTimeVal = 0.0
-                        if (!gameTime.value.isInfinite())
-                            gameTimeVal = gameTime.value
-                        Text(text = "${String.format("%.3f", fifo.value)} %")
-                        Text(text = "${String.format("%.3f", gameFps.value)} FPS")
+                        if (!gameTime.doubleValue.isInfinite())
+                            gameTimeVal = gameTime.doubleValue
+                        Text(text = "${String.format("%.3f", fifo.doubleValue)} %")
+                        Text(text = "${String.format("%.3f", gameFps.doubleValue)} FPS")
                         Text(text = "${String.format("%.3f", gameTimeVal)} ms")
                         Box(modifier = Modifier.width(96.dp)) {
                             Column {
@@ -335,12 +330,12 @@ class GameViews {
                                 Row {
                                     Text(modifier = Modifier.padding(2.dp), text = "Used")
                                     Spacer(Modifier.weight(1f))
-                                    Text(text = "${usedMem.value} MB")
+                                    Text(text = "${usedMem.intValue} MB")
                                 }
                                 Row {
                                     Text(modifier = Modifier.padding(2.dp), text = "Total")
                                     Spacer(Modifier.weight(1f))
-                                    Text(text = "${totalMem.value} MB")
+                                    Text(text = "${totalMem.intValue} MB")
                                 }
                             }
                         }

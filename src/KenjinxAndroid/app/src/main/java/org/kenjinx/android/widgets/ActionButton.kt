@@ -20,10 +20,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ActionButton(
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
     text: String,
     icon: ImageVector? = null,
-    modifier: Modifier = Modifier,
     isFullWidth: Boolean = false,
 ) {
     val buttonModifier = if (isFullWidth) {

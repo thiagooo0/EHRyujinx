@@ -7,6 +7,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
+import androidx.core.net.toUri
 import com.anggrayudi.storage.SimpleStorageHelper
 import com.anggrayudi.storage.file.extension
 import com.google.gson.Gson
@@ -39,7 +40,7 @@ class TitleUpdateViewModel(val titleId: String) {
             pathsState?.clear()
             pathsState?.addAll(updatesData.paths)
 
-            Uri.parse(str)?.let { uri ->
+            str.toUri().let { uri ->
                 try {
                     storageHelper.storage.context.contentResolver.releasePersistableUriPermission(
                         uri,

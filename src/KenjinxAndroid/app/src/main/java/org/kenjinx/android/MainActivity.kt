@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -26,6 +27,7 @@ import org.kenjinx.android.viewmodels.QuickSettings
 import org.kenjinx.android.viewmodels.GameModel
 import org.kenjinx.android.views.MainView
 import androidx.core.net.toUri
+
 
 class MainActivity : BaseActivity() {
     private var physicalControllerManager: PhysicalControllerManager =

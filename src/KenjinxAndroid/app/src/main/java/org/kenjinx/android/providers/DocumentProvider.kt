@@ -178,7 +178,7 @@ class DocumentProvider : DocumentsProvider() {
     private fun copyDocument(
         sourceDocumentId: String, sourceParentDocumentId: String,
         targetParentDocumentId: String?
-    ): String? {
+    ): String {
         if (!isChildDocument(sourceParentDocumentId, sourceDocumentId))
             throw FileNotFoundException("Couldn't copy document '$sourceDocumentId' as its parent is not '$sourceParentDocumentId'")
 
@@ -209,7 +209,7 @@ class DocumentProvider : DocumentsProvider() {
     override fun moveDocument(
         sourceDocumentId: String, sourceParentDocumentId: String?,
         targetParentDocumentId: String?
-    ): String? {
+    ): String {
         try {
             val newDocumentId = copyDocument(
                 sourceDocumentId, sourceParentDocumentId!!,
@@ -256,7 +256,7 @@ class DocumentProvider : DocumentsProvider() {
         return cursor
     }
 
-    private fun getTypeForFile(file: File): Any? {
+    private fun getTypeForFile(file: File): Any {
         return if (file.isDirectory)
             DocumentsContract.Document.MIME_TYPE_DIR
         else

@@ -26,8 +26,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,7 +44,7 @@ class TitleUpdateViews {
         fun Main(titleId: String, name: String, openDialog: MutableState<Boolean>, canClose: MutableState<Boolean>) {
             val viewModel = TitleUpdateViewModel(titleId)
 
-            var selectedIndex by remember { mutableStateOf(0) }
+            var selectedIndex by remember { mutableIntStateOf(0) }
             viewModel.data?.apply {
                 selectedIndex = paths.indexOf(this.selected) + 1
             }
@@ -85,7 +85,7 @@ class TitleUpdateViews {
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Column {
-                    Text(text = "Updates for ${name}", textAlign = TextAlign.Center)
+                    Text(text = "Updates for $name", textAlign = TextAlign.Center)
                     Box(
                         modifier = Modifier
                             .padding(8.dp)

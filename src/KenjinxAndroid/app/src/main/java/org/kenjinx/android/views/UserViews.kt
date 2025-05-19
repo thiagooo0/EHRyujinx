@@ -51,7 +51,7 @@ class UserViews {
             val isNavigating = remember { mutableStateOf(false) }
 
             fun refresh() {
-                viewModel?.userViewModel?.refreshUsers()
+                viewModel.userViewModel.refreshUsers()
                 reload.value = true
             }
             LaunchedEffect(reload.value) {
@@ -98,7 +98,7 @@ class UserViews {
                                 .padding(4.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            if (viewModel.userViewModel.openedUser.id?.isNotEmpty() == true) {
+                            if (viewModel.userViewModel.openedUser.id.isNotEmpty()) {
                                 val openUser = viewModel.userViewModel.openedUser
                                 Image(
                                     bitmap = BitmapFactory.decodeByteArray(
@@ -143,7 +143,7 @@ class UserViews {
                                 .height(104.dp)
                                 .fillMaxSize()
                         ) {
-                            if (viewModel.userViewModel.userList.isNotEmpty() == true) {
+                            if (viewModel.userViewModel.userList.isNotEmpty()) {
                                 items(viewModel.userViewModel.userList) { user ->
                                     Box(
                                         contentAlignment = Alignment.Center

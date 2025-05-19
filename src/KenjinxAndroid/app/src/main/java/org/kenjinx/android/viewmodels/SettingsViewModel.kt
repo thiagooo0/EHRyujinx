@@ -18,6 +18,7 @@ import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.concurrent.thread
+import androidx.core.content.edit
 
 class SettingsViewModel(val activity: MainActivity) {
     var selectedFirmwareVersion: String = ""
@@ -31,6 +32,14 @@ class SettingsViewModel(val activity: MainActivity) {
         sharedPref = getPreferences()
         previousFolderCallback = activity.storageHelper!!.onFolderSelected
         previousFileCallback = activity.storageHelper!!.onFileSelected
+        activity.storageHelper!!.onFolderSelected = { _, folder ->
+            run {
+                val p = folder.getAbsolutePath(activity)
+                sharedPref.edit {
+                    this.putString("gameFolder", p)
+                }
+            }
+        }
     }
 
     private fun getPreferences(): SharedPreferences {
@@ -70,10 +79,10 @@ class SettingsViewModel(val activity: MainActivity) {
         enableDebugLogs: MutableState<Boolean>,
         enableGraphicsLogs: MutableState<Boolean>
     ) {
-        memoryManagerMode.value = MemoryManagerMode.values()[sharedPref.getInt("memoryManagerMode", MemoryManagerMode.HostMappedUnsafe.ordinal)]
+        memoryManagerMode.value = MemoryManagerMode.entries.toTypedArray()[sharedPref.getInt("memoryManagerMode", MemoryManagerMode.HostMappedUnsafe.ordinal)]
         useNce.value = sharedPref.getBoolean("useNce", false)
-        memoryConfiguration.value = MemoryConfiguration.values()[sharedPref.getInt("memoryConfiguration", MemoryConfiguration.MemoryConfiguration4GiB.ordinal)]
-        vSyncMode.value = VSyncMode.values()[sharedPref.getInt("vSyncMode", VSyncMode.Switch.ordinal)]
+        memoryConfiguration.value = MemoryConfiguration.entries.toTypedArray()[sharedPref.getInt("memoryConfiguration", MemoryConfiguration.MemoryConfiguration4GiB.ordinal)]
+        vSyncMode.value = VSyncMode.entries.toTypedArray()[sharedPref.getInt("vSyncMode", VSyncMode.Switch.ordinal)]
         enableDocked.value = sharedPref.getBoolean("enableDocked", true)
         enablePptc.value = sharedPref.getBoolean("enablePptc", true)
         enableLowPowerPptc.value = sharedPref.getBoolean("enableLowPowerPptc", false)
@@ -136,41 +145,42 @@ class SettingsViewModel(val activity: MainActivity) {
         enableDebugLogs: MutableState<Boolean>,
         enableGraphicsLogs: MutableState<Boolean>
     ) {
-        val editor = sharedPref.edit()
+        sharedPref.edit {
 
-        editor.putInt("memoryManagerMode", memoryManagerMode.value.ordinal)
-        editor.putBoolean("useNce", useNce.value)
-        editor.putInt("memoryConfiguration", memoryConfiguration.value.ordinal)
-        editor.putInt("vSyncMode", vSyncMode.value.ordinal)
-        editor.putBoolean("enableDocked", enableDocked.value)
-        editor.putBoolean("enablePptc", enablePptc.value)
-        editor.putBoolean("enableLowPowerPptc", enableLowPowerPptc.value)
-        editor.putBoolean("enableJitCacheEviction", enableJitCacheEviction.value)
-        editor.putBoolean("enableFsIntegrityChecks", enableFsIntegrityChecks.value)
-        editor.putInt("fsGlobalAccessLogMode", fsGlobalAccessLogMode.value)
-        editor.putBoolean("ignoreMissingServices", ignoreMissingServices.value)
-        editor.putBoolean("enableShaderCache", enableShaderCache.value)
-        editor.putBoolean("enableTextureRecompression", enableTextureRecompression.value)
-        editor.putBoolean("enableMacroHLE", enableMacroHLE.value)
-        editor.putFloat("resScale", resScale.value)
-        editor.putFloat("maxAnisotropy", maxAnisotropy.value)
-        editor.putBoolean("useVirtualController", useVirtualController.value)
-        editor.putBoolean("isGrid", isGrid.value)
-        editor.putBoolean("useSwitchLayout", useSwitchLayout.value)
-        editor.putBoolean("enableMotion", enableMotion.value)
-        editor.putBoolean("enablePerformanceMode", enablePerformanceMode.value)
-        editor.putFloat("controllerStickSensitivity", controllerStickSensitivity.value)
-        editor.putBoolean("enableStubLogs", enableStubLogs.value)
-        editor.putBoolean("enableInfoLogs", enableInfoLogs.value)
-        editor.putBoolean("enableWarningLogs", enableWarningLogs.value)
-        editor.putBoolean("enableErrorLogs", enableErrorLogs.value)
-        editor.putBoolean("enableGuestLogs", enableGuestLogs.value)
-        editor.putBoolean("enableFsAccessLogs", enableFsAccessLogs.value)
-        editor.putBoolean("enableTraceLogs", enableTraceLogs.value)
-        editor.putBoolean("enableDebugLogs", enableDebugLogs.value)
-        editor.putBoolean("enableGraphicsLogs", enableGraphicsLogs.value)
+            putInt("memoryManagerMode", memoryManagerMode.value.ordinal)
+            putBoolean("useNce", useNce.value)
+            putInt("memoryConfiguration", memoryConfiguration.value.ordinal)
+            putInt("vSyncMode", vSyncMode.value.ordinal)
+            putBoolean("enableDocked", enableDocked.value)
+            putBoolean("enablePptc", enablePptc.value)
+            putBoolean("enableLowPowerPptc", enableLowPowerPptc.value)
+            putBoolean("enableJitCacheEviction", enableJitCacheEviction.value)
+            putBoolean("enableFsIntegrityChecks", enableFsIntegrityChecks.value)
+            putInt("fsGlobalAccessLogMode", fsGlobalAccessLogMode.value)
+            putBoolean("ignoreMissingServices", ignoreMissingServices.value)
+            putBoolean("enableShaderCache", enableShaderCache.value)
+            putBoolean("enableTextureRecompression", enableTextureRecompression.value)
+            putBoolean("enableMacroHLE", enableMacroHLE.value)
+            putFloat("resScale", resScale.value)
+            putFloat("maxAnisotropy", maxAnisotropy.value)
+            putBoolean("useVirtualController", useVirtualController.value)
+            putBoolean("isGrid", isGrid.value)
+            putBoolean("useSwitchLayout", useSwitchLayout.value)
+            putBoolean("enableMotion", enableMotion.value)
+            putBoolean("enablePerformanceMode", enablePerformanceMode.value)
+            putFloat("controllerStickSensitivity", controllerStickSensitivity.value)
+            putBoolean("enableStubLogs", enableStubLogs.value)
+            putBoolean("enableInfoLogs", enableInfoLogs.value)
+            putBoolean("enableWarningLogs", enableWarningLogs.value)
+            putBoolean("enableErrorLogs", enableErrorLogs.value)
+            putBoolean("enableGuestLogs", enableGuestLogs.value)
+            putBoolean("enableFsAccessLogs", enableFsAccessLogs.value)
+            putBoolean("enableTraceLogs", enableTraceLogs.value)
+            putBoolean("enableDebugLogs", enableDebugLogs.value)
+            putBoolean("enableGraphicsLogs", enableGraphicsLogs.value)
 
-        editor.apply()
+        }
+        activity.storageHelper!!.onFolderSelected = previousFolderCallback
 
         KenjinxNative.loggingSetEnabled(LogLevel.Info, enableInfoLogs.value)
         KenjinxNative.loggingSetEnabled(LogLevel.Stub, enableStubLogs.value)

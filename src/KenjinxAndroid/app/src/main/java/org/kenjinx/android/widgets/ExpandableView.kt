@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -50,7 +50,7 @@ fun ExpandableView(
             targetState = !mutableExpanded.value
         }
     }
-    val transition = updateTransition(transitionState, label = "transition")
+    val transition = rememberTransition(transitionState, label = "transition")
     val arrowRotationDegree = transition.animateFloat(
         transitionSpec = {
             tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
@@ -90,14 +90,16 @@ fun ExpandableView(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start
                     ) {
-                        if (icon != null) {
-                            Icon(
-                                imageVector = icon,
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        androidx.compose.foundation.layout.Spacer(
+                            modifier = Modifier.padding(
+                                end = 8.dp
                             )
-                            androidx.compose.foundation.layout.Spacer(modifier = Modifier.padding(end = 8.dp))
-                        }
+                        )
 
                         Text(
                             text = title,
@@ -129,12 +131,14 @@ fun ExpandableView(
                     animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
                 )
             ) {
-                Column(modifier = Modifier.padding(
-                    start = 8.dp,
-                    end = 8.dp,
-                    top = 0.dp,
-                    bottom = 8.dp
-                )) {
+                Column(
+                    modifier = Modifier.padding(
+                        start = 8.dp,
+                        end = 8.dp,
+                        top = 0.dp,
+                        bottom = 8.dp
+                    )
+                ) {
                     content()
                 }
             }
