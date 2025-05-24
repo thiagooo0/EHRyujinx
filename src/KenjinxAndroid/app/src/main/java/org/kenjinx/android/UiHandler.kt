@@ -52,7 +52,7 @@ class UiHandler {
     var message: String = ""
 
     init {
-        KenjinxNative.jnaInstance.uiHandlerSetup()
+        KenjinxNative.uiHandlerSetup()
     }
 
     fun update(
@@ -96,7 +96,7 @@ class UiHandler {
 
         fun validate(): Boolean {
             if (inputText.value.isEmpty()) {
-                validation.value = "Must be between ${minLength} and ${maxLength} characters"
+                validation.value = "Must be between $minLength and $maxLength characters"
             } else {
                 return inputText.value.length < minLength || inputText.value.length > maxLength
             }
@@ -120,7 +120,7 @@ class UiHandler {
                 if (inputListener.value.length < minLength || inputListener.value.length > maxLength)
                     return
             }
-            KenjinxNative.jnaInstance.uiHandlerSetResponse(
+            KenjinxNative.uiHandlerSetResponse(
                 true,
                 if (type == 2) inputListener.value else ""
             )

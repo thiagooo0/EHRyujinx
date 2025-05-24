@@ -15,24 +15,24 @@ class UserViewModel {
         userList.clear()
         val decoder = Base64.getDecoder()
         openedUser = UserModel()
-        openedUser.id = KenjinxNative.jnaInstance.userGetOpenedUser()
+        openedUser.id = KenjinxNative.userGetOpenedUser()
         if (openedUser.id.isNotEmpty()) {
-            openedUser.username = KenjinxNative.jnaInstance.userGetUserName(openedUser.id)
+            openedUser.username = KenjinxNative.userGetUserName(openedUser.id)
             openedUser.userPicture = decoder.decode(
-                KenjinxNative.jnaInstance.userGetUserPicture(
+                KenjinxNative.userGetUserPicture(
                     openedUser.id
                 )
             )
         }
 
-        val users = KenjinxNative.jnaInstance.userGetAllUsers()
+        val users = KenjinxNative.userGetAllUsers()
         for (user in users) {
             userList.add(
                 UserModel(
                     user,
-                    KenjinxNative.jnaInstance.userGetUserName(user),
+                    KenjinxNative.userGetUserName(user),
                     decoder.decode(
-                        KenjinxNative.jnaInstance.userGetUserPicture(user)
+                        KenjinxNative.userGetUserPicture(user)
                     )
                 )
             )
@@ -40,7 +40,7 @@ class UserViewModel {
     }
 
     fun openUser(userModel: UserModel) {
-        KenjinxNative.jnaInstance.userOpenUser(userModel.id)
+        KenjinxNative.userOpenUser(userModel.id)
 
         refreshUsers()
     }

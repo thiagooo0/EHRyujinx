@@ -35,7 +35,7 @@ class GameModel(var file: DocumentFile, val context: Context) {
     fun getGameInfo() {
         val pid = open()
         val gameInfo = GameInfo()
-        KenjinxNative.jnaInstance.deviceGetGameInfo(pid, file.extension, gameInfo)
+        KenjinxNative.deviceGetGameInfo(pid, file.extension, gameInfo)
         close()
 
         fileSize = gameInfo.FileSize

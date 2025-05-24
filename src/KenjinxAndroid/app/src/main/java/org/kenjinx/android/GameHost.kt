@@ -12,7 +12,6 @@ import kotlin.concurrent.thread
 @SuppressLint("ViewConstructor")
 class GameHost(context: Context?, private val mainViewModel: MainViewModel) : SurfaceView(context),
     SurfaceHolder.Callback {
-    private var _currentWindow: Long = -1
     private var isProgressHidden: Boolean = false
     private var progress: MutableState<String>? = null
     private var progressValue: MutableState<Float>? = null
@@ -28,12 +27,10 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
     private var _isStarted: Boolean = false
     private val _nativeWindow: NativeWindow
 
-    val currentSurface:Long
-        get() {
-            return _currentWindow
-        }
+    var currentSurface: Long = -1
+        private set
 
-    val currentWindowhandle: Long
+    val currentWindowHandle: Long
         get() {
             return _nativeWindow.nativePointer
         }
@@ -67,7 +64,7 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
             return
 
         if (_width != width || _height != height) {
-            _currentWindow = _nativeWindow.requeryWindowHandle()
+            currentSurface = _nativeWindow.requeryWindowHandle()
 
             _nativeWindow.swapInterval = 0
         }
@@ -77,13 +74,13 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
 
         start(holder)
 
-        KenjinxNative.jnaInstance.graphicsRendererSetSize(
+        KenjinxNative.graphicsRendererSetSize(
             width,
             height
         )
 
         if (_isStarted) {
-            KenjinxNative.jnaInstance.inputSetClientSize(width, height)
+            KenjinxNative.inputSetClientSize(width, height)
         }
     }
 
@@ -96,7 +93,7 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
         _isInit = false
         _isStarted = false
 
-        KenjinxNative.jnaInstance.uiHandlerSetResponse(false, "")
+        KenjinxNative.uiHandlerSetResponse(false, "")
 
         _updateThread?.join()
         _renderingThreadWatcher?.join()
@@ -110,12 +107,12 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
 
         game = if (mainViewModel.isMiiEditorLaunched) null else mainViewModel.gameModel
 
-        KenjinxNative.jnaInstance.inputInitialize(width, height)
+        KenjinxNative.inputInitialize(width, height)
 
         val id = mainViewModel.physicalControllerManager?.connect()
         mainViewModel.motionSensorManager?.setControllerId(id ?: -1)
 
-        KenjinxNative.jnaInstance.graphicsRendererSetSize(
+        KenjinxNative.graphicsRendererSetSize(
             surfaceHolder.surfaceFrame.width(),
             surfaceHolder.surfaceFrame.height()
         )
@@ -130,7 +127,7 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
             var c = 0
             val helper = NativeHelpers.instance
             while (_isStarted) {
-                KenjinxNative.jnaInstance.inputUpdate()
+                KenjinxNative.inputUpdate()
                 Thread.sleep(1)
                 c++
                 if (c >= 1000) {
@@ -141,9 +138,9 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
                         }
                     c = 0
                     mainViewModel.updateStats(
-                        KenjinxNative.jnaInstance.deviceGetGameFifo(),
-                        KenjinxNative.jnaInstance.deviceGetGameFrameRate(),
-                        KenjinxNative.jnaInstance.deviceGetGameFrameTime()
+                        KenjinxNative.deviceGetGameFifo(),
+                        KenjinxNative.deviceGetGameFrameRate(),
+                        KenjinxNative.deviceGetGameFrameTime()
                     )
                 }
             }
@@ -151,7 +148,7 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
     }
 
     private fun runGame() {
-        KenjinxNative.jnaInstance.graphicsRendererRunLoop()
+        KenjinxNative.graphicsRendererRunLoop()
 
         game?.close()
     }

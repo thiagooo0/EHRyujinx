@@ -58,6 +58,6 @@ class Logging(private var viewModel: MainViewModel) {
     }
 }
 
-internal enum class LogLevel {
+enum class LogLevel {
     Debug, Stub, Info, Warning, Error, Guest, AccessLog, Notice, Trace
 }

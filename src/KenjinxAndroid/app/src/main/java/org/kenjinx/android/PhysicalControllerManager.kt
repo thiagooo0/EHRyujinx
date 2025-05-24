@@ -15,11 +15,11 @@ class PhysicalControllerManager(val activity: MainActivity) {
             if (/*controllerId != -1 &&*/ isNotFallback) {
                 when (event.action) {
                     KeyEvent.ACTION_UP -> {
-                        KenjinxNative.jnaInstance.inputSetButtonReleased(id.ordinal, controllerId)
+                        KenjinxNative.inputSetButtonReleased(id.ordinal, controllerId)
                     }
 
                     KeyEvent.ACTION_DOWN -> {
-                        KenjinxNative.jnaInstance.inputSetButtonPressed(id.ordinal, controllerId)
+                        KenjinxNative.inputSetButtonPressed(id.ordinal, controllerId)
                     }
                 }
                 return true
@@ -38,13 +38,13 @@ class PhysicalControllerManager(val activity: MainActivity) {
                 val leftStickY = ev.getAxisValue(MotionEvent.AXIS_Y)
                 val rightStickX = ev.getAxisValue(MotionEvent.AXIS_Z)
                 val rightStickY = ev.getAxisValue(MotionEvent.AXIS_RZ)
-                KenjinxNative.jnaInstance.inputSetStickAxis(
+                KenjinxNative.inputSetStickAxis(
                     1,
                     leftStickX,
                     -leftStickY,
                     controllerId
                 )
-                KenjinxNative.jnaInstance.inputSetStickAxis(
+                KenjinxNative.inputSetStickAxis(
                     2,
                     rightStickX,
                     -rightStickY,
@@ -57,63 +57,63 @@ class PhysicalControllerManager(val activity: MainActivity) {
                         val dPadHor = ev.getAxisValue(MotionEvent.AXIS_HAT_X)
                         val dPadVert = ev.getAxisValue(MotionEvent.AXIS_HAT_Y)
                         if (dPadVert == 0.0f) {
-                            KenjinxNative.jnaInstance.inputSetButtonReleased(
+                            KenjinxNative.inputSetButtonReleased(
                                 GamePadButtonInputId.DpadUp.ordinal,
                                 controllerId
                             )
-                            KenjinxNative.jnaInstance.inputSetButtonReleased(
+                            KenjinxNative.inputSetButtonReleased(
                                 GamePadButtonInputId.DpadDown.ordinal,
                                 controllerId
                             )
                         }
                         if (dPadHor == 0.0f) {
-                            KenjinxNative.jnaInstance.inputSetButtonReleased(
+                            KenjinxNative.inputSetButtonReleased(
                                 GamePadButtonInputId.DpadLeft.ordinal,
                                 controllerId
                             )
-                            KenjinxNative.jnaInstance.inputSetButtonReleased(
+                            KenjinxNative.inputSetButtonReleased(
                                 GamePadButtonInputId.DpadRight.ordinal,
                                 controllerId
                             )
                         }
 
                         if (dPadVert < 0.0f) {
-                            KenjinxNative.jnaInstance.inputSetButtonPressed(
+                            KenjinxNative.inputSetButtonPressed(
                                 GamePadButtonInputId.DpadUp.ordinal,
                                 controllerId
                             )
-                            KenjinxNative.jnaInstance.inputSetButtonReleased(
+                            KenjinxNative.inputSetButtonReleased(
                                 GamePadButtonInputId.DpadDown.ordinal,
                                 controllerId
                             )
                         }
                         if (dPadHor < 0.0f) {
-                            KenjinxNative.jnaInstance.inputSetButtonPressed(
+                            KenjinxNative.inputSetButtonPressed(
                                 GamePadButtonInputId.DpadLeft.ordinal,
                                 controllerId
                             )
-                            KenjinxNative.jnaInstance.inputSetButtonReleased(
+                            KenjinxNative.inputSetButtonReleased(
                                 GamePadButtonInputId.DpadRight.ordinal,
                                 controllerId
                             )
                         }
 
                         if (dPadVert > 0.0f) {
-                            KenjinxNative.jnaInstance.inputSetButtonReleased(
+                            KenjinxNative.inputSetButtonReleased(
                                 GamePadButtonInputId.DpadUp.ordinal,
                                 controllerId
                             )
-                            KenjinxNative.jnaInstance.inputSetButtonPressed(
+                            KenjinxNative.inputSetButtonPressed(
                                 GamePadButtonInputId.DpadDown.ordinal,
                                 controllerId
                             )
                         }
                         if (dPadHor > 0.0f) {
-                            KenjinxNative.jnaInstance.inputSetButtonReleased(
+                            KenjinxNative.inputSetButtonReleased(
                                 GamePadButtonInputId.DpadLeft.ordinal,
                                 controllerId
                             )
-                            KenjinxNative.jnaInstance.inputSetButtonPressed(
+                            KenjinxNative.inputSetButtonPressed(
                                 GamePadButtonInputId.DpadRight.ordinal,
                                 controllerId
                             )
@@ -125,7 +125,7 @@ class PhysicalControllerManager(val activity: MainActivity) {
     }
 
     fun connect(): Int {
-        controllerId = KenjinxNative.jnaInstance.inputConnectGamepad(0)
+        controllerId = KenjinxNative.inputConnectGamepad(0)
         return controllerId
     }
 

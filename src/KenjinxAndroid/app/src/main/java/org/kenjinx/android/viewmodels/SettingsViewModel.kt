@@ -173,15 +173,15 @@ class SettingsViewModel(val activity: MainActivity) {
         editor.apply()
         activity.storageHelper!!.onFolderSelected = previousFolderCallback
 
-        KenjinxNative.jnaInstance.loggingSetEnabled(LogLevel.Info.ordinal, enableInfoLogs.value)
-        KenjinxNative.jnaInstance.loggingSetEnabled(LogLevel.Stub.ordinal, enableStubLogs.value)
-        KenjinxNative.jnaInstance.loggingSetEnabled(LogLevel.Warning.ordinal, enableWarningLogs.value)
-        KenjinxNative.jnaInstance.loggingSetEnabled(LogLevel.Error.ordinal, enableErrorLogs.value)
-        KenjinxNative.jnaInstance.loggingSetEnabled(LogLevel.AccessLog.ordinal, enableFsAccessLogs.value)
-        KenjinxNative.jnaInstance.loggingSetEnabled(LogLevel.Guest.ordinal, enableGuestLogs.value)
-        KenjinxNative.jnaInstance.loggingSetEnabled(LogLevel.Trace.ordinal, enableTraceLogs.value)
-        KenjinxNative.jnaInstance.loggingSetEnabled(LogLevel.Debug.ordinal, enableDebugLogs.value)
-        KenjinxNative.jnaInstance.loggingEnabledGraphicsLog(enableGraphicsLogs.value)
+        KenjinxNative.loggingSetEnabled(LogLevel.Info, enableInfoLogs.value)
+        KenjinxNative.loggingSetEnabled(LogLevel.Stub, enableStubLogs.value)
+        KenjinxNative.loggingSetEnabled(LogLevel.Warning, enableWarningLogs.value)
+        KenjinxNative.loggingSetEnabled(LogLevel.Error, enableErrorLogs.value)
+        KenjinxNative.loggingSetEnabled(LogLevel.AccessLog, enableFsAccessLogs.value)
+        KenjinxNative.loggingSetEnabled(LogLevel.Guest, enableGuestLogs.value)
+        KenjinxNative.loggingSetEnabled(LogLevel.Trace, enableTraceLogs.value)
+        KenjinxNative.loggingSetEnabled(LogLevel.Debug, enableDebugLogs.value)
+        KenjinxNative.loggingEnabledGraphicsLog(enableGraphicsLogs.value)
     }
 
     fun openGameFolder() {
@@ -236,7 +236,7 @@ class SettingsViewModel(val activity: MainActivity) {
                     outputFolder,
                     callback = object : FileCallback() {
                         override fun onCompleted(result: Any) {
-                            KenjinxNative.jnaInstance.deviceReloadFilesystem()
+                            KenjinxNative.deviceReloadFilesystem()
                             installState.value = KeyInstallState.Done
                         }
                     }
@@ -264,7 +264,7 @@ class SettingsViewModel(val activity: MainActivity) {
                             Thread.sleep(1000)
                             val descriptor = activity.contentResolver.openFileDescriptor(file.uri, "rw")
                             descriptor?.use { d ->
-                                selectedFirmwareVersion = KenjinxNative.jnaInstance.deviceVerifyFirmware(d.fd, extension == "xci")
+                                selectedFirmwareVersion = KenjinxNative.deviceVerifyFirmware(d.fd, extension == "xci")
                                 selectedFirmwareFile = file
                                 if (!selectedFirmwareVersion.isEmpty()) {
                                     installState.value = FirmwareInstallState.Query
@@ -299,7 +299,7 @@ class SettingsViewModel(val activity: MainActivity) {
                     Thread.sleep(1000)
 
                     try {
-                        KenjinxNative.jnaInstance.deviceInstallFirmware(descriptor.fd,extension == "xci")
+                        KenjinxNative.deviceInstallFirmware(descriptor.fd,extension == "xci")
                     } finally {
                         MainActivity.mainViewModel?.refreshFirmwareVersion()
                         installState.value = FirmwareInstallState.Done
@@ -361,7 +361,7 @@ class SettingsViewModel(val activity: MainActivity) {
             }
         } finally {
             dataImportState.value = DataImportState.Done
-            KenjinxNative.jnaInstance.deviceReloadFilesystem()
+            KenjinxNative.deviceReloadFilesystem()
             MainActivity.mainViewModel?.refreshFirmwareVersion()
         }
     }

@@ -25,6 +25,7 @@ import org.kenjinx.android.viewmodels.MainViewModel
 import org.kenjinx.android.viewmodels.QuickSettings
 import org.kenjinx.android.viewmodels.GameModel
 import org.kenjinx.android.views.MainView
+import androidx.core.net.toUri
 
 class MainActivity : BaseActivity() {
     private var physicalControllerManager: PhysicalControllerManager =
@@ -47,7 +48,6 @@ class MainActivity : BaseActivity() {
         var mainViewModel: MainViewModel? = null
         var AppPath: String = ""
         var StorageHelper: SimpleStorageHelper? = null
-        val performanceMonitor = PerformanceMonitor()
 
         @JvmStatic
         fun frameEnded() {
@@ -76,45 +76,43 @@ class MainActivity : BaseActivity() {
         val appPath: String = AppPath
 
         var quickSettings = QuickSettings(this)
-        KenjinxNative.jnaInstance.loggingSetEnabled(
-            LogLevel.Info.ordinal,
+        KenjinxNative.loggingSetEnabled(
+            LogLevel.Info,
             quickSettings.enableInfoLogs
         )
-        KenjinxNative.jnaInstance.loggingSetEnabled(
-            LogLevel.Stub.ordinal,
+        KenjinxNative.loggingSetEnabled(
+            LogLevel.Stub,
             quickSettings.enableStubLogs
         )
-        KenjinxNative.jnaInstance.loggingSetEnabled(
-            LogLevel.Warning.ordinal,
+        KenjinxNative.loggingSetEnabled(
+            LogLevel.Warning,
             quickSettings.enableWarningLogs
         )
-        KenjinxNative.jnaInstance.loggingSetEnabled(
-            LogLevel.Error.ordinal,
+        KenjinxNative.loggingSetEnabled(
+            LogLevel.Error,
             quickSettings.enableErrorLogs
         )
-        KenjinxNative.jnaInstance.loggingSetEnabled(
-            LogLevel.AccessLog.ordinal,
+        KenjinxNative.loggingSetEnabled(
+            LogLevel.AccessLog,
             quickSettings.enableFsAccessLogs
         )
-        KenjinxNative.jnaInstance.loggingSetEnabled(
-            LogLevel.Guest.ordinal,
+        KenjinxNative.loggingSetEnabled(
+            LogLevel.Guest,
             quickSettings.enableGuestLogs
         )
-        KenjinxNative.jnaInstance.loggingSetEnabled(
-            LogLevel.Trace.ordinal,
+        KenjinxNative.loggingSetEnabled(
+            LogLevel.Trace,
             quickSettings.enableTraceLogs
         )
-        KenjinxNative.jnaInstance.loggingSetEnabled(
-            LogLevel.Debug.ordinal,
+        KenjinxNative.loggingSetEnabled(
+            LogLevel.Debug,
             quickSettings.enableDebugLogs
         )
-        KenjinxNative.jnaInstance.loggingEnabledGraphicsLog(
+        KenjinxNative.loggingEnabledGraphicsLog(
             quickSettings.enableGraphicsLogs
         )
-        val success =
-            KenjinxNative.jnaInstance.javaInitialize(appPath, JNIEnv.CURRENT)
 
-        _isInit = success
+        _isInit = KenjinxNative.javaInitialize(appPath, JNIEnv.CURRENT)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -235,7 +233,7 @@ class MainActivity : BaseActivity() {
                 val forceNceAndPptc = storedIntent.getBooleanExtra("forceNceAndPptc",false)
 
                 if (bootPath != null) {
-                    val uri = android.net.Uri.parse(bootPath)
+                    val uri = bootPath.toUri()
                     val documentFile = DocumentFile.fromSingleUri(this, uri)
 
                     if (documentFile != null) {

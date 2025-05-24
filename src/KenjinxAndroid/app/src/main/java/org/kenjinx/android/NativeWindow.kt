@@ -7,12 +7,12 @@ class NativeWindow(val surface: SurfaceView) {
     private val nativeHelpers: NativeHelpers = NativeHelpers.instance
     private var _swapInterval: Int = 0
 
-    var maxSwapInterval: Int = 0
+    val maxSwapInterval: Int
         get() {
             return if (nativePointer == -1L) 0 else nativeHelpers.getMaxSwapInterval(nativePointer)
         }
 
-    var minSwapInterval: Int = 0
+    val minSwapInterval: Int
         get() {
             return if (nativePointer == -1L) 0 else nativeHelpers.getMinSwapInterval(nativePointer)
         }
