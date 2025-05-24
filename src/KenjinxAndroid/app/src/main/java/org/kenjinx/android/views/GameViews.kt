@@ -130,19 +130,19 @@ class GameViews {
 
                                     when (event.type) {
                                         PointerEventType.Press -> {
-                                            KenjinxNative.jnaInstance.inputSetTouchPoint(
+                                            KenjinxNative.inputSetTouchPoint(
                                                 position.x.roundToInt(),
                                                 position.y.roundToInt()
                                             )
                                         }
 
                                         PointerEventType.Release -> {
-                                            KenjinxNative.jnaInstance.inputReleaseTouchPoint()
+                                            KenjinxNative.inputReleaseTouchPoint()
 
                                         }
 
                                         PointerEventType.Move -> {
-                                            KenjinxNative.jnaInstance.inputSetTouchPoint(
+                                            KenjinxNative.inputSetTouchPoint(
                                                 position.x.roundToInt(),
                                                 position.y.roundToInt()
                                             )
@@ -188,7 +188,7 @@ class GameViews {
                                         IconButton(modifier = Modifier.padding(4.dp), onClick = {
                                             showMore.value = false
                                             showController.value = !showController.value
-                                            KenjinxNative.jnaInstance.inputReleaseTouchPoint()
+                                            KenjinxNative.inputReleaseTouchPoint()
                                             mainViewModel.controller?.setVisible(showController.value)
                                         }) {
                                             Icon(
@@ -207,7 +207,7 @@ class GameViews {
                                             {
                                                 vSyncMode.value= VSyncMode.Switch
                                             }
-                                            KenjinxNative.jnaInstance.graphicsRendererSetVsync(
+                                            KenjinxNative.graphicsRendererSetVsync(
                                                 vSyncMode.value.ordinal
                                             )
                                         }) {

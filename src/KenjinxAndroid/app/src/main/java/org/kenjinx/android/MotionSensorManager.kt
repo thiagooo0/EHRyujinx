@@ -92,8 +92,8 @@ class MotionSensorManager(val activity: MainActivity) : SensorEventListener2 {
         isRegistered = false
 
         if (controllerId != -1) {
-            KenjinxNative.jnaInstance.inputSetAccelerometerData(0.0F, 0.0F, 0.0F, controllerId)
-            KenjinxNative.jnaInstance.inputSetGyroData(0.0F, 0.0F, 0.0F, controllerId)
+            KenjinxNative.inputSetAccelerometerData(0.0F, 0.0F, 0.0F, controllerId)
+            KenjinxNative.inputSetGyroData(0.0F, 0.0F, 0.0F, controllerId)
         }
     }
 
@@ -107,7 +107,7 @@ class MotionSensorManager(val activity: MainActivity) : SensorEventListener2 {
                             val y = motionAcelOrientation[1] * event.values[0]
                             val z = motionAcelOrientation[2] * event.values[2]
 
-                            KenjinxNative.jnaInstance.inputSetAccelerometerData(
+                            KenjinxNative.inputSetAccelerometerData(
                                 x,
                                 y,
                                 z,
@@ -119,13 +119,13 @@ class MotionSensorManager(val activity: MainActivity) : SensorEventListener2 {
                             val x = motionGyroOrientation[0] * event.values[1]
                             val y = motionGyroOrientation[1] * event.values[0]
                             val z = motionGyroOrientation[2] * event.values[2]
-                            KenjinxNative.jnaInstance.inputSetGyroData(x, y, z, controllerId)
+                            KenjinxNative.inputSetGyroData(x, y, z, controllerId)
                         }
                     }
                 }
             else {
-                KenjinxNative.jnaInstance.inputSetAccelerometerData(0.0F, 0.0F, 0.0F, controllerId)
-                KenjinxNative.jnaInstance.inputSetGyroData(0.0F, 0.0F, 0.0F, controllerId)
+                KenjinxNative.inputSetAccelerometerData(0.0F, 0.0F, 0.0F, controllerId)
+                KenjinxNative.inputSetGyroData(0.0F, 0.0F, 0.0F, controllerId)
             }
     }
 

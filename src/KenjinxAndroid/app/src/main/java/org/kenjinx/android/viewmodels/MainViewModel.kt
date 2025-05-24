@@ -18,6 +18,7 @@ import org.kenjinx.android.PerformanceManager
 import org.kenjinx.android.PhysicalControllerManager
 import org.kenjinx.android.RegionCode
 import org.kenjinx.android.KenjinxNative
+import org.kenjinx.android.PerformanceMonitor
 import org.kenjinx.android.SystemLanguage
 import org.kenjinx.android.UiHandler
 import java.io.File
@@ -62,20 +63,20 @@ class MainViewModel(val activity: MainActivity) {
     }
 
     fun refreshFirmwareVersion() {
-        firmwareVersion = KenjinxNative.jnaInstance.deviceGetInstalledFirmwareVersion()
+        firmwareVersion = KenjinxNative.deviceGetInstalledFirmwareVersion()
     }
 
     fun closeGame() {
-        KenjinxNative.jnaInstance.deviceSignalEmulationClose()
+        KenjinxNative.deviceSignalEmulationClose()
         gameHost?.close()
-        KenjinxNative.jnaInstance.deviceCloseEmulation()
+        KenjinxNative.deviceCloseEmulation()
         motionSensorManager?.unregister()
         physicalControllerManager?.disconnect()
         motionSensorManager?.setControllerId(-1)
     }
 
     fun loadGame(game: GameModel, overrideSettings: Boolean? = false, forceNceAndPptc: Boolean? = false): Int {
-        KenjinxNative.jnaInstance.deviceReinitEmulation()
+        KenjinxNative.deviceReinitEmulation()
         MainActivity.mainViewModel?.activity?.uiHandler = UiHandler()
 
         val descriptor = game.open()
@@ -100,7 +101,7 @@ class MainViewModel(val activity: MainActivity) {
             settings.overrideSettings(forceNceAndPptc);
         }
 
-        var success = KenjinxNative.jnaInstance.graphicsInitialize(
+        var success = KenjinxNative.graphicsInitialize(
             enableMacroHLE = settings.enableMacroHLE,
             enableShaderCache = settings.enableShaderCache,
             enableTextureRecompression = settings.enableTextureRecompression,
@@ -156,7 +157,7 @@ class MainViewModel(val activity: MainActivity) {
 
         val extensions = nativeInterop.VkRequiredExtensions
 
-        success = KenjinxNative.jnaInstance.graphicsInitializeRenderer(
+        success = KenjinxNative.graphicsInitializeRenderer(
             extensions!!,
             extensions.size,
             driverHandle
@@ -169,7 +170,7 @@ class MainViewModel(val activity: MainActivity) {
             semaphore.acquire()
             launchOnUiThread {
                 // We are only able to initialize the emulation context on the main thread
-                success = KenjinxNative.jnaInstance.deviceInitialize(
+                success = KenjinxNative.deviceInitialize(
                     settings.memoryManagerMode.ordinal,
                     settings.useNce,
                     settings.memoryConfiguration.ordinal,
@@ -194,7 +195,7 @@ class MainViewModel(val activity: MainActivity) {
         if (!success)
             return 0
 
-        success = KenjinxNative.jnaInstance.deviceLoadDescriptor(descriptor, game.type.ordinal, update)
+        success = KenjinxNative.deviceLoadDescriptor(descriptor, game.type.ordinal, update)
 
         return if (success) 1 else 0
     }
@@ -205,7 +206,7 @@ class MainViewModel(val activity: MainActivity) {
 
         val settings = QuickSettings(activity)
 
-        var success = KenjinxNative.jnaInstance.graphicsInitialize(
+        var success = KenjinxNative.graphicsInitialize(
             enableMacroHLE = settings.enableMacroHLE,
             enableShaderCache = settings.enableShaderCache,
             enableTextureRecompression = settings.enableTextureRecompression,
@@ -262,7 +263,7 @@ class MainViewModel(val activity: MainActivity) {
 
         val extensions = nativeInterop.VkRequiredExtensions
 
-        success = KenjinxNative.jnaInstance.graphicsInitializeRenderer(
+        success = KenjinxNative.graphicsInitializeRenderer(
             extensions!!,
             extensions.size,
             driverHandle
@@ -275,7 +276,7 @@ class MainViewModel(val activity: MainActivity) {
             semaphore.acquire()
             launchOnUiThread {
                 // We are only able to initialize the emulation context on the main thread
-                success = KenjinxNative.jnaInstance.deviceInitialize(
+                success = KenjinxNative.deviceInitialize(
                     settings.memoryManagerMode.ordinal,
                     settings.useNce,
                     settings.memoryConfiguration.ordinal,
@@ -300,7 +301,7 @@ class MainViewModel(val activity: MainActivity) {
         if (!success)
             return false
 
-        success = KenjinxNative.jnaInstance.deviceLaunchMiiEditor()
+        success = KenjinxNative.deviceLaunchMiiEditor()
 
         return success
     }
@@ -399,13 +400,13 @@ class MainViewModel(val activity: MainActivity) {
         }
         usedMemState?.let { usedMem ->
             totalMemState?.let { totalMem ->
-                MainActivity.performanceMonitor.getMemoryUsage(
+                PerformanceMonitor.getMemoryUsage(
                     usedMem,
                     totalMem
                 )
             }
         }
-        frequenciesState?.let { MainActivity.performanceMonitor.getFrequencies(it) }
+        frequenciesState?.let { PerformanceMonitor.getFrequencies(it) }
     }
 
     fun setGameController(controller: GameController) {

@@ -36,9 +36,9 @@ typealias GamePadConfig = RadialGamePadConfig
 class GameController(var activity: Activity) {
 
     companion object {
-        private fun Create(context: Context, controller: GameController): View {
-            val inflator = LayoutInflater.from(context)
-            val view = inflator.inflate(R.layout.game_layout, null)
+        private fun init(context: Context, controller: GameController): View {
+            val inflater = LayoutInflater.from(context)
+            val view = inflater.inflate(R.layout.game_layout, null)
             view.findViewById<FrameLayout>(R.id.leftcontainer)!!.addView(controller.leftGamePad)
             view.findViewById<FrameLayout>(R.id.rightcontainer)!!.addView(controller.rightGamePad)
 
@@ -50,7 +50,7 @@ class GameController(var activity: Activity) {
             AndroidView(
                 modifier = Modifier.fillMaxSize(), factory = { context ->
                     val controller = GameController(viewModel.activity)
-                    val c = Create(context, controller)
+                    val c = init(context, controller)
                     viewModel.activity.lifecycleScope.apply {
                         viewModel.activity.lifecycleScope.launch {
                             val events = merge(
@@ -108,12 +108,12 @@ class GameController(var activity: Activity) {
 
     fun connect() {
         if (controllerId == -1)
-            controllerId = KenjinxNative.jnaInstance.inputConnectGamepad(0)
+            controllerId = KenjinxNative.inputConnectGamepad(0)
     }
 
     private fun handleEvent(ev: Event) {
         if (controllerId == -1)
-            controllerId = KenjinxNative.jnaInstance.inputConnectGamepad(0)
+            controllerId = KenjinxNative.inputConnectGamepad(0)
 
         controllerId.apply {
             when (ev) {
@@ -121,11 +121,11 @@ class GameController(var activity: Activity) {
                     val action = ev.action
                     when (action) {
                         KeyEvent.ACTION_UP -> {
-                            KenjinxNative.jnaInstance.inputSetButtonReleased(ev.id, this)
+                            KenjinxNative.inputSetButtonReleased(ev.id, this)
                         }
 
                         KeyEvent.ACTION_DOWN -> {
-                            KenjinxNative.jnaInstance.inputSetButtonPressed(ev.id, this)
+                            KenjinxNative.inputSetButtonPressed(ev.id, this)
                         }
                     }
                 }
@@ -136,57 +136,57 @@ class GameController(var activity: Activity) {
                     when (direction) {
                         GamePadButtonInputId.DpadUp.ordinal -> {
                             if (ev.xAxis > 0) {
-                                KenjinxNative.jnaInstance.inputSetButtonPressed(
+                                KenjinxNative.inputSetButtonPressed(
                                     GamePadButtonInputId.DpadRight.ordinal,
                                     this
                                 )
-                                KenjinxNative.jnaInstance.inputSetButtonReleased(
+                                KenjinxNative.inputSetButtonReleased(
                                     GamePadButtonInputId.DpadLeft.ordinal,
                                     this
                                 )
                             } else if (ev.xAxis < 0) {
-                                KenjinxNative.jnaInstance.inputSetButtonPressed(
+                                KenjinxNative.inputSetButtonPressed(
                                     GamePadButtonInputId.DpadLeft.ordinal,
                                     this
                                 )
-                                KenjinxNative.jnaInstance.inputSetButtonReleased(
+                                KenjinxNative.inputSetButtonReleased(
                                     GamePadButtonInputId.DpadRight.ordinal,
                                     this
                                 )
                             } else {
-                                KenjinxNative.jnaInstance.inputSetButtonReleased(
+                                KenjinxNative.inputSetButtonReleased(
                                     GamePadButtonInputId.DpadLeft.ordinal,
                                     this
                                 )
-                                KenjinxNative.jnaInstance.inputSetButtonReleased(
+                                KenjinxNative.inputSetButtonReleased(
                                     GamePadButtonInputId.DpadRight.ordinal,
                                     this
                                 )
                             }
                             if (ev.yAxis < 0) {
-                                KenjinxNative.jnaInstance.inputSetButtonPressed(
+                                KenjinxNative.inputSetButtonPressed(
                                     GamePadButtonInputId.DpadUp.ordinal,
                                     this
                                 )
-                                KenjinxNative.jnaInstance.inputSetButtonReleased(
+                                KenjinxNative.inputSetButtonReleased(
                                     GamePadButtonInputId.DpadDown.ordinal,
                                     this
                                 )
                             } else if (ev.yAxis > 0) {
-                                KenjinxNative.jnaInstance.inputSetButtonPressed(
+                                KenjinxNative.inputSetButtonPressed(
                                     GamePadButtonInputId.DpadDown.ordinal,
                                     this
                                 )
-                                KenjinxNative.jnaInstance.inputSetButtonReleased(
+                                KenjinxNative.inputSetButtonReleased(
                                     GamePadButtonInputId.DpadUp.ordinal,
                                     this
                                 )
                             } else {
-                                KenjinxNative.jnaInstance.inputSetButtonReleased(
+                                KenjinxNative.inputSetButtonReleased(
                                     GamePadButtonInputId.DpadDown.ordinal,
                                     this
                                 )
-                                KenjinxNative.jnaInstance.inputSetButtonReleased(
+                                KenjinxNative.inputSetButtonReleased(
                                     GamePadButtonInputId.DpadUp.ordinal,
                                     this
                                 )
@@ -197,7 +197,7 @@ class GameController(var activity: Activity) {
                             val setting = QuickSettings(activity)
                             val x = MathUtils.clamp(ev.xAxis * setting.controllerStickSensitivity, -1f, 1f)
                             val y = MathUtils.clamp(ev.yAxis * setting.controllerStickSensitivity, -1f, 1f)
-                            KenjinxNative.jnaInstance.inputSetStickAxis(
+                            KenjinxNative.inputSetStickAxis(
                                 1,
                                 x,
                                 -y,
@@ -209,7 +209,7 @@ class GameController(var activity: Activity) {
                             val setting = QuickSettings(activity)
                             val x = MathUtils.clamp(ev.xAxis * setting.controllerStickSensitivity, -1f, 1f)
                             val y = MathUtils.clamp(ev.yAxis * setting.controllerStickSensitivity, -1f, 1f)
-                            KenjinxNative.jnaInstance.inputSetStickAxis(
+                            KenjinxNative.inputSetStickAxis(
                                 2,
                                 x,
                                 -y,

@@ -6,23 +6,17 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import java.io.RandomAccessFile
 
-class PerformanceMonitor {
-    val numberOfCores = Runtime.getRuntime().availableProcessors()
-
+object PerformanceMonitor {
     fun getFrequencies(frequencies: MutableList<Double>){
         frequencies.clear()
-        for (i in 0 until numberOfCores) {
-            var freq = 0.0
-            try {
-                RandomAccessFile("/sys/devices/system/cpu/cpu${i}/cpufreq/scaling_cur_freq", "r").use { reader->
-                    val f = reader.readLine()
-                    freq = f.toDouble() / 1000.0
-                }
-            } catch (e: Exception) {
-                Log.e("Performance Monitor", "Failed to read CPU freq", e);
-            }
+        for (i in 0 until Runtime.getRuntime().availableProcessors()) {
+            runCatching {
+                val raf = RandomAccessFile("/sys/devices/system/cpu/cpu$i/cpufreq/scaling_cur_freq", "r")
 
-            frequencies.add(freq)
+                frequencies.add(raf.use { it.readLine().toDouble() / 1000.0 })
+            }.onFailure {
+                Log.e("Performance Monitor", "Failed to read frequency of CPU core $i", it)
+            }
         }
     }
 

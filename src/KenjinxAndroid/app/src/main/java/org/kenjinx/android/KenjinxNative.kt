@@ -87,77 +87,53 @@ interface KenjinxNativeJna : Library {
     fun loggingEnabledGraphicsLog(enabled: Boolean)
 }
 
-class KenjinxNative {
+val jnaInstance: KenjinxNativeJna = Native.load(
+    "kenjinx",
+    KenjinxNativeJna::class.java,
+    Collections.singletonMap(Library.OPTION_ALLOW_OBJECTS, true)
+)
 
-    companion object {
-        val jnaInstance: KenjinxNativeJna = Native.load(
-            "kenjinx",
-            KenjinxNativeJna::class.java,
-            Collections.singletonMap(Library.OPTION_ALLOW_OBJECTS, true)
+object KenjinxNative : KenjinxNativeJna by jnaInstance {
+
+    fun loggingSetEnabled(logLevel: LogLevel, enabled: Boolean) = loggingSetEnabled(logLevel.ordinal, enabled)
+
+    @JvmStatic
+    fun frameEnded() = MainActivity.frameEnded()
+
+    @JvmStatic
+    fun getSurfacePtr(): Long = MainActivity.mainViewModel?.gameHost?.currentSurface ?: -1
+
+    @JvmStatic
+    fun getWindowHandle(): Long =
+        MainActivity.mainViewModel?.gameHost?.currentWindowHandle ?: -1
+
+    @JvmStatic
+    fun updateProgress(infoPtr: Long, progress: Float) =
+        MainActivity.mainViewModel?.gameHost?.setProgress(
+            NativeHelpers.instance.getStringJava(infoPtr),
+            progress
         )
 
-        @JvmStatic
-        fun test()
-        {
-            val i = 0
-        }
-
-        @JvmStatic
-        fun frameEnded()
-        {
-            MainActivity.frameEnded()
-        }
-
-        @JvmStatic
-        fun getSurfacePtr() : Long
-        {
-            return MainActivity.mainViewModel?.gameHost?.currentSurface ?: -1
-        }
-
-        @JvmStatic
-        fun getWindowHandle() : Long
-        {
-            return MainActivity.mainViewModel?.gameHost?.currentWindowhandle ?: -1
-        }
-
-        @JvmStatic
-        fun updateProgress(infoPtr : Long, progress: Float)
-        {
-            val info = NativeHelpers.instance.getStringJava(infoPtr);
-            MainActivity.mainViewModel?.gameHost?.setProgress(info, progress)
-        }
-
-        @JvmStatic
-        fun updateUiHandler(
-            newTitlePointer: Long,
-            newMessagePointer: Long,
-            newWatermarkPointer: Long,
-            newType: Int,
-            min: Int,
-            max: Int,
-            nMode: Int,
-            newSubtitlePointer: Long,
-            newInitialTextPointer: Long
-        )
-        {
-            var uiHandler = MainActivity.mainViewModel?.activity?.uiHandler
-            uiHandler?.apply {
-                val newTitle = NativeHelpers.instance.getStringJava(newTitlePointer)
-                val newMessage = NativeHelpers.instance.getStringJava(newMessagePointer)
-                val newWatermark = NativeHelpers.instance.getStringJava(newWatermarkPointer)
-                val newSubtitle = NativeHelpers.instance.getStringJava(newSubtitlePointer)
-                val newInitialText = NativeHelpers.instance.getStringJava(newInitialTextPointer)
-                val newMode = KeyboardMode.entries[nMode]
-                update(newTitle,
-                    newMessage,
-                    newWatermark,
-                    newType,
-                    min,
-                    max,
-                    newMode,
-                    newSubtitle,
-                    newInitialText);
-            }
-        }
-    }
+    @JvmStatic
+    fun updateUiHandler(
+        newTitlePointer: Long,
+        newMessagePointer: Long,
+        newWatermarkPointer: Long,
+        newType: Int,
+        min: Int,
+        max: Int,
+        nMode: Int,
+        newSubtitlePointer: Long,
+        newInitialTextPointer: Long
+    ) = MainActivity.mainViewModel?.activity?.uiHandler?.update(
+        newTitle = NativeHelpers.instance.getStringJava(newTitlePointer),
+        newMessage = NativeHelpers.instance.getStringJava(newMessagePointer),
+        newWatermark = NativeHelpers.instance.getStringJava(newWatermarkPointer),
+        newType,
+        min,
+        max,
+        newMode = KeyboardMode.entries[nMode],
+        newSubtitle = NativeHelpers.instance.getStringJava(newSubtitlePointer),
+        NativeHelpers.instance.getStringJava(newInitialTextPointer)
+    )
 }
