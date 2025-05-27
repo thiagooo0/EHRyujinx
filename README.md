@@ -4,8 +4,8 @@
   <br>
   <b>Kenji-NX</b>
   <br>
-    <a href="https://github.com/Kenji-NX/Releases/releases/latest">
-        <img src="https://img.shields.io/github/v/release/Kenji-NX/Releases"
+    <a href="https://github.com/Kenji-NX/Android-Releases/releases/latest">
+        <img src="https://img.shields.io/github/v/release/Kenji-NX/Android-Releases"
             alt="Latest Release">
     </a>
 </h1>
