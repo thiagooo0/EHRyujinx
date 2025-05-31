@@ -11,8 +11,8 @@ android {
         applicationId "org.kenjinx.android"
         minSdk 30
         targetSdk 34
-        versionCode 10044
-        versionName '2.0.3'
+        versionCode 20004
+        versionName '2.0.4'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -87,39 +87,39 @@ tasks.named("preBuild") {
 }
 
 dependencies {
-    implementation "androidx.compose.material:material-icons-extended:1.7.8"
-    implementation 'net.java.dev.jna:jna:5.17.0@aar'
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'com.google.android.material:material:1.12.0'
-    implementation platform('androidx.compose:compose-bom:2024.08.00')
-    androidTestImplementation platform('androidx.compose:compose-bom:2024.08.00')
     runtimeOnly project(":libkenjinx")
-    implementation 'androidx.core:core-ktx:1.16.0'
-    implementation platform('org.jetbrains.kotlin:kotlin-bom:1.9.24')
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.9.0'
-    implementation "androidx.navigation:navigation-compose:2.9.0"
     implementation 'androidx.activity:activity-compose:1.10.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.material:material-icons-extended:1.7.8'
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.ui:ui-graphics'
     implementation 'androidx.compose.ui:ui-tooling-preview'
-    implementation 'androidx.compose.material3:material3'
-    implementation 'com.github.swordfish90:radialgamepad:2.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
-    implementation "com.anggrayudi:storage:1.5.6"
-    implementation "androidx.preference:preference-ktx:1.2.1"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0'
+    implementation 'androidx.core:core-ktx:1.16.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.9.0'
+    implementation 'androidx.navigation:navigation-compose:2.9.0'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
+    implementation 'br.com.devsrsouza.compose.icons:css-gg:1.1.1'
+    implementation 'com.anggrayudi:storage:1.5.6'
+    implementation 'com.github.swordfish90:radialgamepad:2.0.0'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation 'com.google.code.gson:gson:2.11.0'
-    implementation 'net.lingala.zip4j:zip4j:2.11.5'
-    implementation('br.com.devsrsouza.compose.icons:css-gg:1.1.1')
+    implementation 'com.halilibo.compose-richtext:richtext-commonmark:0.20.0'
+    implementation 'com.halilibo.compose-richtext:richtext-ui-material3:0.20.0'
+    implementation 'com.halilibo.compose-richtext:richtext-ui:0.20.0'
     implementation 'io.coil-kt:coil-compose:2.6.0'
-    implementation("com.halilibo.compose-richtext:richtext-ui:0.20.0")
-    implementation("com.halilibo.compose-richtext:richtext-commonmark:0.20.0")
-    implementation("com.halilibo.compose-richtext:richtext-ui-material3:0.20.0")
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
-    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+    implementation 'net.java.dev.jna:jna:5.17.0@aar'
+    implementation 'net.lingala.zip4j:zip4j:2.11.5'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0'
-    debugImplementation 'androidx.compose.ui:ui-tooling'
+    implementation platform('androidx.compose:compose-bom:2024.08.00')
+    implementation platform('org.jetbrains.kotlin:kotlin-bom:1.9.24')
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation platform('androidx.compose:compose-bom:2024.08.00')
+    testImplementation 'junit:junit:4.13.2'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
 }
