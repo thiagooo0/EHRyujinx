@@ -305,7 +305,7 @@ namespace Ryujinx.HLE.Loaders.Processes
 
                     if (string.IsNullOrWhiteSpace(programName))
                     {
-                        programName = Array.Find(nacpData.Value.Title.ItemsRo.ToArray(), x => x.Name[0] != 0).NameString.ToString();
+                        programName = Array.Find(nacpData.Value.Title.AsReadOnlySpan().ToArray(), x => x.Name[0] != 0).NameString.ToString();
                     }
 
                     if (nacpData.Value.PresenceGroupId != 0)

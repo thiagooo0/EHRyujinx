@@ -344,7 +344,7 @@ namespace LibKenjinx
             {
                 _ = Enum.TryParse(TitleLanguage.ToString(), out TitleLanguage desiredTitleLanguage);
 
-                if (controlData.Title.ItemsRo.Length > (int)desiredTitleLanguage)
+                if (controlData.Title.Length > (int)desiredTitleLanguage)
                 {
                     titleName = controlData.Title[(int)desiredTitleLanguage].NameString.ToString();
                     publisher = controlData.Title[(int)desiredTitleLanguage].PublisherString.ToString();
@@ -357,7 +357,7 @@ namespace LibKenjinx
 
                 if (string.IsNullOrWhiteSpace(titleName))
                 {
-                    foreach (ref readonly var controlTitle in controlData.Title.ItemsRo)
+                    foreach (ref readonly var controlTitle in controlData.Title)
                     {
                         if (!controlTitle.NameString.IsEmpty())
                         {
@@ -370,7 +370,7 @@ namespace LibKenjinx
 
                 if (string.IsNullOrWhiteSpace(publisher))
                 {
-                    foreach (ref readonly var controlTitle in controlData.Title.ItemsRo)
+                    foreach (ref readonly var controlTitle in controlData.Title)
                     {
                         if (!controlTitle.PublisherString.IsEmpty())
                         {
