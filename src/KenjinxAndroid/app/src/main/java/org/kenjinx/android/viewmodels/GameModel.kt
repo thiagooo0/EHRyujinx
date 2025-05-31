@@ -50,6 +50,10 @@ class GameModel(var file: DocumentFile, val context: Context) {
         }
     }
 
+    fun isUnknown() : Boolean {
+        return (titleName == "Unknown")
+    }
+
     fun open(): Int {
         descriptor = context.contentResolver.openFileDescriptor(file.uri, "rw")
 

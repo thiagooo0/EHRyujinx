@@ -16,7 +16,7 @@ namespace Ryujinx.UI.Common.Configuration
         /// <summary>
         /// The current version of the file format
         /// </summary>
-        public const int CurrentVersion = 58;
+        public const int CurrentVersion = 59;
 
         /// <summary>
         /// Version of the configuration file format
@@ -239,6 +239,11 @@ namespace Ryujinx.UI.Common.Configuration
         /// Enables or disables low-power profiled translation cache persistency loading
         /// </summary>
         public bool EnableLowPowerPtc { get; set; }
+
+        /// <summary>
+        /// Enables or disables JIT cache eviction to avoid out of memory errors in some games
+        /// </summary>
+        public bool EnableJitCacheEviction { get; set; }
 
         /// <summary>
         /// Enables or disables guest Internet access

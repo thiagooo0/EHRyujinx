@@ -36,6 +36,10 @@
                         <TextBlock Text="{locale:Locale SettingsTabSystemEnableLowPowerPptc}"
                                    ToolTip.Tip="{locale:Locale LowPowerPptcToggleTooltip}" />
                     </CheckBox>
+                    <CheckBox IsChecked="{Binding EnableJitCacheEviction}">
+                        <TextBlock Text="{locale:Locale SettingsTabSystemEnableJitCacheEviction}"
+                                   ToolTip.Tip="{locale:Locale JitCacheEvictionToggleTooltip}" />
+                    </CheckBox>
                 </StackPanel>
                 <Separator Height="1" />
                 <TextBlock Classes="h1" Text="{locale:Locale SettingsTabCpuMemory}" />

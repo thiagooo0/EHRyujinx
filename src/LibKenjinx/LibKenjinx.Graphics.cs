@@ -10,6 +10,7 @@ using Ryujinx.Graphics.Gpu;
 using Ryujinx.Graphics.Gpu.Shader;
 using Ryujinx.Graphics.OpenGL;
 using Ryujinx.Graphics.Vulkan;
+using Ryujinx.UI.Common.Configuration;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
@@ -94,6 +95,9 @@ namespace LibKenjinx
             {
                 return;
             }
+            ARMeilleure.Optimizations.EcoFriendly = SwitchDevice!.EnableLowPowerPtc;
+            ARMeilleure.Optimizations.CacheEviction = SwitchDevice!.EnableJitCacheEviction;
+
             var device = SwitchDevice!.EmulationContext!;
             _gpuDoneEvent = new ManualResetEvent(true);
 

@@ -7,6 +7,8 @@ import androidx.preference.PreferenceManager
 class QuickSettings(val activity: Activity) {
     var ignoreMissingServices: Boolean
     var enablePptc: Boolean
+    var enableLowPowerPptc: Boolean
+    var enableJitCacheEviction: Boolean
     var enableFsIntegrityChecks: Boolean
     var fsGlobalAccessLogMode: Int
     var enableDocked: Boolean
@@ -39,11 +41,13 @@ class QuickSettings(val activity: Activity) {
 
     init {
         memoryManagerMode = MemoryManagerMode.values()[sharedPref.getInt("memoryManagerMode", MemoryManagerMode.HostMappedUnsafe.ordinal)]
-        useNce = sharedPref.getBoolean("useNce", true)
+        useNce = sharedPref.getBoolean("useNce", false)
         memoryConfiguration = MemoryConfiguration.values()[sharedPref.getInt("memoryConfiguration", MemoryConfiguration.MemoryConfiguration4GiB.ordinal)]
         vSyncMode = VSyncMode.values()[sharedPref.getInt("vSyncMode", VSyncMode.Switch.ordinal)]
         enableDocked = sharedPref.getBoolean("enableDocked", true)
         enablePptc = sharedPref.getBoolean("enablePptc", true)
+        enableLowPowerPptc = sharedPref.getBoolean("enableLowPowerPptc", false)
+        enableJitCacheEviction = sharedPref.getBoolean("enableJitCacheEviction", true)
         enableFsIntegrityChecks = sharedPref.getBoolean("enableFsIntegrityChecks", false)
         fsGlobalAccessLogMode = sharedPref.getInt("fsGlobalAccessLogMode", 0)
         ignoreMissingServices = sharedPref.getBoolean("ignoreMissingServices", false)
@@ -78,6 +82,8 @@ class QuickSettings(val activity: Activity) {
         editor.putInt("vSyncMode", vSyncMode.ordinal)
         editor.putBoolean("enableDocked", enableDocked)
         editor.putBoolean("enablePptc", enablePptc)
+        editor.putBoolean("enableLowPowerPptc", enableLowPowerPptc)
+        editor.putBoolean("enableJitCacheEviction", enableJitCacheEviction)
         editor.putBoolean("enableFsIntegrityChecks", enableFsIntegrityChecks)
         editor.putInt("fsGlobalAccessLogMode", fsGlobalAccessLogMode)
         editor.putBoolean("ignoreMissingServices", ignoreMissingServices)

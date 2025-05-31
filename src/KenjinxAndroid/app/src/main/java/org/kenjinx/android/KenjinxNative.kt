@@ -16,6 +16,8 @@ interface KenjinxNativeJna : Library {
         vSyncMode: Int,
         enableDockedMode: Boolean,
         enablePptc: Boolean,
+        enableLowPowerPptc: Boolean,
+        enableJitCacheEviction: Boolean,
         enableInternetAccess: Boolean,
         enableFsIntegrityChecks: Boolean,
         fsGlobalAccessLogMode: Int,

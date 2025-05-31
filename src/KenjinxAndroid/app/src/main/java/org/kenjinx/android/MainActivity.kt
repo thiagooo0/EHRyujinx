@@ -248,4 +248,24 @@ class MainActivity : BaseActivity() {
             }
         }
     }
+
+    fun shutdownAndRestart() {
+        // Create an intent to restart the app
+        val packageManager = packageManager
+        val intent = packageManager.getLaunchIntentForPackage(packageName)
+        val componentName = intent?.component
+        val restartIntent = Intent.makeRestartActivityTask(componentName)
+
+        // Clean up resources if needed
+        mainViewModel?.let {
+            // Perform any critical cleanup
+            it.performanceManager?.setTurboMode(false)
+        }
+
+        // Start the new activity directly
+        startActivity(restartIntent)
+
+        // Force immediate process termination
+        Runtime.getRuntime().exit(0)
+    }
 }

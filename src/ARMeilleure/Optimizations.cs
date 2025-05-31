@@ -8,6 +8,9 @@ namespace ARMeilleure
         // low-core count PPTC
         public static bool EcoFriendly { get; set; } = false;
 
+        // Jit cache eviction
+        public static bool CacheEviction { get; set; } = false;
+
         public static bool FastFP { get; set; } = true;
 
         public static bool AllowLcqInFunctionTable { get; set; } = true;

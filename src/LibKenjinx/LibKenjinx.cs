@@ -419,7 +419,7 @@ namespace LibKenjinx
                 }
 
                 // Return the ControlFS
-                controlFs = controlNca?.OpenFileSystem(NcaSectionType.Data, IntegrityCheckLevel.None);
+                controlFs = controlNca?.OpenFileSystem(NcaSectionType.Data, SwitchDevice.EnableFsIntegrityChecks ? IntegrityCheckLevel.ErrorOnInvalid : IntegrityCheckLevel.None);
                 titleId = controlNca?.Header.TitleId.ToString("x16");
             }
 
@@ -486,7 +486,7 @@ namespace LibKenjinx
 
                     if (patchNca != null && controlNca != null)
                     {
-                        updatedControlFs = controlNca.OpenFileSystem(NcaSectionType.Data, IntegrityCheckLevel.None);
+                        updatedControlFs = controlNca.OpenFileSystem(NcaSectionType.Data, SwitchDevice.EnableFsIntegrityChecks ? IntegrityCheckLevel.ErrorOnInvalid : IntegrityCheckLevel.None);
 
                         return true;
                     }
@@ -708,6 +708,10 @@ namespace LibKenjinx
         public InputManager? InputManager { get; set; }
         public Switch? EmulationContext { get; set; }
         public IHostUIHandler? HostUiHandler { get; set; }
+        public bool EnableLowPowerPtc { get; set; }
+        public bool EnableJitCacheEviction { get; set; }
+
+        public bool EnableFsIntegrityChecks { get; set; }
 
         internal void DisposeContext()
         {
@@ -803,6 +807,8 @@ namespace LibKenjinx
                                       VSyncMode vSyncMode,
                                       bool enableDockedMode,
                                       bool enablePtc,
+                                      bool enableLowPowerPtc,
+                                      bool enableJitCacheEviction,
                                       bool enableInternetAccess,
                                       bool enableFsIntegrityChecks,
                                       int fsGlobalAccessLogMode,
@@ -824,6 +830,10 @@ namespace LibKenjinx
                 renderer = new ThreadedRenderer(renderer);
             }
 
+            EnableLowPowerPtc = enableLowPowerPtc;
+            EnableJitCacheEviction = enableJitCacheEviction;
+            EnableFsIntegrityChecks = enableFsIntegrityChecks;
+
             HLEConfiguration configuration = new HLEConfiguration(VirtualFileSystem,
                                                                   LibHacHorizonManager,
                                                                   ContentManager,
@@ -839,7 +849,7 @@ namespace LibKenjinx
                                                                   enableDockedMode,
                                                                   enablePtc,
                                                                   enableInternetAccess,
-                                                                  enableFsIntegrityChecks ? IntegrityCheckLevel.ErrorOnInvalid : IntegrityCheckLevel.None,
+                                                                  EnableFsIntegrityChecks ? IntegrityCheckLevel.ErrorOnInvalid : IntegrityCheckLevel.None,
                                                                   fsGlobalAccessLogMode,
                                                                   0,
                                                                   timeZone,

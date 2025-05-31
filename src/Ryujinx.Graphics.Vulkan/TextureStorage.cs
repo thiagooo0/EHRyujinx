@@ -93,7 +93,7 @@ namespace Ryujinx.Graphics.Vulkan
 
             var sampleCountFlags = ConvertToSampleCountFlags(gd.Capabilities.SupportedSampleCounts, (uint)info.Samples);
 
-            var usage = GetImageUsage(info.Format, gd.Capabilities, isMsImageStorageSupported, true);
+            var usage = GetImageUsage(info.Format, info.Target, gd.Capabilities);
 
             var flags = ImageCreateFlags.CreateMutableFormatBit | ImageCreateFlags.CreateExtendedUsageBit;
 
@@ -307,7 +307,7 @@ namespace Ryujinx.Graphics.Vulkan
             }
         }
 
-        public static ImageUsageFlags GetImageUsage(Format format, in HardwareCapabilities capabilities, bool isMsImageStorageSupported, bool extendedUsage)
+        public static ImageUsageFlags GetImageUsage(Format format, Target target, in HardwareCapabilities capabilities)
         {
             var usage = DefaultUsageFlags;
 
@@ -320,9 +320,17 @@ namespace Ryujinx.Graphics.Vulkan
                 usage |= ImageUsageFlags.ColorAttachmentBit;
             }
 
-            if ((format.IsImageCompatible() && isMsImageStorageSupported) || extendedUsage)
+            bool isMsImageStorageSupported = capabilities.SupportsShaderStorageImageMultisample;
+
+            if (format.IsImageCompatible() && (isMsImageStorageSupported || !target.IsMultisample()))
             {
                 usage |= ImageUsageFlags.StorageBit;
+            }
+
+            if (capabilities.SupportsAttachmentFeedbackLoop &&
+                (usage & (ImageUsageFlags.DepthStencilAttachmentBit | ImageUsageFlags.ColorAttachmentBit)) != 0)
+            {
+                usage |= ImageUsageFlags.AttachmentFeedbackLoopBitExt;
             }
 
             return usage;

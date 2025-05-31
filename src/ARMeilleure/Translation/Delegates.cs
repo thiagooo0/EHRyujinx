@@ -1,5 +1,4 @@
 using ARMeilleure.Instructions;
-using ARMeilleure.State;
 using System;
 using System.Collections.Generic;
 using System.Reflection;

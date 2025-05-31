@@ -1223,15 +1223,15 @@ namespace Ryujinx.Ava.UI.ViewModels
             {
                 try
                 {
-                    // Creazione di una copia completa di Applications
                     List<ApplicationData> appsCopy;
+
                     lock (_applicationsLock)
                     {
                         appsCopy = new List<ApplicationData>(Applications);
                     }
 
-                    // Filtraggio e ordinamento in una lista temporanea
                     var tempApplications = new List<ApplicationData>();
+
                     foreach (var app in appsCopy)
                     {
                         if (Filter(app))
@@ -1240,10 +1240,8 @@ namespace Ryujinx.Ava.UI.ViewModels
                         }
                     }
 
-                    // Ordinamento alfabetico
                     tempApplications.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase));
 
-                    // Creazione delle directory di salvataggio
                     foreach (var application in tempApplications)
                     {
                         try
@@ -1252,19 +1250,16 @@ namespace Ryujinx.Ava.UI.ViewModels
                         }
                         catch (Exception ex)
                         {
-                            // Log dell'errore se necessario
                             Logger.Error?.Print(LogClass.Application, $"Failed to create save directory for {application.Name}: {ex.Message}");
                         }
                     }
 
-                    // Ricreazione dell'observable collection in modo thread-safe
                     Dispatcher.UIThread.InvokeAsync(() =>
                     {
                         try
                         {
                             lock (_applicationsLock)
                             {
-                                // Ricrea la collezione osservabile in modo più sicuro
                                 var source = Applications.ToObservableChangeSet();
                                 var filtered = source.Filter(Filter);
                                 var sorted = filtered.Sort(GetComparer());

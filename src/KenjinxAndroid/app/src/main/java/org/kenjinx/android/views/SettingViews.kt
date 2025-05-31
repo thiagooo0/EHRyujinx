@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MailOutline
@@ -62,6 +63,7 @@ import kotlin.concurrent.thread
 import org.kenjinx.android.MainActivity
 import org.kenjinx.android.providers.DocumentProvider
 import org.kenjinx.android.viewmodels.DataImportState
+import org.kenjinx.android.viewmodels.DataResetState
 import org.kenjinx.android.viewmodels.FirmwareInstallState
 import org.kenjinx.android.viewmodels.KeyInstallState
 import org.kenjinx.android.viewmodels.MainViewModel
@@ -90,6 +92,8 @@ class SettingViews {
             val vSyncMode = remember { mutableStateOf(VSyncMode.Switch) }
             val enableDocked = remember { mutableStateOf(false) }
             val enablePptc = remember { mutableStateOf(false) }
+            val enableLowPowerPptc = remember { mutableStateOf(false) }
+            val enableJitCacheEviction = remember { mutableStateOf(false) }
             var enableFsIntegrityChecks = remember { mutableStateOf(false) }
             var fsGlobalAccessLogMode = remember { mutableStateOf(0) }
             val ignoreMissingServices = remember { mutableStateOf(false) }
@@ -100,12 +104,14 @@ class SettingViews {
             val maxAnisotropy = remember { mutableStateOf(0f) }
             val useVirtualController = remember { mutableStateOf(true) }
             val showKeyDialog = remember { mutableStateOf(false) }
-            val keyInstallState = remember { mutableStateOf(KeyInstallState.None) }
+            val keyInstallState = remember { mutableStateOf(KeyInstallState.File) }
             val showFirwmareDialog = remember { mutableStateOf(false) }
-            val firmwareInstallState = remember { mutableStateOf(FirmwareInstallState.None) }
+            val firmwareInstallState = remember { mutableStateOf(FirmwareInstallState.File) }
             val firmwareVersion = remember { mutableStateOf(mainViewModel.firmwareVersion) }
+            val showDataResetDialog = remember { mutableStateOf(false) }
             val showDataImportDialog = remember { mutableStateOf(false) }
-            val dataImportState = remember { mutableStateOf(DataImportState.None) }
+            val dataResetState = remember { mutableStateOf(DataResetState.Query) }
+            val dataImportState = remember { mutableStateOf(DataImportState.File) }
             var dataFile = remember { mutableStateOf<DocumentFile?>(null) }
             val isGrid = remember { mutableStateOf(true) }
             val useSwitchLayout = remember { mutableStateOf(true) }
@@ -131,6 +137,8 @@ class SettingViews {
                     vSyncMode,
                     enableDocked,
                     enablePptc,
+                    enableLowPowerPptc,
+                    enableJitCacheEviction,
                     enableFsIntegrityChecks,
                     fsGlobalAccessLogMode,
                     ignoreMissingServices,
@@ -172,6 +180,8 @@ class SettingViews {
                                     vSyncMode,
                                     enableDocked,
                                     enablePptc,
+                                    enableLowPowerPptc,
+                                    enableJitCacheEviction,
                                     enableFsIntegrityChecks,
                                     fsGlobalAccessLogMode,
                                     ignoreMissingServices,
@@ -245,23 +255,6 @@ class SettingViews {
                             ){
                                 ActionButton(
                                     onClick = {
-                                        settingsViewModel.openGameFolder()
-                                    },
-                                    text = "Add Game Folder",
-                                    icon = Icons.Default.Add,
-                                    modifier = Modifier.weight(1f),
-                                    isFullWidth = false,
-                                )
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(56.dp)
-                                    .padding(horizontal = 8.dp, vertical = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                            ){
-                                ActionButton(
-                                    onClick = {
                                         showKeyDialog.value = true
                                     },
                                     text = "Install Keys",
@@ -287,7 +280,40 @@ class SettingViews {
                                     isFullWidth = false,
                                 )
                             }
-
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp)
+                                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ){
+                                ActionButton(
+                                    onClick = {
+                                        settingsViewModel.openGameFolder()
+                                    },
+                                    text = "Add Game Folder",
+                                    icon = Icons.Default.Add,
+                                    modifier = Modifier.weight(1f),
+                                    isFullWidth = false,
+                                )
+                            }
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp)
+                                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                ActionButton(
+                                    onClick = {
+                                        showDataResetDialog.value = true
+                                    },
+                                    text = "Reinit App Data",
+                                    icon = Icons.Default.Create,
+                                    modifier = Modifier.weight(1f),
+                                    isFullWidth = false,
+                                )
+                            }
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -359,6 +385,7 @@ class SettingViews {
                             if (keyInstallState.value != KeyInstallState.Install) {
                                 showKeyDialog.value = false
                                 settingsViewModel.clearKeySelection(keyInstallState)
+                                keyInstallState.value = KeyInstallState.File
                             }
                         }
                     ) {
@@ -378,7 +405,7 @@ class SettingViews {
                             )
 
                             when (keyInstallState.value) {
-                                KeyInstallState.None -> {
+                                KeyInstallState.File -> {
                                     Text(
                                         text = "Select a key file to install key from.",
                                         modifier = Modifier
@@ -437,7 +464,7 @@ class SettingViews {
                                                     keyInstallState
                                                 )
 
-                                                if (keyInstallState.value == KeyInstallState.None) {
+                                                if (keyInstallState.value == KeyInstallState.File) {
                                                     showKeyDialog.value = false
                                                     settingsViewModel.clearKeySelection(keyInstallState)
                                                 }
@@ -561,6 +588,7 @@ class SettingViews {
                             if (firmwareInstallState.value != FirmwareInstallState.Install) {
                                 showFirwmareDialog.value = false
                                 settingsViewModel.clearFirmwareSelection(firmwareInstallState)
+                                firmwareInstallState.value = FirmwareInstallState.File
                             }
                         }
                     ) {
@@ -580,7 +608,7 @@ class SettingViews {
                             )
 
                             when (firmwareInstallState.value) {
-                                FirmwareInstallState.None -> {
+                                FirmwareInstallState.File -> {
                                     Text(
                                         text = "Select a zip or xci file to install firmware from.",
                                         modifier = Modifier
@@ -635,7 +663,7 @@ class SettingViews {
                                             onClick = {
                                                 settingsViewModel.installFirmware(firmwareInstallState)
 
-                                                if (firmwareInstallState.value == FirmwareInstallState.None) {
+                                                if (firmwareInstallState.value == FirmwareInstallState.File) {
                                                     showFirwmareDialog.value = false
                                                     settingsViewModel.clearFirmwareSelection(firmwareInstallState)
                                                 }
@@ -780,12 +808,124 @@ class SettingViews {
                         }
                     }
                     SimpleAlertDialog.Custom(
+                        showDialog = showDataResetDialog,
+                        onDismissRequest = {
+                            if (dataResetState.value != DataResetState.Reset) {
+                                showDataResetDialog.value = false
+                                dataResetState.value = DataResetState.Query
+                            }
+                        }
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.SpaceBetween,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "App Data Reinit",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 16.dp),
+                                textAlign = TextAlign.Center
+                            )
+
+                            when (dataResetState.value) {
+                                DataResetState.Query -> {
+                                    Text(
+                                        text = "Current bis, games, profiles and system folders will be reset. Do you want to continue?",
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 8.dp, bottom = 8.dp),
+                                        textAlign = TextAlign.Start
+                                    )
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceEvenly,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 16.dp)
+                                    ) {
+                                        Button(
+                                            onClick = {
+                                                thread {
+                                                    settingsViewModel.resetAppData(dataResetState)
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(horizontal = 8.dp)
+                                        ) {
+                                            Text(text = "Yes")
+                                        }
+                                        Button(
+                                            onClick = {
+                                                showDataResetDialog.value = false
+                                            },
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(horizontal = 8.dp)
+                                        ) {
+                                            Text(text = "No")
+                                        }
+                                    }
+                                }
+                                DataResetState.Reset -> {
+                                    Text(
+                                        text = "Resetting app data...",
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 8.dp, bottom = 8.dp),
+                                        textAlign = TextAlign.Start
+                                    )
+                                    LinearProgressIndicator(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 16.dp)
+                                    )
+                                }
+                                DataResetState.Done -> {
+                                    Text(
+                                        text = "Data reset completed successfully.",
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 8.dp, bottom = 8.dp),
+                                        textAlign = TextAlign.Start
+                                    )
+
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceEvenly,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 16.dp)
+                                    ) {
+                                        Button(
+                                            onClick = {
+                                                showDataResetDialog.value = false
+                                                firmwareVersion.value = mainViewModel.firmwareVersion
+                                                dataResetState.value = DataResetState.Query
+                                                mainViewModel.userViewModel.refreshUsers()
+                                                mainViewModel.homeViewModel.requestReload()
+                                                mainViewModel.activity.shutdownAndRestart()
+                                            },
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(horizontal = 8.dp)
+                                        ) {
+                                            Text(text = "Close")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    SimpleAlertDialog.Custom(
                         showDialog = showDataImportDialog,
                         onDismissRequest = {
                             if (dataImportState.value != DataImportState.Import) {
                                 showDataImportDialog.value = false
                                 dataFile.value = null
-                                dataImportState.value = DataImportState.None
+                                dataImportState.value = DataImportState.File
                             }
                         }
                     ) {
@@ -805,9 +945,9 @@ class SettingViews {
                             )
 
                             when (dataImportState.value) {
-                                DataImportState.None -> {
+                                DataImportState.File -> {
                                     Text(
-                                        text = "Select a zip file to import app data from.",
+                                        text = "Select a zip file to import bis, games, profiles and system folders from another Android installation.",
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(start = 8.dp, bottom = 8.dp),
@@ -854,7 +994,7 @@ class SettingViews {
                                             onClick = {
                                                 showDataImportDialog.value = false
                                                 dataFile.value = null
-                                                dataImportState.value = DataImportState.None
+                                                dataImportState.value = DataImportState.File
                                             },
                                             modifier = Modifier
                                                 .weight(1f)
@@ -942,9 +1082,10 @@ class SettingViews {
                                                 showDataImportDialog.value = false
                                                 dataFile.value = null
                                                 firmwareVersion.value = mainViewModel.firmwareVersion
-                                                dataImportState.value = DataImportState.None
+                                                dataImportState.value = DataImportState.File
                                                 mainViewModel.userViewModel.refreshUsers()
                                                 mainViewModel.homeViewModel.requestReload()
+                                                mainViewModel.activity.shutdownAndRestart()
                                             },
                                             modifier = Modifier
                                                 .weight(1f)
@@ -1032,6 +1173,8 @@ class SettingViews {
                         Column(modifier = Modifier.fillMaxWidth()) {
                             useNce.SwitchSelector(label = "Enable NCE (Native Code Execution)")
                             enablePptc.SwitchSelector(label = "Enable PPTC (Profiled Persistent Translation Cache)")
+                            enableLowPowerPptc.SwitchSelector(label = "Enable Low-Power PPTC")
+                            enableJitCacheEviction.SwitchSelector(label = "Enable Jit Cache Eviction")
                             MemoryModeDropdown(
                                 selectedMemoryManagerMode = memoryManagerMode.value,
                                 onModeSelected = { mode ->

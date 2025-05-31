@@ -64,8 +64,7 @@ namespace Ryujinx.Graphics.Vulkan
             bool isMsImageStorageSupported = gd.Capabilities.SupportsShaderStorageImageMultisample || !info.Target.IsMultisample();
 
             var format = _gd.FormatCapabilities.ConvertToVkFormat(info.Format, isMsImageStorageSupported);
-            var usage = TextureStorage.GetImageUsage(info.Format, gd.Capabilities, isMsImageStorageSupported, false);
-
+            var usage = TextureStorage.GetImageUsage(info.Format, info.Target, gd.Capabilities);
             var levels = (uint)info.Levels;
             var layers = (uint)info.GetLayers();
 

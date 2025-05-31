@@ -346,6 +346,11 @@ namespace Ryujinx.UI.Common.Configuration
             public ReactiveObject<bool> EnableLowPowerPtc { get; private set; }
 
             /// <summary>
+            /// Enables or disables JIT cache eviction to avoid out of memory errors in some games
+            /// </summary>
+            public ReactiveObject<bool> EnableJitCacheEviction { get; private set; }
+
+            /// <summary>
             /// Enables or disables guest Internet access
             /// </summary>
             public ReactiveObject<bool> EnableInternetAccess { get; private set; }
@@ -405,6 +410,8 @@ namespace Ryujinx.UI.Common.Configuration
                 EnablePtc.Event += static (sender, e) => LogValueChange(e, nameof(EnablePtc));
                 EnableLowPowerPtc = new ReactiveObject<bool>();
                 EnableLowPowerPtc.Event += static (sender, e) => LogValueChange(e, nameof(EnableLowPowerPtc));
+                EnableJitCacheEviction = new ReactiveObject<bool>();
+                EnableJitCacheEviction.Event += static (sender, e) => LogValueChange(e, nameof(EnableJitCacheEviction));
                 EnableInternetAccess = new ReactiveObject<bool>();
                 EnableInternetAccess.Event += static (sender, e) => LogValueChange(e, nameof(EnableInternetAccess));
                 EnableFsIntegrityChecks = new ReactiveObject<bool>();
@@ -775,6 +782,7 @@ namespace Ryujinx.UI.Common.Configuration
                 EnableColorSpacePassthrough = Graphics.EnableColorSpacePassthrough,
                 EnablePtc = System.EnablePtc,
                 EnableLowPowerPtc = System.EnableLowPowerPtc,
+                EnableJitCacheEviction = System.EnableJitCacheEviction,
                 EnableInternetAccess = System.EnableInternetAccess,
                 EnableFsIntegrityChecks = System.EnableFsIntegrityChecks,
                 FsGlobalAccessLogMode = System.FsGlobalAccessLogMode,
@@ -1647,7 +1655,16 @@ namespace Ryujinx.UI.Common.Configuration
 
                 configurationFileUpdated = true;
             }
-            
+
+            if (configurationFileFormat.Version < 59)
+            {
+                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 59.");
+
+                configurationFileFormat.EnableJitCacheEviction = false;
+
+                configurationFileUpdated = true;
+            }
+
             Logger.EnableFileLog.Value = configurationFileFormat.EnableFileLog;
             Graphics.ResScale.Value = configurationFileFormat.ResScale;
             Graphics.ResScaleCustom.Value = configurationFileFormat.ResScaleCustom;
@@ -1692,6 +1709,7 @@ namespace Ryujinx.UI.Common.Configuration
             Graphics.EnableColorSpacePassthrough.Value = configurationFileFormat.EnableColorSpacePassthrough;
             System.EnablePtc.Value = configurationFileFormat.EnablePtc;
             System.EnableLowPowerPtc.Value = configurationFileFormat.EnableLowPowerPtc;
+            System.EnableJitCacheEviction.Value = configurationFileFormat.EnableJitCacheEviction;
             System.EnableInternetAccess.Value = configurationFileFormat.EnableInternetAccess;
             System.EnableFsIntegrityChecks.Value = configurationFileFormat.EnableFsIntegrityChecks;
             System.FsGlobalAccessLogMode.Value = configurationFileFormat.FsGlobalAccessLogMode;

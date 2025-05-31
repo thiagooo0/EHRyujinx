@@ -107,6 +107,11 @@ class HomeViewModel(
                 for(game in loadedCache)
                 {
                     game.getGameInfo()
+
+                    if(game.isUnknown())
+                    {
+                        loadedCache.remove(game);
+                    }
                 }
             } finally {
                 isLoading.value = false
