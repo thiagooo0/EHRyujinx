@@ -1,6 +1,7 @@
 using Ryujinx.Common.Logging;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using static Ryujinx.Memory.MemoryManagerUnixHelper;
@@ -10,6 +11,7 @@ namespace Ryujinx.Memory
     [SupportedOSPlatform("linux")]
     [SupportedOSPlatform("macos")]
     [SupportedOSPlatform("android")]
+    [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
     static class MemoryManagementUnix
     {
         private static readonly ConcurrentDictionary<IntPtr, ulong> _allocations = new();

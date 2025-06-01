@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ryujinx.Memory
 {
+    [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
     public static class MemoryManagement
     {
         public static IntPtr Allocate(ulong size, bool forJit)
