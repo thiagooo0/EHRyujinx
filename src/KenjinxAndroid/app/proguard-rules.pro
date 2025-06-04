@@ -19,6 +19,11 @@
 -keep public class * extends android.content.BroadcastReceiver
 -keep public class * extends android.content.ContentProvider
 -keep public class * extends androidx.fragment.app.Fragment
+-dontwarn java.awt.Component
+-dontwarn java.awt.GraphicsEnvironment
+-dontwarn java.awt.HeadlessException
+-dontwarn java.awt.Window
+-dontwarn javax.lang.model.element.Modifier
 -assumenosideeffects class java.lang.Math {
     public static double random();
     public static double sin(...);
@@ -29,5 +34,4 @@
   public boolean is*();
   public boolean get*();
   public boolean has*();
-  public void set*(***);
 }
