@@ -32,14 +32,6 @@ class SettingsViewModel(val activity: MainActivity) {
         sharedPref = getPreferences()
         previousFolderCallback = activity.storageHelper!!.onFolderSelected
         previousFileCallback = activity.storageHelper!!.onFileSelected
-        activity.storageHelper!!.onFolderSelected = { _, folder ->
-            run {
-                val p = folder.getAbsolutePath(activity)
-                sharedPref.edit {
-                    this.putString("gameFolder", p)
-                }
-            }
-        }
     }
 
     private fun getPreferences(): SharedPreferences {
@@ -198,11 +190,10 @@ class SettingsViewModel(val activity: MainActivity) {
 
         activity.storageHelper!!.onFolderSelected = { _, folder ->
             val p = folder.getAbsolutePath(activity)
-            val editor = sharedPref.edit()
-            editor.putString("gameFolder", p)
-            editor.apply()
+            sharedPref.edit {
+                putString("gameFolder", p)
+            }
             activity.storageHelper!!.onFolderSelected = previousFolderCallback
-            activity.shutdownAndRestart()
         }
 
         if (path.isEmpty())
