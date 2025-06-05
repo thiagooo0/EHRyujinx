@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "org.kenjinx.android"
-        minSdk 30
+        minSdk 29
         //noinspection EditedTargetSdkVersion
         targetSdk 36
         versionCode 20004

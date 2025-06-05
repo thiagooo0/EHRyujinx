@@ -7,6 +7,7 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.WindowManager
 import android.content.Intent
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import androidx.activity.compose.setContent
@@ -101,9 +102,15 @@ class MainActivity : BaseActivity() {
         motionSensorManager = MotionSensorManager(this)
         Thread.setDefaultUncaughtExceptionHandler(crashHandler)
 
-        if (!Environment.isExternalStorageManager()
+        if (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                !Environment.isExternalStorageManager()
+            } else {
+                !Environment.isExternalStorageLegacy()
+            }
         ) {
-            storageHelper?.storage?.requestFullStorageAccess()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                storageHelper?.storage?.requestFullStorageAccess()
+            }
         }
 
         AppPath = this.getExternalFilesDir(null)!!.absolutePath

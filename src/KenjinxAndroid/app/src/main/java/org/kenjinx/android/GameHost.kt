@@ -2,6 +2,7 @@ package org.kenjinx.android
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -108,7 +109,9 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
 
         // NO graphicsRendererSetSize here – we set it via the stabilizer!
 
-        NativeHelpers.instance.setIsInitialOrientationFlipped(mainViewModel.activity.display?.rotation == 3)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            NativeHelpers.instance.setIsInitialOrientationFlipped(mainViewModel.activity.display?.rotation == 3)
+        }
 
         _guestThread = thread(start = true, name = "KenjinxGuest") {
             runGame()
