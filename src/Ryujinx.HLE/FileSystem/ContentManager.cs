@@ -572,7 +572,7 @@ namespace Ryujinx.HLE.FileSystem
                 new DirectoryInfo(registeredDirectory).Delete(true);
             }
 
-            Directory.Move(temporaryDirectory, registeredDirectory);
+            Directory.Move(temporaryDirectory, registeredDirectory ?? string.Empty);
 
             LoadEntries();
         }
