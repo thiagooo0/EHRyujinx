@@ -12,9 +12,9 @@ public readonly struct JBoolean : IComparable<Boolean>, IEquatable<Boolean>
 	public static readonly CString Signature = (CString)"Z";
 
 	private readonly Byte _value;
-	private Boolean Value => this._value == JBoolean.trueByte;
+	private Boolean Value => this._value == trueByte;
 
-	private JBoolean(Boolean value) => this._value = value ? JBoolean.trueByte : JBoolean.falseByte;
+	private JBoolean(Boolean value) => this._value = value ? trueByte : falseByte;
 
 	#region Operators
 	public static implicit operator JBoolean(Boolean value) => new(value);
@@ -59,7 +59,7 @@ public readonly struct JBoolean : IComparable<Boolean>, IEquatable<Boolean>
 
 	#region Overrided Methods
 	public override String ToString() => this._value.ToString();
-	public override Boolean Equals(Object obj)
+	public override Boolean Equals(object? obj)
 		=> obj is JBoolean jvalue ? this.Equals(jvalue) :
 			obj is Boolean value ? this.Equals(value) : this._value.Equals(obj);
 	public override Int32 GetHashCode() => this._value.GetHashCode();

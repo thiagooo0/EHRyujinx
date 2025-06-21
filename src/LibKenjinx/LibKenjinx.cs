@@ -1,41 +1,41 @@
 // State class for the library
-using Ryujinx.HLE.FileSystem;
-using Ryujinx.HLE.HOS.Services.Account.Acc;
-using Ryujinx.HLE.HOS;
-using Ryujinx.Input.HLE;
-using Ryujinx.HLE;
-using System;
-using System.Runtime.InteropServices;
-using Ryujinx.Common.Configuration;
-using LibHac.Tools.FsSystem;
-using Ryujinx.Graphics.GAL.Multithreading;
-using Ryujinx.Audio.Backends.Dummy;
-using Ryujinx.HLE.HOS.SystemState;
-using Ryujinx.UI.Common.Configuration;
-using Ryujinx.Common.Logging;
-using Ryujinx.Audio.Integration;
-using Ryujinx.Audio.Backends.SDL2;
-using System.IO;
+using Gommon;
+using LibHac.Account;
 using LibHac.Common;
+using LibHac.Common.Keys;
 using LibHac.Fs;
 using LibHac.Fs.Fsa;
 using LibHac.FsSystem;
 using LibHac.Tools.Fs;
-using LibHac.Common.Keys;
+using LibHac.Tools.FsSystem;
 using LibHac.Tools.FsSystem.NcaUtils;
-using Path = System.IO.Path;
-using OpenTK.Audio.OpenAL;
-using Ryujinx.HLE.Loaders.Npdm;
-using Ryujinx.Common.Utilities;
-using System.Globalization;
-using Ryujinx.UI.Common.Configuration.System;
-using Ryujinx.Common.Logging.Targets;
-using System.Collections.Generic;
-using System.Text;
-using Ryujinx.HLE.UI;
 using LibKenjinx.Android;
-using LibHac.Account;
-using Gommon;
+using OpenTK.Audio.OpenAL;
+using Ryujinx.Audio.Backends.Dummy;
+using Ryujinx.Audio.Backends.SDL2;
+using Ryujinx.Audio.Integration;
+using Ryujinx.Common.Configuration;
+using Ryujinx.Common.Logging;
+using Ryujinx.Common.Logging.Targets;
+using Ryujinx.Common.Utilities;
+using Ryujinx.Graphics.GAL.Multithreading;
+using Ryujinx.HLE;
+using Ryujinx.HLE.FileSystem;
+using Ryujinx.HLE.HOS;
+using Ryujinx.HLE.HOS.Services.Account.Acc;
+using Ryujinx.HLE.HOS.SystemState;
+using Ryujinx.HLE.Loaders.Npdm;
+using Ryujinx.HLE.UI;
+using Ryujinx.Input.HLE;
+using Ryujinx.UI.Common.Configuration;
+using Ryujinx.UI.Common.Configuration.System;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
+using Path = System.IO.Path;
 
 namespace LibKenjinx
 {
@@ -264,7 +264,7 @@ namespace LibKenjinx
                                 }
                             }
 
-                            SwitchDevice?.CreateSaveDir(id.ToULong(16), controlHolder);
+                            SwitchDevice.CreateSaveDir(id.ToULong(16), controlHolder);
                         }
                     }
                     else if (extension == "nro")
@@ -602,7 +602,7 @@ namespace LibKenjinx
                 PartitionFileSystem partitionFileSystem = new();
                 partitionFileSystem.Initialize(containerFile.AsStorage()).ThrowIfFailure();
 
-                SwitchDevice.VirtualFileSystem.ImportTickets(partitionFileSystem);
+                SwitchDevice?.VirtualFileSystem.ImportTickets(partitionFileSystem);
 
                 using UniqueRef<IFile> ncaFile = new();
 
@@ -623,7 +623,7 @@ namespace LibKenjinx
         {
             try
             {
-                return new Nca(SwitchDevice.VirtualFileSystem.KeySet, ncaStorage);
+                return new Nca(SwitchDevice?.VirtualFileSystem.KeySet, ncaStorage);
             }
             catch (Exception ex)
             {
@@ -636,7 +636,7 @@ namespace LibKenjinx
         {
             if (!File.Exists(path))
             {
-                return new List<string>();
+                return [];
             }
 
             using FileStream containerFile = File.OpenRead(path);
@@ -644,8 +644,8 @@ namespace LibKenjinx
             PartitionFileSystem partitionFileSystem = new();
             partitionFileSystem.Initialize(containerFile.AsStorage()).ThrowIfFailure();
 
-            SwitchDevice.VirtualFileSystem.ImportTickets(partitionFileSystem);
-            List<string> paths = new List<string>();
+            SwitchDevice?.VirtualFileSystem.ImportTickets(partitionFileSystem);
+            List<string> paths = [];
 
             foreach (DirectoryEntryEx fileEntry in partitionFileSystem.EnumerateEntries("/", "*.nca"))
             {
@@ -871,7 +871,7 @@ namespace LibKenjinx
 
             ref LibHac.Ns.ApplicationControlProperty control = ref nacpData.Value;
 
-            if (LibHac.Common.Utilities.IsZeros(nacpData.ByteSpan))
+            if (Utilities.IsZeros(nacpData.ByteSpan))
             {
                 control = ref new BlitStruct<LibHac.Ns.ApplicationControlProperty>(1).Value;
                 control.UserAccountSaveDataSize = 0x4000;

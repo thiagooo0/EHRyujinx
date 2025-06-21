@@ -20,15 +20,15 @@ namespace LibKenjinx.Android
 
         private static JGlobalRef? _classId;
         private static ConcurrentDictionary<(string method, string descriptor), JMethodId> _methodCache = new ConcurrentDictionary<(string method, string descriptor), JMethodId>();
-        private static (string name, string descriptor)[] _methods = new[]
-        {
+        private static (string name, string descriptor)[] _methods =
+        [
             ("test", "()V"),
             ("updateUiHandler", "(JJJIIIIJJ)V"),
             ("frameEnded", "()V"),
             ("updateProgress", "(JF)V"),
             ("getSurfacePtr", "()J"),
             ("getWindowHandle", "()J")
-        };
+        ];
 
         internal static void Initialize(JEnvRef jniEnv)
         {
@@ -67,14 +67,18 @@ namespace LibKenjinx.Android
                 using (IReadOnlyFixedMemory<Byte>.IDisposable dName = descriptorId.GetUnsafeValPtr()
                        .GetUnsafeFixedContext(descriptorId.Length))
                 {
-                    var methodId = JniHelper.GetStaticMethodId(jEnv, (JClassLocalRef)(_classId.Value.Value), mName, dName);
-                    if (methodId == null)
+                    if (_classId != null)
                     {
-                        Logger.Warning?.Print(LogClass.Application, $"Java Method Id {name} not found");
-                        return;
+                        var methodId = JniHelper.GetStaticMethodId(jEnv, (JClassLocalRef)(_classId.Value.Value), mName, dName);
+                        if (methodId == null)
+                        {
+                            Logger.Warning?.Print(LogClass.Application, $"Java Method Id {name} not found");
+                            return;
+                        }
+
+                        method = methodId.Value;
                     }
 
-                    method = methodId.Value;
                     _methodCache[(name, descriptor)] = method;
                 }
             }
@@ -87,7 +91,10 @@ namespace LibKenjinx.Android
             {
                 if (descriptor.EndsWith("V"))
                 {
-                    JniHelper.CallStaticVoidMethod(env.Env, (JClassLocalRef)(_classId.Value.Value), method, values);
+                    if (env != null && _classId != null)
+                    {
+                        JniHelper.CallStaticVoidMethod(env.Env, (JClassLocalRef)(_classId.Value.Value), method, values);
+                    }
                 }
             }
         }
@@ -98,10 +105,14 @@ namespace LibKenjinx.Android
             if (_methodCache.TryGetValue((name, descriptor), out var method))
             {
                 if (descriptor.EndsWith("J"))
-                    return JniHelper.CallStaticLongMethod(env.Env, (JClassLocalRef)(_classId.Value.Value), method, values) ?? (JLong)(-1);
+                    if (env != null && _classId != null)
+                    {
+                        return JniHelper.CallStaticLongMethod(env.Env, (JClassLocalRef)(_classId.Value.Value), method,
+                            values) ?? -1;
+                    }
             }
 
-            return (JLong)(-1);
+            return -1;
         }
 
         public static void Test()
@@ -117,11 +128,9 @@ namespace LibKenjinx.Android
         public static void UpdateProgress(string info, float progress)
         {
             using var infoPtr = new TempNativeString(info);
-            CallVoidMethod("updateProgress", "(JF)V", new JValue[]
-            {
+            CallVoidMethod("updateProgress", "(JF)V",
                 JValue.Create(infoPtr.AsBytes()),
-                JValue.Create(progress.AsBytes())
-            });
+                JValue.Create(progress.AsBytes()));
         }
 
         public static JLong GetSurfacePtr()
@@ -149,8 +158,7 @@ namespace LibKenjinx.Android
             using var watermarkPointer = new TempNativeString(newWatermark);
             using var subtitlePointer = new TempNativeString(newSubtitle);
             using var newInitialPointer = new TempNativeString(newInitialText);
-            CallVoidMethod("updateUiHandler", "(JJJIIIIJJ)V", new JValue[]
-            {
+            CallVoidMethod("updateUiHandler", "(JJJIIIIJJ)V",
                 JValue.Create(titlePointer.AsBytes()),
                 JValue.Create(messagePointer.AsBytes()),
                 JValue.Create(watermarkPointer.AsBytes()),
@@ -159,8 +167,7 @@ namespace LibKenjinx.Android
                 JValue.Create(max.AsBytes()),
                 JValue.Create(nMode.AsBytes()),
                 JValue.Create(subtitlePointer.AsBytes()),
-                JValue.Create(newInitialPointer.AsBytes())
-            });
+                JValue.Create(newInitialPointer.AsBytes()));
         }
 
         private class TempNativeString : IDisposable
@@ -170,7 +177,7 @@ namespace LibKenjinx.Android
             public TempNativeString(string value)
             {
                 Pointer = Marshal.StringToHGlobalAuto(value);
-                JPointer = (JLong)Pointer;
+                JPointer = Pointer;
             }
 
             public nint Pointer { get; private set; }

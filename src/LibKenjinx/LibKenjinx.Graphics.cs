@@ -18,10 +18,10 @@ namespace LibKenjinx
     {
         private static bool _isActive;
         private static bool _isStopped;
-        private static CancellationTokenSource _gpuCancellationTokenSource;
+        private static CancellationTokenSource? _gpuCancellationTokenSource;
         private static SwapBuffersCallback? _swapBuffersCallback;
         private static NativeGraphicsInterop _nativeGraphicsInterop;
-        private static ManualResetEvent _gpuDoneEvent;
+        private static ManualResetEvent? _gpuDoneEvent;
         private static bool _enableGraphicsLogging;
 
         public delegate void SwapBuffersCallback();
@@ -91,9 +91,9 @@ namespace LibKenjinx
                 return;
             }
             ARMeilleure.Optimizations.EcoFriendly = SwitchDevice!.EnableLowPowerPtc;
-            ARMeilleure.Optimizations.CacheEviction = SwitchDevice!.EnableJitCacheEviction;
+            ARMeilleure.Optimizations.CacheEviction = SwitchDevice.EnableJitCacheEviction;
 
-            var device = SwitchDevice!.EmulationContext!;
+            var device = SwitchDevice.EmulationContext!;
             _gpuDoneEvent = new ManualResetEvent(true);
 
             device.Gpu.Renderer.Initialize(_enableGraphicsLogging ? GraphicsDebugLevel.All : GraphicsDebugLevel.None);

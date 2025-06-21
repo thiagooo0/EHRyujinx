@@ -23,7 +23,7 @@ namespace LibKenjinx.Jni.Values
         #endregion
 
         #region Overrided Methods
-        public override Boolean Equals(Object obj) => obj is JEnvValue other && this.Equals(other);
+        public override Boolean Equals(object? obj) => obj is JEnvValue other && this.Equals(other);
         public override Int32 GetHashCode() => this._value.GetHashCode();
         #endregion
     }

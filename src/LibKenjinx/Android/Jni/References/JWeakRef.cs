@@ -14,7 +14,7 @@ public readonly struct JWeakRef : IEquatable<JWeakRef>
 	#endregion
 
 	#region Override Methods
-	public override Boolean Equals([NotNullWhen(true)] Object obj) => obj is JWeakRef other && this.Equals(other);
+	public override Boolean Equals([NotNullWhen(true)] object? obj) => obj is JWeakRef other && this.Equals(other);
 	public override Int32 GetHashCode() => this._value.GetHashCode();
 	#endregion
 

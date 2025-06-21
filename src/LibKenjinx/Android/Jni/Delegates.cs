@@ -3,9 +3,8 @@ using LibKenjinx.Jni.Pointers;
 using LibKenjinx.Jni.Primitives;
 using LibKenjinx.Jni.References;
 using LibKenjinx.Jni.Values;
-using System;
-
 using Rxmxnx.PInvoke;
+using System;
 
 namespace LibKenjinx.Jni;
 

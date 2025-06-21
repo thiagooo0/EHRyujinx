@@ -22,7 +22,7 @@ namespace LibKenjinx.Android
             throw new NotImplementedException();
         }
 
-        public bool DisplayErrorAppletDialog(string title, string message, string[] buttonsText)
+        public bool DisplayErrorAppletDialog(string? title, string? message, string[] buttonsText)
         {
             Interop.UpdateUiHandler(title ?? "",
                 message ?? "",
@@ -58,7 +58,7 @@ namespace LibKenjinx.Android
             return _isOkPressed;
         }
 
-        public bool DisplayMessageDialog(string title, string message)
+        public bool DisplayMessageDialog(string? title, string? message)
         {
             Interop.UpdateUiHandler(title ?? "",
                 message ?? "",

@@ -61,12 +61,12 @@ namespace LibKenjinx.Jni.Primitives
         public Int32 CompareTo(Object obj) => obj is JInt jValue ? this.CompareTo(jValue) : obj is Int32 value ? this.CompareTo(value) : this._value.CompareTo(obj);
         public Boolean Equals(Int32 other) => this._value.Equals(other);
         public Boolean Equals(JInt other) => this._value.Equals(other._value);
-        public String ToString(String format, IFormatProvider formatProvider) => this._value.ToString(format, formatProvider);
+        public String ToString(string? format, IFormatProvider? formatProvider) => this._value.ToString(format, formatProvider);
         #endregion
 
         #region Overrided Methods
         public override String ToString() => this._value.ToString();
-        public override Boolean Equals(Object obj) => obj is JInt jvalue ? this.Equals(jvalue) : obj is Int32 value ? this.Equals(value) : this._value.Equals(obj);
+        public override Boolean Equals(object? obj) => obj is JInt jvalue ? this.Equals(jvalue) : obj is Int32 value ? this.Equals(value) : this._value.Equals(obj);
         public override Int32 GetHashCode() => this._value.GetHashCode();
         #endregion
     }

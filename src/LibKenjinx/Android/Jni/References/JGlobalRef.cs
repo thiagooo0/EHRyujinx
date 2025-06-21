@@ -16,7 +16,7 @@ public readonly struct JGlobalRef : IEquatable<JGlobalRef>
 	#endregion
 
 	#region Override Methods
-	public override Boolean Equals([NotNullWhen(true)] Object obj) => obj is JGlobalRef other && this.Equals(other);
+	public override Boolean Equals([NotNullWhen(true)] object? obj) => obj is JGlobalRef other && this.Equals(other);
 	public override Int32 GetHashCode() => this._value.GetHashCode();
 	#endregion
 

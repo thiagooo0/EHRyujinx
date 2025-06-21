@@ -23,7 +23,7 @@ internal readonly struct JavaVMValue : IEquatable<JavaVMValue>
 	#endregion
 
 	#region Overrided Methods
-	public override Boolean Equals(Object obj) => obj is JavaVMValue other && this.Equals(other);
+	public override Boolean Equals(object? obj) => obj is JavaVMValue other && this.Equals(other);
 	public override Int32 GetHashCode() => this._value.GetHashCode();
 	#endregion
 }

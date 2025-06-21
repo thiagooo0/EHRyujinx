@@ -71,12 +71,12 @@ namespace LibKenjinx
 
         public static SystemVersion? VerifyFirmware(Stream stream, bool isXci)
         {
-            return SwitchDevice?.ContentManager?.VerifyFirmwarePackage(stream, isXci) ?? null;
+            return SwitchDevice?.ContentManager.VerifyFirmwarePackage(stream, isXci) ?? null;
         }
 
         public static bool LoadApplication(Stream stream, FileType type, Stream? updateStream = null)
         {
-            var emulationContext = SwitchDevice.EmulationContext;
+            var emulationContext = SwitchDevice?.EmulationContext;
             
             return type switch
             {
@@ -84,19 +84,20 @@ namespace LibKenjinx
                 FileType.Nsp => emulationContext?.LoadNsp(stream, 0, updateStream) ?? false,
                 FileType.Xci => emulationContext?.LoadXci(stream, 0, updateStream) ?? false,
                 FileType.Nro => emulationContext?.LoadProgram(stream, true, "") ?? false,
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }
 
         public static bool LaunchMiiEditApplet()
         {
-            string contentPath = SwitchDevice.ContentManager.GetInstalledContentPath(0x0100000000001009, StorageId.BuiltInSystem, NcaContentType.Program);
+            string? contentPath = SwitchDevice?.ContentManager.GetInstalledContentPath(0x0100000000001009, StorageId.BuiltInSystem, NcaContentType.Program);
 
             return LoadApplication(contentPath);
         }
 
         public static bool LoadApplication(string? path)
         {
-            var emulationContext = SwitchDevice.EmulationContext;
+            var emulationContext = SwitchDevice?.EmulationContext;
 
             if (Directory.Exists(path))
             {
@@ -111,9 +112,9 @@ namespace LibKenjinx
                 {
                     Logger.Info?.Print(LogClass.Application, "Loading as cart with RomFS.");
 
-                    if (!emulationContext.LoadCart(path, romFsFiles[0]))
+                    if (emulationContext != null && !emulationContext.LoadCart(path, romFsFiles[0]))
                     {
-                        SwitchDevice.DisposeContext();
+                        SwitchDevice?.DisposeContext();
                         return false;
                     }
                 }
@@ -121,9 +122,9 @@ namespace LibKenjinx
                 {
                     Logger.Info?.Print(LogClass.Application, "Loading as cart WITHOUT RomFS.");
 
-                    if (!emulationContext.LoadCart(path))
+                    if (emulationContext != null && !emulationContext.LoadCart(path))
                     {
-                        SwitchDevice.DisposeContext();
+                        SwitchDevice?.DisposeContext();
                         return false;
                     }
                 }
@@ -135,18 +136,18 @@ namespace LibKenjinx
                     case ".xci":
                         Logger.Info?.Print(LogClass.Application, "Loading as XCI.");
 
-                        if (!emulationContext.LoadXci(path))
+                        if (emulationContext != null && !emulationContext.LoadXci(path))
                         {
-                            SwitchDevice.DisposeContext();
+                            SwitchDevice?.DisposeContext();
                             return false;
                         }
                         break;
                     case ".nca":
                         Logger.Info?.Print(LogClass.Application, "Loading as NCA.");
 
-                        if (!emulationContext.LoadNca(path))
+                        if (emulationContext != null && !emulationContext.LoadNca(path))
                         {
-                            SwitchDevice.DisposeContext();
+                            SwitchDevice?.DisposeContext();
                             return false;
                         }
                         break;
@@ -154,9 +155,9 @@ namespace LibKenjinx
                     case ".pfs0":
                         Logger.Info?.Print(LogClass.Application, "Loading as NSP.");
 
-                        if (!emulationContext.LoadNsp(path))
+                        if (emulationContext != null && !emulationContext.LoadNsp(path))
                         {
-                            SwitchDevice.DisposeContext();
+                            SwitchDevice?.DisposeContext();
                             return false;
                         }
                         break;
@@ -164,16 +165,16 @@ namespace LibKenjinx
                         Logger.Info?.Print(LogClass.Application, "Loading as Homebrew.");
                         try
                         {
-                            if (!emulationContext.LoadProgram(path))
+                            if (emulationContext != null && !emulationContext.LoadProgram(path))
                             {
-                                SwitchDevice.DisposeContext();
+                                SwitchDevice?.DisposeContext();
                                 return false;
                             }
                         }
                         catch (ArgumentOutOfRangeException)
                         {
                             Logger.Error?.Print(LogClass.Application, "The specified file is not supported by Ryujinx.");
-                            SwitchDevice.DisposeContext();
+                            SwitchDevice?.DisposeContext();
                             return false;
                         }
                         break;
@@ -182,7 +183,7 @@ namespace LibKenjinx
             else
             {
                 Logger.Warning?.Print(LogClass.Application, $"Couldn't load '{path}'. Please specify a valid XCI/NCA/NSP/PFS0/NRO file.");
-                SwitchDevice.DisposeContext();
+                SwitchDevice?.DisposeContext();
                 return false;
             }
 
@@ -211,15 +212,15 @@ namespace LibKenjinx
             _touchScreenManager?.Dispose();
             _touchScreenManager = null;
 
-            _gpuDoneEvent?.WaitOne(3000);
-            _gpuDoneEvent?.Dispose();
+            _gpuDoneEvent.WaitOne(3000);
+            _gpuDoneEvent.Dispose();
             _gpuDoneEvent = null;
 
-            _gpuCancellationTokenSource?.Cancel();
-            _gpuCancellationTokenSource?.Dispose();
+            _gpuCancellationTokenSource.Cancel();
+            _gpuCancellationTokenSource.Dispose();
             _gpuCancellationTokenSource = null;
 
-            SwitchDevice?.Dispose();
+            SwitchDevice.Dispose();
             SwitchDevice = null;
 
             Renderer = null;
@@ -236,7 +237,10 @@ namespace LibKenjinx
             if (SwitchDevice == null)
             {
                 Logger.Info?.Print(LogClass.Application, "Resetting device");
-                SwitchDevice = new SwitchDevice(AndroidFileSystem);
+                if (AndroidFileSystem != null)
+                {
+                    SwitchDevice = new SwitchDevice(AndroidFileSystem);
+                }
             }
 
             _isStopped = false;

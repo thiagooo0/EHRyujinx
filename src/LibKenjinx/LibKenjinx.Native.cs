@@ -131,7 +131,7 @@ namespace LibKenjinx
                 return false;
             }
 
-            List<string> extensions = new List<string>();
+            List<string> extensions = [];
             var size = Marshal.SizeOf<IntPtr>();
             var extPtr = (IntPtr*)nativeGraphicsInterop.VkRequiredExtensions;
             for (int i = 0; i < nativeGraphicsInterop.VkRequiredExtensionsCount; i++)
@@ -157,7 +157,7 @@ namespace LibKenjinx
             if (Renderer is OpenGLRenderer)
             {
                 var proc = Marshal.GetDelegateForFunctionPointer<GetProcAddress>(_nativeGraphicsInterop.GlGetProcAddress);
-                GL.LoadBindings(new OpenTKBindingsContext(x => proc!.Invoke(x)));
+                GL.LoadBindings(new OpenTKBindingsContext(x => proc.Invoke(x)));
             }
             RunLoop();
         }
@@ -373,7 +373,7 @@ namespace LibKenjinx
         {
             using var stream = OpenFile(fileDescriptor);
             var ext = Marshal.PtrToStringAnsi(extension);
-            var info = GetGameInfo(stream, ext.ToLower()) ?? GetDefaultInfo(stream);
+            var info = GetGameInfo(stream, ext?.ToLower() ?? string.Empty) ?? GetDefaultInfo(stream);
             var i = (GameInfoNative*)infoPtr;
             var n = new GameInfoNative(info);
             i->TitleId = n.TitleId;

@@ -15,7 +15,7 @@ namespace LibKenjinx.Jni.Identifiers
         #endregion
 
         #region Override Methods
-        public override Boolean Equals([NotNullWhen(true)] Object obj)
+        public override Boolean Equals([NotNullWhen(true)] object? obj)
             => obj is JFieldId other && this.Equals(other);
         public override Int32 GetHashCode() => this._value.GetHashCode();
         #endregion

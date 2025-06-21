@@ -25,7 +25,7 @@ public readonly struct JavaVMRef : IEquatable<JavaVMRef>
 	#endregion
 
 	#region Overrided Methods
-	public override Boolean Equals(Object obj) => obj is JavaVMRef other && this.Equals(other);
+	public override Boolean Equals(object? obj) => obj is JavaVMRef other && this.Equals(other);
 	public override Int32 GetHashCode() => this._value.GetHashCode();
 	#endregion
 }

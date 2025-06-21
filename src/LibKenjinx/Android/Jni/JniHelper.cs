@@ -3,9 +3,8 @@ using LibKenjinx.Jni.Pointers;
 using LibKenjinx.Jni.Primitives;
 using LibKenjinx.Jni.References;
 using LibKenjinx.Jni.Values;
-using System;
-
 using Rxmxnx.PInvoke;
+using System;
 
 namespace LibKenjinx.Jni
 {
@@ -21,13 +20,13 @@ namespace LibKenjinx.Jni
             IntPtr getEnvPtr = jInvoke.GetEnvPointer;
             GetEnvDelegate getEnv = getEnvPtr.GetUnsafeDelegate<GetEnvDelegate>()!;
 
-            if (getEnv(javaVm, out JEnvRef jEnv, JniHelper.JniVersion) == JResult.Ok)
+            if (getEnv(javaVm, out JEnvRef jEnv, JniVersion) == JResult.Ok)
             {
                 newAttach = false;
                 return jEnv;
             }
 
-            JavaVMAttachArgs args = new() { Version = JniHelper.JniVersion, Name = threadName.ValuePointer, };
+            JavaVMAttachArgs args = new() { Version = JniVersion, Name = threadName.ValuePointer, };
             IntPtr attachCurrentThreadPtr = jInvoke.AttachCurrentThreadPointer;
             AttachCurrentThreadDelegate attachCurrentThread =
                 attachCurrentThreadPtr.GetUnsafeDelegate<AttachCurrentThreadDelegate>()!;
@@ -40,7 +39,7 @@ namespace LibKenjinx.Jni
             ref JavaVMValue value = ref javaVm.VirtualMachine;
             ref JInvokeInterface jInvoke = ref value.Functions;
 
-            JavaVMAttachArgs args = new() { Version = JniHelper.JniVersion, Name = daemonName.ValuePointer, };
+            JavaVMAttachArgs args = new() { Version = JniVersion, Name = daemonName.ValuePointer, };
             IntPtr attachCurrentThreadAsDaemonPtr = jInvoke.AttachCurrentThreadAsDaemonPointer;
             AttachCurrentThreadAsDaemonDelegate attachCurrentThreadAsDaemon =
                 attachCurrentThreadAsDaemonPtr.GetUnsafeDelegate<AttachCurrentThreadAsDaemonDelegate>()!;
@@ -67,16 +66,16 @@ namespace LibKenjinx.Jni
             FindClassDelegate findClass = findClassPtr.GetUnsafeDelegate<FindClassDelegate>()!;
             JClassLocalRef jClass = findClass(jEnv, className.ValuePointer);
 
-            if (JniHelper.ExceptionCheck(jEnv))
+            if (ExceptionCheck(jEnv))
                 return default;
 
             IntPtr newGlobalRefPtr = jInterface.NewGlobalRefPointer;
             NewGlobalRefDelegate newGlobalRef = newGlobalRefPtr.GetUnsafeDelegate<NewGlobalRefDelegate>()!;
 
             JGlobalRef jGlobal = newGlobalRef(jEnv, (JObjectLocalRef)jClass);
-            JniHelper.RemoveLocal(jEnv, (JObjectLocalRef)jClass);
+            RemoveLocal(jEnv, (JObjectLocalRef)jClass);
 
-            return !JniHelper.ExceptionCheck(jEnv) ? jGlobal : null;
+            return !ExceptionCheck(jEnv) ? jGlobal : null;
         }
         public static void RemoveLocal(JEnvRef jEnv, JObjectLocalRef jObject)
         {
@@ -119,7 +118,7 @@ namespace LibKenjinx.Jni
             using IReadOnlyFixedMemory<Char>.IDisposable ctx = textValue.AsMemory().GetFixedContext();
             JStringLocalRef jString = newString(jEnv, ctx.ValuePointer, ctx.Values.Length);
 
-            return !JniHelper.ExceptionCheck(jEnv) ? jString : null;
+            return !ExceptionCheck(jEnv) ? jString : null;
         }
         public static JWeakRef? CreateWeakGlobal(JEnvRef jEnv, JObjectLocalRef jObject)
         {
@@ -130,7 +129,7 @@ namespace LibKenjinx.Jni
             NewWeakGlobalRefDelegate newWeakGlobalRef = newWeakGlobalRefPtr.GetUnsafeDelegate<NewWeakGlobalRefDelegate>()!;
             JWeakRef jWeak = newWeakGlobalRef(jEnv, jObject);
 
-            return !JniHelper.ExceptionCheck(jEnv) ? jWeak : null;
+            return !ExceptionCheck(jEnv) ? jWeak : null;
         }
         private static Boolean ExceptionCheck(JEnvRef jEnv)
         {
@@ -170,7 +169,7 @@ namespace LibKenjinx.Jni
             IntPtr isSameObjectPtr = jInterface.IsSameObjectPointer;
             IsSameObjectDelegate isSameObject = isSameObjectPtr.GetUnsafeDelegate<IsSameObjectDelegate>()!;
             JBoolean result = isSameObject(jEnv, (JObjectLocalRef)jWeak, default);
-            return !JniHelper.ExceptionCheck(jEnv) ? !result : null;
+            return !ExceptionCheck(jEnv) ? !result : null;
         }
         public static JMethodId? GetMethodId(JEnvRef jEnv, JClassLocalRef jClass, IReadOnlyFixedMemory<Byte> methodName,
             IReadOnlyFixedMemory<Byte> descriptor)
@@ -181,7 +180,7 @@ namespace LibKenjinx.Jni
             IntPtr getMethodIdPtr = jInterface.GetMethodIdPointer;
             GetMethodIdDelegate getMethodId = getMethodIdPtr.GetUnsafeDelegate<GetMethodIdDelegate>()!;
             JMethodId methodId = getMethodId(jEnv, jClass, methodName.ValuePointer, descriptor.ValuePointer);
-            return !JniHelper.ExceptionCheck(jEnv) ? methodId : null;
+            return !ExceptionCheck(jEnv) ? methodId : null;
         }
         public static JMethodId? GetStaticMethodId(JEnvRef jEnv, JClassLocalRef jClass,
             IReadOnlyFixedMemory<Byte> methodName, IReadOnlyFixedMemory<Byte> descriptor)
@@ -193,7 +192,7 @@ namespace LibKenjinx.Jni
             GetStaticMethodIdDelegate getStaticMethodId =
                 getStaticMethodIdPtr.GetUnsafeDelegate<GetStaticMethodIdDelegate>()!;
             JMethodId jMethodId = getStaticMethodId(jEnv, jClass, methodName.ValuePointer, descriptor.ValuePointer);
-            return !JniHelper.ExceptionCheck(jEnv) ? jMethodId : null;
+            return !ExceptionCheck(jEnv) ? jMethodId : null;
         }
         public static void CallStaticVoidMethod(JEnvRef jEnv, JClassLocalRef jClass, JMethodId jMethodId,
             params JValue[] args)
@@ -220,7 +219,7 @@ namespace LibKenjinx.Jni
 
             using IReadOnlyFixedMemory<JValue>.IDisposable fArgs = args.AsMemory().GetFixedContext();
             JObjectLocalRef jObject = callStaticObjectMethod(jEnv, jClass, jMethodId, fArgs.ValuePointer);
-            return !JniHelper.ExceptionCheck(jEnv) ? jObject : null;
+            return !ExceptionCheck(jEnv) ? jObject : null;
         }
         public static JLong? CallStaticLongMethod(JEnvRef jEnv, JClassLocalRef jClass, JMethodId jMethodId,
             params JValue[] args)
@@ -234,7 +233,7 @@ namespace LibKenjinx.Jni
 
             using IReadOnlyFixedMemory<JValue>.IDisposable fArgs = args.AsMemory().GetFixedContext();
             JLong jLong = callStaticLongMethod(jEnv, jClass, jMethodId, fArgs.ValuePointer);
-            return !JniHelper.ExceptionCheck(jEnv) ? jLong : null;
+            return !ExceptionCheck(jEnv) ? jLong : null;
         }
         public static void CallVoidMethod(JEnvRef jEnv, JObjectLocalRef jObject, JMethodId jMethodId, params JValue[] args)
         {

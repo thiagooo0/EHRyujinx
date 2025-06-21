@@ -49,7 +49,7 @@ namespace LibKenjinx.Jni.Primitives
 
         #region Overrided Methods
         public override String ToString() => this._value.ToString();
-        public override Boolean Equals(Object obj) => obj is JChar jvalue ? this.Equals(jvalue) : obj is Char value ? this.Equals(value) : this._value.Equals(obj);
+        public override Boolean Equals(object? obj) => obj is JChar jvalue ? this.Equals(jvalue) : obj is Char value ? this.Equals(value) : this._value.Equals(obj);
         public override Int32 GetHashCode() => this._value.GetHashCode();
         #endregion
     }

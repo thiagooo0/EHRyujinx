@@ -40,12 +40,12 @@ namespace LibKenjinx
             _inputManager.SetMouseDriver(_touchScreenDriver);
             _npadManager = _inputManager.CreateNpadManager();
 
-            SwitchDevice!.InputManager = _inputManager;
+            SwitchDevice.InputManager = _inputManager;
 
             _touchScreenManager = _inputManager.CreateTouchScreenManager();
-            _touchScreenManager.Initialize(SwitchDevice!.EmulationContext);
+            _touchScreenManager.Initialize(SwitchDevice.EmulationContext);
 
-            _npadManager.Initialize(SwitchDevice.EmulationContext, new List<InputConfig>(), false, false);
+            _npadManager.Initialize(SwitchDevice.EmulationContext, [], false, false);
 
             _virtualTouchScreen.ClientSize = new Size(width, height);
         }
@@ -253,7 +253,7 @@ namespace LibKenjinx
             throw new NotImplementedException();
         }
 
-        public (float, float) GetStick(Ryujinx.Input.StickInputId inputId)
+        public (float, float) GetStick(StickInputId inputId)
         {
             throw new NotImplementedException();
         }
@@ -329,8 +329,8 @@ namespace LibKenjinx
 
         public string DriverName => "Virtual";
 
-        public event Action<string> OnGamepadConnected;
-        public event Action<string> OnGamepadDisconnected;
+        public event Action<string>? OnGamepadConnected;
+        public event Action<string>? OnGamepadDisconnected;
 
         private Dictionary<int, VirtualGamepad> _gamePads;
 

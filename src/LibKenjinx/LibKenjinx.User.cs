@@ -53,7 +53,7 @@ namespace LibKenjinx
         public static string[] GetAllUsers()
         {
             return SwitchDevice?.AccountManager.GetAllUsers().Select(x => x.UserId.ToString()).ToArray() ??
-                   Array.Empty<string>();
+                   [];
         }
 
         public static void AddUser(string userName, string picture)

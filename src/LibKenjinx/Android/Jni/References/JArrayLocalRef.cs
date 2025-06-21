@@ -14,7 +14,7 @@ public readonly struct JArrayLocalRef : IEquatable<JArrayLocalRef>
 	#endregion
 
 	#region Override Methods
-	public override Boolean Equals([NotNullWhen(true)] Object obj) => obj is JArrayLocalRef other && this.Equals(other);
+	public override Boolean Equals([NotNullWhen(true)] object? obj) => obj is JArrayLocalRef other && this.Equals(other);
 	public override Int32 GetHashCode() => this._value.GetHashCode();
 	#endregion
 

@@ -282,7 +282,7 @@ namespace LibKenjinx
                 return false;
             }
 
-            List<string?> extensions = new();
+            List<string?> extensions = [];
 
             for (int i = 0; i < extensionsLength; i++)
             {
@@ -332,8 +332,11 @@ namespace LibKenjinx
             Logger.Trace?.Print(LogClass.Application, "Jni Function Call");
             SetSwapBuffersCallback(() =>
             {
-                var time = SwitchDevice.EmulationContext.Statistics.GetGameFrameTime();
-                Interop.FrameEnded(time);
+                if (SwitchDevice?.EmulationContext != null)
+                {
+                    var time = SwitchDevice.EmulationContext.Statistics.GetGameFrameTime();
+                    Interop.FrameEnded(time);
+                }
             });
             RunLoop();
         }
@@ -356,7 +359,7 @@ namespace LibKenjinx
             Logger.Trace?.Print(LogClass.Application, "Jni Function Call");
             using var stream = OpenFile(fileDescriptor);
             var ext = Marshal.PtrToStringAnsi(extension);
-            var info = GetGameInfo(stream, ext.ToLower()) ?? GetDefaultInfo(stream);
+            var info = GetGameInfo(stream, ext?.ToLower() ?? string.Empty) ?? GetDefaultInfo(stream);
             var i = (GameInfoNative*)infoPtr;
             var n = new GameInfoNative(info);
             i->TitleId = n.TitleId;
