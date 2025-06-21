@@ -1,4 +1,3 @@
-using LibHac.Tools.FsSystem;
 using LibKenjinx.Android;
 using LibKenjinx.Jni.Pointers;
 using Ryujinx.Audio.Backends.OpenAL;
@@ -17,7 +16,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace LibKenjinx
 {

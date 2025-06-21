@@ -6,16 +6,11 @@ using LibKenjinx.Jni.References;
 using LibKenjinx.Jni.Values;
 using Rxmxnx.PInvoke;
 using Ryujinx.Common.Logging;
-using Ryujinx.Common.Memory;
 using Ryujinx.HLE.HOS.Applets.SoftwareKeyboard;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace LibKenjinx.Android
 {

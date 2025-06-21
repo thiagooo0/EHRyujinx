@@ -1,4 +1,3 @@
-using LibHac.Tools.FsSystem;
 using LibKenjinx.Shared;
 using OpenTK.Graphics.OpenGL;
 using Ryujinx.Common.Configuration;

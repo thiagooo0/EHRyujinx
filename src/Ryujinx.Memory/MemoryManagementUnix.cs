@@ -144,7 +144,7 @@ namespace Ryujinx.Memory
 
             if (OperatingSystem.IsMacOS())
             {
-                byte[] memName = "Kenji-NX-XXXXXX"u8.ToArray();
+                byte[] memName = "Ryujinx-XXXXXX"u8.ToArray();
 
                 fixed (byte* pMemName = memName)
                 {
@@ -162,7 +162,7 @@ namespace Ryujinx.Memory
             }
             else if (Ryujinx.Common.PlatformInfo.IsBionic)
             {
-                byte[] memName = "Kenji-NX-XXXXXX"u8.ToArray();
+                byte[] memName = "Ryujinx-XXXXXX"u8.ToArray();
 
                 Logger.Debug?.Print(LogClass.Cpu, $"Creating Android SharedMemory of size:{size}");
 
@@ -180,7 +180,7 @@ namespace Ryujinx.Memory
             }
             else
             {
-                byte[] fileName = "/dev/shm/Kenji-NX-XXXXXX"u8.ToArray();
+                byte[] fileName = "/dev/shm/Ryujinx-XXXXXX"u8.ToArray();
 
                 fixed (byte* pFileName = fileName)
                 {

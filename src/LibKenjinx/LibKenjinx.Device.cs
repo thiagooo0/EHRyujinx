@@ -1,5 +1,4 @@
 using LibHac.Ncm;
-using LibHac.Tools.FsSystem;
 using LibHac.Tools.FsSystem.NcaUtils;
 using Microsoft.Win32.SafeHandles;
 using Ryujinx.Common.Configuration;
@@ -7,11 +6,8 @@ using Ryujinx.Common.Logging;
 using Ryujinx.HLE;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS.SystemState;
-using Ryujinx.Input.HLE;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace LibKenjinx
