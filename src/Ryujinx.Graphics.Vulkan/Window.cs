@@ -1,3 +1,4 @@
+using Ryujinx.Common;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Vulkan.Effects;
 using Silk.NET.Vulkan;
@@ -142,10 +143,10 @@ namespace Ryujinx.Graphics.Vulkan
                 ImageFormat = surfaceFormat.Format,
                 ImageColorSpace = surfaceFormat.ColorSpace,
                 ImageExtent = extent,
-                ImageUsage = ImageUsageFlags.ColorAttachmentBit | ImageUsageFlags.TransferDstBit | (Ryujinx.Common.PlatformInfo.IsBionic ? 0 : ImageUsageFlags.StorageBit),
+                ImageUsage = ImageUsageFlags.ColorAttachmentBit | ImageUsageFlags.TransferDstBit | (PlatformInfo.IsBionic ? 0 : ImageUsageFlags.StorageBit),
                 ImageSharingMode = SharingMode.Exclusive,
                 ImageArrayLayers = 1,
-                PreTransform = Ryujinx.Common.PlatformInfo.IsBionic ? SurfaceTransformFlagsKHR.IdentityBitKhr : capabilities.CurrentTransform,
+                PreTransform = PlatformInfo.IsBionic ? SurfaceTransformFlagsKHR.IdentityBitKhr : capabilities.CurrentTransform,
                 CompositeAlpha = ChooseCompositeAlpha(capabilities.SupportedCompositeAlpha),
                 PresentMode = ChooseSwapPresentMode(presentModes, _vSyncMode),
                 Clipped = true,

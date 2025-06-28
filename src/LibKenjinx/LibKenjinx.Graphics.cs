@@ -1,4 +1,5 @@
 using LibKenjinx.Android;
+using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Cpu;
 using Ryujinx.Graphics.GAL;
@@ -113,7 +114,7 @@ namespace LibKenjinx
 
                     _isActive = true;
 
-                    if (Ryujinx.Common.PlatformInfo.IsBionic)
+                    if (PlatformInfo.IsBionic)
                     {
                         setRenderingThread();
                     }
@@ -164,7 +165,7 @@ namespace LibKenjinx
         {
             void SetInfo(string status, float value)
             {
-                if(Ryujinx.Common.PlatformInfo.IsBionic)
+                if(PlatformInfo.IsBionic)
                 {
                     Interop.UpdateProgress(status, value);
                 }

@@ -136,7 +136,7 @@ namespace Ryujinx.Common.Logging
 
             _time = Stopwatch.StartNew();
 
-            if (!Ryujinx.Common.PlatformInfo.IsBionic)
+            if (!PlatformInfo.IsBionic)
             {
                 // Logger should log to console by default
                 AddTarget(new AsyncLogTargetWrapper(
