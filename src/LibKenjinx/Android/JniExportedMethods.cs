@@ -45,7 +45,7 @@ namespace LibKenjinx
 
             Logger.AddTarget(
                 new AsyncLogTargetWrapper(
-                    new AndroidLogTarget("KenjinxLog"),
+                    new AndroidLogTarget("RyujinxLog"),
                     1000,
                     AsyncLogTargetOverflowAction.Block
                 ));
