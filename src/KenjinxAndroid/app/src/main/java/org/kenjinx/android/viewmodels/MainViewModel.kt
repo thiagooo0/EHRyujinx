@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.NavHostController
+import androidx.preference.PreferenceManager
 import com.anggrayudi.storage.extension.launchOnUiThread
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
@@ -74,6 +75,20 @@ class MainViewModel(val activity: MainActivity) {
         physicalControllerManager?.disconnect()
         motionSensorManager?.setControllerId(-1)
     }
+
+    // ---- Load language/region from Preferences (Defaults: AmericanEnglish/USA) ----
+    private fun loadSystemLanguage(): SystemLanguage {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
+        val stored = prefs.getString("system_language", "AmericanEnglish") ?: "AmericanEnglish"
+        return runCatching { SystemLanguage.valueOf(stored) }.getOrElse { SystemLanguage.AmericanEnglish }
+    }
+
+    private fun loadRegionCode(): RegionCode {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
+        val stored = prefs.getString("region_code", "USA") ?: "USA"
+        return runCatching { RegionCode.valueOf(stored) }.getOrElse { RegionCode.USA }
+    }
+    // -------------------------------------------------------------------------------
 
     fun loadGame(game: GameModel, overrideSettings: Boolean? = false, forceNceAndPptc: Boolean? = false): Int {
         KenjinxNative.deviceReinitEmulation()
@@ -174,8 +189,10 @@ class MainViewModel(val activity: MainActivity) {
                     settings.memoryManagerMode.ordinal,
                     settings.useNce,
                     settings.memoryConfiguration.ordinal,
-                    SystemLanguage.AmericanEnglish.ordinal,
-                    RegionCode.USA.ordinal,
+                    /* OLD: was fixed -> SystemLanguage.AmericanEnglish.ordinal */
+                    loadSystemLanguage().ordinal,
+                    /* OLD: was fixed -> RegionCode.USA.ordinal */
+                    loadRegionCode().ordinal,
                     settings.vSyncMode.ordinal,
                     settings.enableDocked,
                     settings.enablePptc,
@@ -282,8 +299,10 @@ class MainViewModel(val activity: MainActivity) {
                     settings.memoryManagerMode.ordinal,
                     settings.useNce,
                     settings.memoryConfiguration.ordinal,
-                    SystemLanguage.AmericanEnglish.ordinal,
-                    RegionCode.USA.ordinal,
+                    /* OLD: was fixed -> SystemLanguage.AmericanEnglish.ordinal */
+                    loadSystemLanguage().ordinal,
+                    /* OLD: was fixed -> RegionCode.USA.ordinal */
+                    loadRegionCode().ordinal,
                     settings.vSyncMode.ordinal,
                     settings.enableDocked,
                     settings.enablePptc,
