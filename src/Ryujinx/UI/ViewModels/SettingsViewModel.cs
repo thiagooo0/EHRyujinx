@@ -63,6 +63,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         private int _multiplayerModeIndex;
         private string _ldnPassphrase;
         private string _LdnServer;
+        private bool _matchSystemTime;
 
         public int ResolutionScale
         {
@@ -333,7 +334,16 @@ namespace Ryujinx.Ava.UI.ViewModels
         //private DateTimeOffset _currentDate;
         //private TimeSpan _currentTime;
 
-        public bool MatchSystemTime { get; set; }
+        public bool MatchSystemTime
+        {
+            get => _matchSystemTime;
+            set
+            {
+                _matchSystemTime = value;
+
+                OnPropertyChanged();
+            }
+        }
 
         public DateTimeOffset CurrentDate { get; set; }
 
