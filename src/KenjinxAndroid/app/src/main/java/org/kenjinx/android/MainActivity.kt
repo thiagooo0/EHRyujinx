@@ -26,7 +26,6 @@ import org.kenjinx.android.viewmodels.MainViewModel
 import org.kenjinx.android.viewmodels.QuickSettings
 import org.kenjinx.android.viewmodels.GameModel
 import org.kenjinx.android.views.MainView
-import androidx.core.net.toUri
 
 class MainActivity : BaseActivity() {
     private var physicalControllerManager: PhysicalControllerManager =
@@ -78,47 +77,20 @@ class MainActivity : BaseActivity() {
     private external fun initVm()
 
     private fun initialize() {
-        if (_isInit)
-            return
+        if (_isInit) return
 
         val appPath: String = AppPath
 
         var quickSettings = QuickSettings(this)
-        KenjinxNative.loggingSetEnabled(
-            LogLevel.Info,
-            quickSettings.enableInfoLogs
-        )
-        KenjinxNative.loggingSetEnabled(
-            LogLevel.Stub,
-            quickSettings.enableStubLogs
-        )
-        KenjinxNative.loggingSetEnabled(
-            LogLevel.Warning,
-            quickSettings.enableWarningLogs
-        )
-        KenjinxNative.loggingSetEnabled(
-            LogLevel.Error,
-            quickSettings.enableErrorLogs
-        )
-        KenjinxNative.loggingSetEnabled(
-            LogLevel.AccessLog,
-            quickSettings.enableFsAccessLogs
-        )
-        KenjinxNative.loggingSetEnabled(
-            LogLevel.Guest,
-            quickSettings.enableGuestLogs
-        )
-        KenjinxNative.loggingSetEnabled(
-            LogLevel.Trace,
-            quickSettings.enableTraceLogs
-        )
-        KenjinxNative.loggingSetEnabled(
-            LogLevel.Debug,
-            quickSettings.enableDebugLogs
-        )
-        KenjinxNative.loggingEnabledGraphicsLog(
-            quickSettings.enableGraphicsLogs
-        )
+        KenjinxNative.loggingSetEnabled(LogLevel.Info, quickSettings.enableInfoLogs)
+        KenjinxNative.loggingSetEnabled(LogLevel.Stub, quickSettings.enableStubLogs)
+        KenjinxNative.loggingSetEnabled(LogLevel.Warning, quickSettings.enableWarningLogs)
+        KenjinxNative.loggingSetEnabled(LogLevel.Error, quickSettings.enableErrorLogs)
+        KenjinxNative.loggingSetEnabled(LogLevel.AccessLog, quickSettings.enableFsAccessLogs)
+        KenjinxNative.loggingSetEnabled(LogLevel.Guest, quickSettings.enableGuestLogs)
+        KenjinxNative.loggingSetEnabled(LogLevel.Trace, quickSettings.enableTraceLogs)
+        KenjinxNative.loggingSetEnabled(LogLevel.Debug, quickSettings.enableDebugLogs)
+        KenjinxNative.loggingEnabledGraphicsLog(quickSettings.enableGraphicsLogs)
 
         _isInit = KenjinxNative.javaInitialize(appPath, JNIEnv.CURRENT)
     }
@@ -143,7 +115,7 @@ class MainActivity : BaseActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        // --- Apply alignment
+        // Apply alignment
         applyOrientationPreference()
 
         WindowInsetsControllerCompat(window, window.decorView).let { controller ->
@@ -151,7 +123,6 @@ class MainActivity : BaseActivity() {
             controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
 
-        // >>> Important: Initialize UI handler (for software keyboard/dialog)
         uiHandler = UiHandler()
 
         mainViewModel = MainViewModel(this)
@@ -194,23 +165,19 @@ class MainActivity : BaseActivity() {
     @SuppressLint("RestrictedApi")
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         event.apply {
-            if (physicalControllerManager.onKeyEvent(this))
-                return true
+            if (physicalControllerManager.onKeyEvent(this)) return true
         }
         return super.dispatchKeyEvent(event)
     }
 
     override fun dispatchGenericMotionEvent(ev: MotionEvent?): Boolean {
-        ev?.apply {
-            physicalControllerManager.onMotionEvent(this)
-        }
+        ev?.apply { physicalControllerManager.onMotionEvent(this) }
         return super.dispatchGenericMotionEvent(ev)
     }
 
     override fun onStop() {
         super.onStop()
         isActive = false
-
         if (isGameRunning) {
             mainViewModel?.performanceManager?.setTurboMode(false)
         }
@@ -218,26 +185,23 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        // --- Reapply alignment if necessary
+        // Reapply alignment if necessary
         applyOrientationPreference()
 
         handler.postDelayed(delayedHandleIntent, 10)
         isActive = true
 
         if (isGameRunning) {
-            if (QuickSettings(this).enableMotion)
-                motionSensorManager.register()
+            if (QuickSettings(this).enableMotion) motionSensorManager.register()
         }
     }
 
     override fun onPause() {
         super.onPause()
         isActive = false
-
         if (isGameRunning) {
             mainViewModel?.performanceManager?.setTurboMode(false)
         }
-
         motionSensorManager.unregister()
     }
 
@@ -275,9 +239,7 @@ class MainActivity : BaseActivity() {
         val componentName = intent?.component
         val restartIntent = Intent.makeRestartActivityTask(componentName)
 
-        mainViewModel?.let {
-            it.performanceManager?.setTurboMode(false)
-        }
+        mainViewModel?.let { it.performanceManager?.setTurboMode(false) }
         startActivity(restartIntent)
         Runtime.getRuntime().exit(0)
     }
