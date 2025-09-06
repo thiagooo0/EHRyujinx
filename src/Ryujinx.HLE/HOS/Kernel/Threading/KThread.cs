@@ -19,9 +19,9 @@ namespace Ryujinx.HLE.HOS.Kernel.Threading
 
         public const int MaxWaitSyncObjects = 64;
 
-        private ManualResetEvent _schedulerWaitEvent;
+        private ManualResetEventSlim _schedulerWaitEvent;
 
-        public ManualResetEvent SchedulerWaitEvent => _schedulerWaitEvent;
+        public ManualResetEventSlim SchedulerWaitEvent => _schedulerWaitEvent;
 
         public Thread HostThread { get; private set; }
 
@@ -73,6 +73,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Threading
         private LinkedListNode<KThread> _mutexWaiterNode;
 
         private readonly LinkedList<KThread> _pinnedWaiters;
+        private LinkedListNode<KThread> _pinnedWaiterNode;
 
         public KThread MutexOwner { get; private set; }
 
@@ -122,8 +123,18 @@ namespace Ryujinx.HLE.HOS.Kernel.Threading
 
             SiblingsPerCore = new LinkedListNode<KThread>[KScheduler.CpuCoresCount];
 
+            for (int i = 0; i < SiblingsPerCore.Length; i++)
+            {
+                SiblingsPerCore[i] = new LinkedListNode<KThread>(this);
+            }
+            
             _mutexWaiters = [];
             _pinnedWaiters = [];
+
+            WithholderNode = new LinkedListNode<KThread>(this);
+            ProcessListNode = new LinkedListNode<KThread>(this);
+            _mutexWaiterNode = new LinkedListNode<KThread>(this);
+            _pinnedWaiterNode = new LinkedListNode<KThread>(this);
         }
 
         public Result Initialize(
@@ -605,7 +616,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Threading
                                 break;
                             }
 
-                            _pinnedWaiters.AddLast(currentThread);
+                            _pinnedWaiters.AddLast(_pinnedWaiterNode);
 
                             currentThread.Reschedule(ThreadSchedState.Paused);
                         }
@@ -822,7 +833,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Threading
                                 return KernelResult.ThreadTerminating;
                             }
 
-                            _pinnedWaiters.AddLast(currentThread);
+                            _pinnedWaiters.AddLast(_pinnedWaiterNode);
 
                             currentThread.Reschedule(ThreadSchedState.Paused);
                         }
@@ -1236,7 +1247,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Threading
         {
             if (_schedulerWaitEvent == null)
             {
-                var schedulerWaitEvent = new ManualResetEvent(false);
+                var schedulerWaitEvent = new ManualResetEventSlim(false);
 
                 if (Interlocked.Exchange(ref _schedulerWaitEvent, schedulerWaitEvent) == null)
                 {
@@ -1251,7 +1262,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Threading
 
         private void ThreadStart()
         {
-            _schedulerWaitEvent.WaitOne();
+            _schedulerWaitEvent.Wait();
             KernelStatic.SetKernelContext(KernelContext, this);
 
             if (_customThreadStart != null)

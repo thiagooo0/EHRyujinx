@@ -850,7 +850,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
         {
             lock (_threadingLock)
             {
-                thread.ProcessListNode = _threads.AddLast(thread);
+                _threads.AddLast(thread.ProcessListNode);
             }
         }
 
