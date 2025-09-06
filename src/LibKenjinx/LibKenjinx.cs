@@ -35,7 +35,6 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.Json;
 using Path = System.IO.Path;
 
 namespace LibKenjinx
@@ -936,19 +935,18 @@ namespace LibKenjinx
 
             // TitleId string normalized
             string titleIdHex = titleId.ToString("x16");
+            string titleName = TryGetTitleName(ref control) ?? "Unknown";
 
             // Marker file in the save folder + central mapping under .../save/_titleid_map.json
             try
             {
-                // 1) If we have recognized the newly created folder: Put a marker in
                 if (!string.IsNullOrEmpty(createdSaveDirName))
                 {
                     string markerFile = Path.Combine(savesRoot, createdSaveDirName, "TITLEID.txt");
-                    File.WriteAllText(markerFile, titleIdHex);
+                    File.WriteAllText(markerFile, $"{titleIdHex}\n{titleName}");
                 }
 
-                // 2) Load/update mapping file
-                WriteOrUpdateTitleMapJson(savesRoot, titleIdHex, createdSaveDirName);
+                AppendTitleMapNdjson(savesRoot, titleIdHex, titleName, createdSaveDirName);
             }
             catch (Exception ex)
             {
@@ -956,75 +954,56 @@ namespace LibKenjinx
             }
         }
 
-        // ---------- Helper for TitleId→SaveId mapping ----------
-
-        private sealed class TitleMap
+        private static string EscapeJson(string s)
         {
-            public Dictionary<string, string> Map { get; set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (string.IsNullOrEmpty(s)) return "";
+            return s
+                .Replace("\\", "\\\\")
+                .Replace("\"", "\\\"")
+                .Replace("\r", "\\r")
+                .Replace("\n", "\\n");
         }
 
-        private static void WriteOrUpdateTitleMapJson(string savesRoot, string titleIdHex, string? createdSaveDirName)
+        /// <summary>
+        /// Writes a line in NDJSON format to .../save/titleid_map.ndjson
+        /// </summary>
+        private static void AppendTitleMapNdjson(string savesRoot, string titleIdHex, string titleName, string createdFolder)
         {
-            string mapFile = Path.Combine(savesRoot, "_titleid_map.json");
+            Directory.CreateDirectory(savesRoot);
+            string mapPath = Path.Combine(savesRoot, "titleid_map.ndjson");
 
-            TitleMap map;
-            try
-            {
-                if (File.Exists(mapFile))
-                {
-                    var json = File.ReadAllText(mapFile);
-                    map = JsonSerializer.Deserialize<TitleMap>(json) ?? new TitleMap();
-                }
-                else
-                {
-                    map = new TitleMap();
-                }
-            }
-            catch
-            {
-                map = new TitleMap();
-            }
+            string line = $"{{\"titleId\":\"{EscapeJson(titleIdHex)}\",\"name\":\"{EscapeJson(titleName)}\",\"folder\":\"{EscapeJson(createdFolder ?? "")}\",\"timestamp\":\"{DateTime.UtcNow:O}\"}}{Environment.NewLine}";
 
-            // If we know the newly created folder, use this information.
-            // Otherwise, do not overwrite anything (existing mapping remains intact).
-            if (!string.IsNullOrEmpty(createdSaveDirName))
-            {
-                map.Map[titleIdHex] = createdSaveDirName!;
-            }
-            else if (!map.Map.ContainsKey(titleIdHex))
-            {
-                // Heuristic: Scan folder with TITLEID.txt and assign if necessary
-                try
-                {
-                    foreach (var dir in Directory.GetDirectories(savesRoot))
-                    {
-                        var marker = Path.Combine(dir, "TITLEID.txt");
-                        if (File.Exists(marker))
-                        {
-                            var txt = File.ReadAllText(marker).Trim();
-                            if (string.Equals(txt, titleIdHex, StringComparison.OrdinalIgnoreCase))
-                            {
-                                map.Map[titleIdHex] = Path.GetFileName(dir);
-                                break;
-                            }
-                        }
-                    }
-                }
-                catch { /* ignore */ }
-            }
-
-            try
-            {
-                var json = JsonSerializer.Serialize(map, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(mapFile, json);
-            }
-            catch
-            {
-                // ignore – mapping is “best effort”.
-            }
+            // Append-only, erstellt die Datei falls sie nicht existiert:
+            File.AppendAllText(mapPath, line, Encoding.UTF8);
         }
 
-        // -------------------------------------------------------
+        /// <summary>
+        /// Gets the (preferably American) title from the NACP, as a fallback the first non-empty one.
+        /// </summary>
+        private static string? TryGetTitleName(ref LibHac.Ns.ApplicationControlProperty control)
+        {
+            try
+            {
+                // Preferred: AmericanEnglish
+                int idx = (int)Language.AmericanEnglish;
+                if (control.Title.Length > idx)
+                {
+                    var s = control.Title[idx].NameString.ToString();
+                    if (!string.IsNullOrWhiteSpace(s)) return s;
+                }
+
+                // Fallback: first non-empty localization
+                foreach (ref readonly var t in control.Title)
+                {
+                    var s = t.NameString.ToString();
+                    if (!string.IsNullOrWhiteSpace(s)) return s;
+                }
+            }
+            catch { /* ignore */ }
+
+            return null;
+        }
 
         internal void ReloadFileSystem()
         {
