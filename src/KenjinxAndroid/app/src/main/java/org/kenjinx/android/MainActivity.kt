@@ -60,7 +60,7 @@ class MainActivity : BaseActivity() {
             mainViewModel?.gameHost?.hideProgressIndicator()
         }
 
-        // <<< NEW: is called from the Native/Lib page to set the loading progress
+        // <<< is called from the Native/Lib page to set the loading progress
         @JvmStatic
         fun updateProgress(info: String, percent: Float) {
             // Route directly via the GameHost – it takes care of the progress states
@@ -143,6 +143,9 @@ class MainActivity : BaseActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
+        // --- Apply alignment
+        applyOrientationPreference()
+
         WindowInsetsControllerCompat(window, window.decorView).let { controller ->
             controller.hide(WindowInsetsCompat.Type.systemBars())
             controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
@@ -215,6 +218,9 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        // --- Reapply alignment if necessary
+        applyOrientationPreference()
+
         handler.postDelayed(delayedHandleIntent, 10)
         isActive = true
 
@@ -258,22 +264,21 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private fun applyOrientationPreference() {
+        val pref = QuickSettings(this).orientationPreference
+        requestedOrientation = pref.value
+    }
+
     fun shutdownAndRestart() {
-        // Create an intent to restart the app
         val packageManager = packageManager
         val intent = packageManager.getLaunchIntentForPackage(packageName)
         val componentName = intent?.component
         val restartIntent = Intent.makeRestartActivityTask(componentName)
 
-        // Clean up resources if needed
         mainViewModel?.let {
             it.performanceManager?.setTurboMode(false)
         }
-
-        // Start the new activity directly
         startActivity(restartIntent)
-
-        // Force immediate process termination
         Runtime.getRuntime().exit(0)
     }
 }

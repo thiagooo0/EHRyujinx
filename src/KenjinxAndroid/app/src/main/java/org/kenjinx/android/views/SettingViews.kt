@@ -79,6 +79,10 @@ import org.kenjinx.android.widgets.ExpandableView
 import org.kenjinx.android.widgets.SimpleAlertDialog
 import org.kenjinx.android.widgets.SwitchSelector
 
+// >>> QuickSettings + OrientationPreference
+import org.kenjinx.android.viewmodels.QuickSettings
+import org.kenjinx.android.viewmodels.QuickSettings.OrientationPreference
+
 class SettingViews {
     companion object {
         const val EXPANSTION_TRANSITION_DURATION = 450
@@ -130,6 +134,11 @@ class SettingViews {
             val enableDebugLogs = remember { mutableStateOf(true) }
             val enableGraphicsLogs = remember { mutableStateOf(true) }
             val isNavigating = remember { mutableStateOf(false) }
+
+            // Load orientation from QuickSettings
+            val orientationPref = remember {
+                mutableStateOf(QuickSettings(mainViewModel.activity).orientationPreference)
+            }
 
             if (!loaded.value) {
                 settingsViewModel.initializeState(
@@ -231,6 +240,20 @@ class SettingViews {
                 ) {
                     ExpandableView(onCardArrowClick = { }, title = "User Interface", icon = Icons.Outlined.BarChart ,isFirst = true) {
                         Column(modifier = Modifier.fillMaxWidth()) {
+
+                            // Screen Orientation
+                            OrientationDropdown(
+                                selectedOrientation = orientationPref.value,
+                                onOrientationSelected = { sel ->
+                                    orientationPref.value = sel
+                                    // Save and use immediately
+                                    val qs = QuickSettings(mainViewModel.activity)
+                                    qs.orientationPreference = sel
+                                    qs.save()
+                                    mainViewModel.activity.requestedOrientation = sel.value
+                                }
+                            )
+
                             isGrid.SwitchSelector("Use Grid")
                             Row(
                                 modifier = Modifier
@@ -1273,6 +1296,35 @@ class SettingViews {
             }
         }
 
+        // ---- Dropdown for orientation ----
+        @Composable
+        fun OrientationDropdown(
+            selectedOrientation: OrientationPreference,
+            onOrientationSelected: (OrientationPreference) -> Unit
+        ) {
+            val options = listOf(
+                OrientationPreference.Sensor,
+                OrientationPreference.SensorLandscape,
+                OrientationPreference.SensorPortrait
+            )
+
+            DropdownSelector(
+                label = "Screen Orientation",
+                selectedValue = selectedOrientation,
+                options = options,
+                getDisplayText = { opt ->
+                    when (opt) {
+                        OrientationPreference.Sensor -> "Sensor"
+                        OrientationPreference.SensorLandscape -> "Sensor Landscape"
+                        OrientationPreference.SensorPortrait -> "Sensor Portrait"
+                    }
+                },
+                onOptionSelected = onOrientationSelected
+            )
+        }
+
+        // ---- Existing dropdowns ----
+
         @Composable
         fun MemoryModeDropdown(
             selectedMemoryManagerMode: MemoryManagerMode,
@@ -1363,7 +1415,7 @@ class SettingViews {
                 onOptionSelected = onScaleSelected
             )
         }
-		
+
         @Composable
         fun AnisotropicFilteringDropdown(
             selectedAnisotropy: Float,
