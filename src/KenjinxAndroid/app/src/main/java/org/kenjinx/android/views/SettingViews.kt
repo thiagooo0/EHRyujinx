@@ -2,6 +2,7 @@ package org.kenjinx.android.views
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.os.Build
 import android.provider.DocumentsContract
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -43,7 +44,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -259,11 +259,21 @@ class SettingViews {
                                 selectedOrientation = orientationPref.value,
                                 onOrientationSelected = { sel ->
                                     orientationPref.value = sel
-                                    // Save and use immediately
                                     val qs = QuickSettings(mainViewModel.activity)
                                     qs.orientationPreference = sel
                                     qs.save()
-                                    mainViewModel.activity.requestedOrientation = sel.value
+
+                                    // 1) Set activity alignment
+                                    val act = mainViewModel.activity
+                                    act.requestedOrientation = sel.value
+
+                                    // 2) Submit rotation/size immediately to the rendering
+                                    val rot = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                        act.display?.rotation
+                                    } else {
+                                        TODO("VERSION.SDK_INT < R")
+                                    }
+                                    mainViewModel.gameHost?.onOrientationOrSizeChanged(rot)
                                 }
                             )
 
