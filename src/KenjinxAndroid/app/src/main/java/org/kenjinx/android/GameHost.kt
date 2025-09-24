@@ -40,6 +40,9 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
     // last known Android rotation (0,1,2,3)
     private var lastRotation: Int? = null
 
+    // Debounce for resize kick
+    private var lastKickAt = 0L
+
     var currentSurface: Long = -1
         private set
 
@@ -50,6 +53,11 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
         holder.addCallback(this)
         _nativeWindow = NativeWindow(this)
         mainViewModel.gameHost = this
+    }
+
+    private fun ghLog(msg: String) {
+        val enabled = BuildConfig.DEBUG && org.kenjinx.android.viewmodels.QuickSettings(mainViewModel.activity).enableDebugLogs
+        if (enabled) Log.d("GameHost", msg)
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
@@ -112,10 +120,7 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
         val id = mainViewModel.physicalControllerManager?.connect()
         mainViewModel.motionSensorManager?.setControllerId(id ?: -1)
 
-        // ❌ Removed: initial "flip" at 270° (caused 90° lock at start right)
-        // NativeHelpers.instance.setIsInitialOrientationFlipped(mainViewModel.activity.display?.rotation == 3)
-
-        // ✅ Correct: Report current Android rotation directly to the native site
+        // No initial "flip" special case: we give the real rotation downwards
         val currentRot = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             mainViewModel.activity.display?.rotation
         } else {
@@ -126,13 +131,11 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
             KenjinxNative.setSurfaceRotationByAndroidRotation(currentRot)
             // Pass the window handle for safety reasons (if Surface has just been refreshed)
             try { KenjinxNative.deviceSetWindowHandle(currentWindowHandle) } catch (_: Throwable) {}
-            // Swapchain/Viewport “knock”: set identical size again
+            // gentle kick: set identical size again
             if (width > 0 && height > 0) {
                 try { KenjinxNative.resizeRendererAndInput(width, height) } catch (_: Throwable) {}
             }
         } catch (_: Throwable) {}
-
-        // NO graphicsRendererSetSize here – we set it via the stabilizer!
 
         _guestThread = thread(start = true, name = "KenjinxGuest") {
             runGame()
@@ -192,7 +195,7 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
         if (_isClosed) return
         if (w <= 0 || h <= 0) return
         try {
-            Log.d("GameHost", "safeSetSize: ${w}x$h (started=$_isStarted)")
+            ghLog("safeSetSize: ${w}x$h (started=$_isStarted)")
             KenjinxNative.graphicsRendererSetSize(w, h)
             if (_isStarted) {
                 KenjinxNative.inputSetClientSize(w, h)
@@ -203,8 +206,8 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
     }
 
     /**
-     * Called on the activity when the rotation/layout changes.
-     * Detects 90°↔270° and immediately forces a NativeWindow query.
+     * Called by the activity when the rotation/layout changes.
+     * Detects 90°↔270° and forces (debounces) a requery/resize.
      */
     fun onOrientationOrSizeChanged(rotation: Int? = null) {
         if (_isClosed) return
@@ -225,11 +228,15 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
                 try { KenjinxNative.deviceSetWindowHandle(currentWindowHandle) } catch (_: Throwable) {}
             } catch (_: Throwable) {}
 
-            // 3) Swapchain/Viewport directly “knock”, set identical size again
-            val w = if (holder.surfaceFrame.width() > 0) holder.surfaceFrame.width() else width
-            val h = if (holder.surfaceFrame.height() > 0) holder.surfaceFrame.height() else height
-            if (w > 0 && h > 0) {
-                try { KenjinxNative.resizeRendererAndInput(w, h) } catch (_: Throwable) {}
+            // 3) Debounced kick of identical size (update swap chain/viewport)
+            val now = android.os.SystemClock.uptimeMillis()
+            if (now - lastKickAt >= 300L) {
+                lastKickAt = now
+                val w = if (holder.surfaceFrame.width() > 0) holder.surfaceFrame.width() else width
+                val h = if (holder.surfaceFrame.height() > 0) holder.surfaceFrame.height() else height
+                if (w > 0 && h > 0) {
+                    try { KenjinxNative.resizeRendererAndInput(w, h) } catch (_: Throwable) {}
+                }
             }
         }
 
@@ -273,7 +280,6 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
 
                 // If rotation is known: Force plausibility (Landscape ↔ Portrait)
                 expectedRotation?.let { rot ->
-                    // ROTATION_90 (1) / ROTATION_270 (3) => Landscape
                     val landscape = (rot == 1 || rot == 3)
                     if (landscape && h > w) {
                         val t = w; w = h; h = t
@@ -293,9 +299,9 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
 
                 attempts++
 
-                // 2 consecutive identical measurements OR 20 attempts → apply
-                if ((stableCount >= 2 || attempts >= 20) && w > 0 && h > 0) {
-                    Log.d("GameHost", "resize stabilized after $attempts ticks → ${w}x$h")
+                // slightly tightened: 1 stable tick or max. 12 attempts
+                if ((stableCount >= 1 || attempts >= 12) && w > 0 && h > 0) {
+                    ghLog("resize stabilized after $attempts ticks → ${w}x$h")
                     safeSetSize(w, h)
                     stabilizerActive = false
                     return

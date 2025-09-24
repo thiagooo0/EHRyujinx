@@ -10,7 +10,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +21,6 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.documentfile.provider.DocumentFile
-import androidx.preference.PreferenceManager
 import com.anggrayudi.storage.SimpleStorageHelper
 import com.sun.jna.JNIEnv
 import org.kenjinx.android.ui.theme.KenjinxAndroidTheme
@@ -30,8 +28,6 @@ import org.kenjinx.android.viewmodels.MainViewModel
 import org.kenjinx.android.viewmodels.QuickSettings
 import org.kenjinx.android.viewmodels.GameModel
 import org.kenjinx.android.views.MainView
-import java.io.File
-import android.content.res.Configuration
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.hardware.display.DisplayManager
@@ -54,8 +50,14 @@ class MainActivity : BaseActivity() {
     private lateinit var displayManager: DisplayManager
     private var lastKnownRotation: Int? = null
     private var pulsingOrientation = false
+    private var lastPulseAt = 0L
 
     private val TAG_ROT = "RotationDebug"
+
+    private fun rotLog(msg: String) {
+        val enabled = BuildConfig.DEBUG && QuickSettings(this).enableDebugLogs
+        if (enabled) Log.d(TAG_ROT, msg)
+    }
 
     private val displayListener = object : DisplayManager.DisplayListener {
         override fun onDisplayAdded(displayId: Int) {}
@@ -70,23 +72,23 @@ class MainActivity : BaseActivity() {
             val rot = display?.rotation
             if (rot == lastKnownRotation) return
 
-            Log.d(TAG_ROT, "onDisplayChanged: display.rotation=$rot → ${deg(rot)}°")
+            rotLog("onDisplayChanged: display.rotation=$rot → ${deg(rot)}°")
 
             val pref = QuickSettings(this@MainActivity).orientationPreference
             val old = lastKnownRotation
             lastKnownRotation = rot
 
-            // 1) Inform Native/Renderer
+            // 1) Inform Native/Renderer (applies to Sensor & SensorLandscape)
             try { KenjinxNative.setSurfaceRotationByAndroidRotation(rot) } catch (_: Throwable) {}
 
-            // 2) Initiate host resize
+            // 2) Initiate host resize (applies to Sensor & SensorLandscape)
             if (isGameRunning) {
                 handler.post {
                     try { mainViewModel?.gameHost?.onOrientationOrSizeChanged(rot) } catch (_: Throwable) {}
                 }
             }
 
-            // 3) For SENSOR_LANDSCAPE possibly pulse, if 90↔270 flip
+            // 3) Only with SENSOR_LANDSCAPE: gentle pulse with real 90↔270 flip
             if (pref == QuickSettings.OrientationPreference.SensorLandscape && old != null && rot != null) {
                 val isSideFlip = (old == Surface.ROTATION_90 && rot == Surface.ROTATION_270) ||
                     (old == Surface.ROTATION_270 && rot == Surface.ROTATION_90)
@@ -104,10 +106,12 @@ class MainActivity : BaseActivity() {
     }
 
     private fun doOrientationPulse(currentRot: Int) {
-        if (pulsingOrientation) return
+        val now = android.os.SystemClock.uptimeMillis()
+        if (pulsingOrientation || now - lastPulseAt < 350L) return
         pulsingOrientation = true
+        lastPulseAt = now
 
-        // Short lock on the target page (instead of portrait intermediate step; prevents flickering)
+        // Short lock on the target page (prevents flickering)
         val lock = if (currentRot == Surface.ROTATION_90)
             ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         else
@@ -249,7 +253,7 @@ class MainActivity : BaseActivity() {
 
         storedIntent = intent
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Log.d(TAG_ROT, "onCreate: initial display.rotation=${display?.rotation} → ${deg(display?.rotation)}°")
+            rotLog("onCreate: initial display.rotation=${display?.rotation} → ${deg(display?.rotation)}°")
         }
     }
 
@@ -293,7 +297,7 @@ class MainActivity : BaseActivity() {
         // Enable display listener
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             lastKnownRotation = display?.rotation
-        Log.d(TAG_ROT, "onResume: display.rotation=${display?.rotation} → ${deg(display?.rotation)}°")
+        rotLog("onResume: display.rotation=${display?.rotation} → ${deg(display?.rotation)}°")
         }
         try { displayManager.registerDisplayListener(displayListener, handler) } catch (_: Throwable) {}
 
@@ -340,7 +344,7 @@ class MainActivity : BaseActivity() {
         } else {
             TODO("VERSION.SDK_INT < R")
         }
-        Log.d(TAG_ROT, "applyOrientationPreference: rot=$rot → ${deg(rot)}°, pref=${pref.name}")
+        rotLog("applyOrientationPreference: rot=$rot → ${deg(rot)}°, pref=${pref.name}")
         try { KenjinxNative.setSurfaceRotationByAndroidRotation(rot) } catch (_: Throwable) {}
     }
 
