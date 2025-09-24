@@ -124,8 +124,8 @@ namespace Ryujinx.Ava.UI.ViewModels
         private ApplicationContextMenu _listAppContextMenu;
         private ApplicationContextMenu _gridAppContextMenu;
 
-        private readonly object _refreshLock = new object();
-        private readonly object _applicationsLock = new object();
+        private readonly object _refreshLock = new();
+        private readonly object _applicationsLock = new();
 
         public ApplicationData ListSelectedApplication
         {

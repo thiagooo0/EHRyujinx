@@ -827,7 +827,7 @@ namespace LibKenjinx
             EnableJitCacheEviction = enableJitCacheEviction;
             EnableFsIntegrityChecks = enableFsIntegrityChecks;
 
-            HLEConfiguration configuration = new HLEConfiguration(VirtualFileSystem,
+            HLEConfiguration configuration = new(VirtualFileSystem,
                                                                   LibHacHorizonManager,
                                                                   ContentManager,
                                                                   AccountManager,
