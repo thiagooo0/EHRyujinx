@@ -96,7 +96,7 @@ namespace Ryujinx.Headless
 
             InputConfig config;
 
-            if (inputProfileName == null || inputProfileName.Equals("default"))
+            if (inputProfileName is null or "default")
             {
                 if (isKeyboard)
                 {

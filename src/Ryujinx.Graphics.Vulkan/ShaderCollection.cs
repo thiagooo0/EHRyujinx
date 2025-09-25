@@ -452,7 +452,7 @@ namespace Ryujinx.Graphics.Vulkan
 
         private static bool IsReadOnlyTexture(ResourceType resourceType)
         {
-            return resourceType == ResourceType.TextureAndSampler || resourceType == ResourceType.BufferTexture;
+            return resourceType is ResourceType.TextureAndSampler or ResourceType.BufferTexture;
 
         }
 

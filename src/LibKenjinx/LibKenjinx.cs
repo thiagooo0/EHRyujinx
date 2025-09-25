@@ -138,7 +138,7 @@ namespace LibKenjinx
             {
                 try
                 {
-                    if (extension == "nsp" || extension == "pfs0" || extension == "xci")
+                    if (extension is "nsp" or "pfs0" or "xci")
                     {
                         IFileSystem pfs;
 
