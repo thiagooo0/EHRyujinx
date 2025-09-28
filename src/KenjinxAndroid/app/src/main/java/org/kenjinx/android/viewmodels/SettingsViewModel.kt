@@ -57,6 +57,7 @@ class SettingsViewModel(val activity: MainActivity) {
         enableShaderCache: MutableState<Boolean>,
         enableTextureRecompression: MutableState<Boolean>,
         enableMacroHLE: MutableState<Boolean>,
+        stretchToFullscreen: MutableState<Boolean>,
         resScale: MutableState<Float>,
         maxAnisotropy: MutableState<Float>,
         useVirtualController: MutableState<Boolean>,
@@ -91,6 +92,7 @@ class SettingsViewModel(val activity: MainActivity) {
         enableShaderCache.value = sharedPref.getBoolean("enableShaderCache", true)
         enableTextureRecompression.value = sharedPref.getBoolean("enableTextureRecompression", false)
         enableMacroHLE.value = sharedPref.getBoolean("enableMacroHLE", false)
+        stretchToFullscreen.value = sharedPref.getBoolean("stretchToFullscreen", false)
         resScale.value = sharedPref.getFloat("resScale", 1f)
         maxAnisotropy.value = sharedPref.getFloat("maxAnisotropy", 0f)
         useVirtualController.value = sharedPref.getBoolean("useVirtualController", true)
@@ -131,6 +133,7 @@ class SettingsViewModel(val activity: MainActivity) {
         enableShaderCache: MutableState<Boolean>,
         enableTextureRecompression: MutableState<Boolean>,
         enableMacroHLE: MutableState<Boolean>,
+        stretchToFullscreen: MutableState<Boolean>,
         resScale: MutableState<Float>,
         maxAnisotropy: MutableState<Float>,
         useVirtualController: MutableState<Boolean>,
@@ -167,6 +170,7 @@ class SettingsViewModel(val activity: MainActivity) {
             putBoolean("enableShaderCache", enableShaderCache.value)
             putBoolean("enableTextureRecompression", enableTextureRecompression.value)
             putBoolean("enableMacroHLE", enableMacroHLE.value)
+            putBoolean("stretchToFullscreen", stretchToFullscreen.value)
             putFloat("resScale", resScale.value)
             putFloat("maxAnisotropy", maxAnisotropy.value)
             putBoolean("useVirtualController", useVirtualController.value)

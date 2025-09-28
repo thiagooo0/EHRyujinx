@@ -137,6 +137,10 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
             }
         } catch (_: Throwable) {}
 
+        val qs = org.kenjinx.android.viewmodels.QuickSettings(mainViewModel.activity)
+        try {
+            KenjinxNative.graphicsSetFullscreenStretch(qs.stretchToFullscreen)
+        } catch (_: Throwable) {}
         _guestThread = thread(start = true, name = "KenjinxGuest") {
             runGame()
         }
@@ -280,6 +284,7 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
 
                 // If rotation is known: Force plausibility (Landscape ↔ Portrait)
                 expectedRotation?.let { rot ->
+                    // ROTATION_90 (1) / ROTATION_270 (3) => Landscape
                     val landscape = (rot == 1 || rot == 3)
                     if (landscape && h > w) {
                         val t = w; w = h; h = t
