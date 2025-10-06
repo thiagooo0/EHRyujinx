@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Popup
+import androidx.compose.ui.draw.alpha // ← NEU
 import compose.icons.CssGgIcons
 import compose.icons.cssggicons.ToolbarBottom
 import org.kenjinx.android.GameController
@@ -75,30 +76,35 @@ class GameViews {
         @Composable
         fun GameOverlay(mainViewModel: MainViewModel) {
             Box(modifier = Modifier.fillMaxSize()) {
-                val showStats = remember {
-                    mutableStateOf(false)
+                val showStats = remember { mutableStateOf(false) }
+                val showController = remember { mutableStateOf(QuickSettings(mainViewModel.activity).useVirtualController) }
+                val vSyncMode = remember { mutableStateOf(QuickSettings(mainViewModel.activity).vSyncMode) }
+                val enableMotion = remember { mutableStateOf(QuickSettings(mainViewModel.activity).enableMotion) }
+                val showMore = remember { mutableStateOf(false) }
+                val showLoading = remember { mutableStateOf(true) }
+                val progressValue = remember { mutableStateOf(0.0f) }
+                val progress = remember { mutableStateOf("Loading") }
+
+                // --- Read overlay settings
+                val overlayPositionState = remember {
+                    mutableStateOf(QuickSettings(mainViewModel.activity).overlayMenuPosition)
                 }
-                val showController = remember {
-                    mutableStateOf(QuickSettings(mainViewModel.activity).useVirtualController)
+                val overlayOpacityState = remember {
+                    mutableStateOf(QuickSettings(mainViewModel.activity).overlayMenuOpacity.coerceIn(0f, 1f))
                 }
-                val vSyncMode = remember {
-                    mutableStateOf(QuickSettings(mainViewModel.activity).vSyncMode)
+
+                // Auxiliary mapping position → alignment
+                fun overlayAlignment(): Alignment {
+                    return when (overlayPositionState.value) {
+                        QuickSettings.OverlayMenuPosition.BottomMiddle -> Alignment.BottomCenter
+                        QuickSettings.OverlayMenuPosition.BottomLeft   -> Alignment.BottomStart
+                        QuickSettings.OverlayMenuPosition.BottomRight  -> Alignment.BottomEnd
+                        QuickSettings.OverlayMenuPosition.TopMiddle    -> Alignment.TopCenter
+                        QuickSettings.OverlayMenuPosition.TopLeft      -> Alignment.TopStart
+                        QuickSettings.OverlayMenuPosition.TopRight     -> Alignment.TopEnd
+                    }
                 }
-                val enableMotion = remember {
-                    mutableStateOf(QuickSettings(mainViewModel.activity).enableMotion)
-                }
-                val showMore = remember {
-                    mutableStateOf(false)
-                }
-                val showLoading = remember {
-                    mutableStateOf(true)
-                }
-                val progressValue = remember {
-                    mutableStateOf(0.0f)
-                }
-                val progress = remember {
-                    mutableStateOf("Loading")
-                }
+
 
                 if (showStats.value) {
                     GameStats(mainViewModel)
@@ -130,18 +136,14 @@ class GameViews {
                                                 position.y.roundToInt()
                                             )
                                         }
-
                                         PointerEventType.Release -> {
                                             KenjinxNative.inputReleaseTouchPoint()
-
                                         }
-
                                         PointerEventType.Move -> {
                                             KenjinxNative.inputSetTouchPoint(
                                                 position.x.roundToInt(),
                                                 position.y.roundToInt()
                                             )
-
                                         }
                                     }
                                 }
@@ -149,13 +151,16 @@ class GameViews {
                         }
                     }) {
                 }
+
                 if (!showLoading.value) {
                     GameController.Compose(mainViewModel)
 
+                    // --- Button at any corner/edge + transparency
                     Row(
                         modifier = Modifier
-                            .align(Alignment.BottomCenter)
+                            .align(overlayAlignment())
                             .padding(8.dp)
+                            .alpha(overlayOpacityState.value) // 0f = unsichtbar, aber weiter klickbar
                     ) {
                         IconButton(modifier = Modifier.padding(4.dp), onClick = {
                             showMore.value = true
@@ -169,8 +174,9 @@ class GameViews {
 
                     if (showMore.value) {
                         Popup(
-                            alignment = Alignment.BottomCenter,
-                            onDismissRequest = { showMore.value = false }) {
+                            alignment = overlayAlignment(), // --- NEU: Panel an gleicher Position
+                            onDismissRequest = { showMore.value = false }
+                        ) {
                             Surface(
                                 modifier = Modifier.padding(16.dp),
                                 shape = MaterialTheme.shapes.medium
@@ -194,12 +200,9 @@ class GameViews {
                                         }
                                         IconButton(modifier = Modifier.padding(4.dp), onClick = {
                                             showMore.value = false
-                                            if(vSyncMode.value == VSyncMode.Switch)
-                                            {
+                                            if(vSyncMode.value == VSyncMode.Switch) {
                                                 vSyncMode.value= VSyncMode.Unbounded
-                                            }
-                                            else
-                                            {
+                                            } else {
                                                 vSyncMode.value= VSyncMode.Switch
                                             }
                                             KenjinxNative.graphicsRendererSetVsync(
@@ -246,17 +249,14 @@ class GameViews {
                     }
                 }
 
-                val showBackNotice = remember {
-                    mutableStateOf(false)
-                }
+                val showBackNotice = remember { mutableStateOf(false) }
 
-                // NEW: If the software keyboard is open, catch Back and close ONLY the dialog.
+                // If the software keyboard is open, catch Back and close ONLY the dialog.
                 val uiHandler = mainViewModel.activity.uiHandler
                 BackHandler(enabled = uiHandler.showMessage.value) {
                     KenjinxNative.uiHandlerSetResponse(false, "")
                     uiHandler.showMessage.value = false
                 }
-
                 BackHandler {
                     showBackNotice.value = true
                 }
@@ -286,24 +286,12 @@ class GameViews {
 
         @Composable
         fun GameStats(mainViewModel: MainViewModel) {
-            val fifo = remember {
-                mutableDoubleStateOf(0.0)
-            }
-            val gameFps = remember {
-                mutableDoubleStateOf(0.0)
-            }
-            val gameTime = remember {
-                mutableDoubleStateOf(0.0)
-            }
-            val usedMem = remember {
-                mutableIntStateOf(0)
-            }
-            val totalMem = remember {
-                mutableIntStateOf(0)
-            }
-            val frequencies = remember {
-                mutableListOf<Double>()
-            }
+            val fifo = remember { mutableDoubleStateOf(0.0) }
+            val gameFps = remember { mutableDoubleStateOf(0.0) }
+            val gameTime = remember { mutableDoubleStateOf(0.0) }
+            val usedMem = remember { mutableIntStateOf(0) }
+            val totalMem = remember { mutableIntStateOf(0) }
+            val frequencies = remember { mutableListOf<Double>() }
 
             Surface(
                 modifier = Modifier.padding(16.dp),
@@ -324,10 +312,7 @@ class GameViews {
                                         if (i < frequencies.size) {
                                             val t = frequencies[i]
                                             Row {
-                                                Text(
-                                                    modifier = Modifier.padding(2.dp),
-                                                    text = "CPU $i"
-                                                )
+                                                Text(modifier = Modifier.padding(2.dp), text = "CPU $i")
                                                 Spacer(Modifier.weight(1f))
                                                 Text(text = "$t MHz")
                                             }

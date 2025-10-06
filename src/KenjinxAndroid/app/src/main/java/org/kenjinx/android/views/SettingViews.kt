@@ -83,6 +83,7 @@ import org.kenjinx.android.widgets.SwitchSelector
 // >>> QuickSettings + OrientationPreference
 import org.kenjinx.android.viewmodels.QuickSettings
 import org.kenjinx.android.viewmodels.QuickSettings.OrientationPreference
+import org.kenjinx.android.viewmodels.QuickSettings.OverlayMenuPosition // ← NEU
 
 // Import enums
 import org.kenjinx.android.SystemLanguage
@@ -149,6 +150,14 @@ class SettingViews {
             // Language & Region States
             val systemLanguage = remember { mutableStateOf(SystemLanguage.AmericanEnglish) }
             val regionCode = remember { mutableStateOf(RegionCode.USA) }
+
+            // Load overlay settings from QuickSettings
+            val overlayMenuPosition = remember {
+                mutableStateOf(QuickSettings(mainViewModel.activity).overlayMenuPosition)
+            }
+            val overlayOpacity = remember {
+                mutableFloatStateOf(QuickSettings(mainViewModel.activity).overlayMenuOpacity.coerceIn(0f, 1f))
+            }
 
             if (!loaded.value) {
                 settingsViewModel.initializeState(
@@ -280,6 +289,69 @@ class SettingViews {
                                     mainViewModel.gameHost?.onOrientationOrSizeChanged(rot)
                                 }
                             )
+
+                            // Overlay Menu Position (DropdownSelector as usual)
+                            OverlayPositionDropdown(
+                                selectedPosition = overlayMenuPosition.value,
+                                onPositionSelected = { pos ->
+                                    overlayMenuPosition.value = pos
+                                    val qs = QuickSettings(mainViewModel.activity)
+                                    qs.overlayMenuPosition = pos
+                                    qs.save()
+                                }
+                            )
+
+                            // Overlay transparency slider – identical style as controller stick sensitivity
+                            val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp)
+                                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Text(
+                                    text = "Overlay transparency",
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                )
+                                Slider(
+                                    modifier = Modifier.width(250.dp),
+                                    value = overlayOpacity.floatValue,
+                                    onValueChange = {
+                                        val clamped = it.coerceIn(0f, 1f)
+                                        overlayOpacity.floatValue = clamped
+                                        val qs = QuickSettings(mainViewModel.activity)
+                                        qs.overlayMenuOpacity = clamped
+                                        qs.save()
+                                    },
+                                    valueRange = 0f..1f,
+                                    steps = 20,
+                                    interactionSource = interactionSource,
+                                    thumb = {
+                                        Label(
+                                            label = {
+                                                PlainTooltip(
+                                                    modifier = Modifier
+                                                        .sizeIn(45.dp, 25.dp)
+                                                        .wrapContentWidth()
+                                                ) {
+                                                    Text("${(overlayOpacity.floatValue * 100f).toInt()}%")
+                                                }
+                                            },
+                                            interactionSource = interactionSource
+                                        ) {
+                                            Icon(
+                                                imageVector = org.kenjinx.android.Icons.circle(
+                                                    color = MaterialTheme.colorScheme.primary
+                                                ),
+                                                contentDescription = null,
+                                                modifier = Modifier.size(ButtonDefaults.IconSize),
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+                                )
+                            }
 
                             isGrid.SwitchSelector("Use Grid")
                             Row(
@@ -1333,6 +1405,39 @@ class SettingViews {
                     }
                 }
             }
+        }
+
+        // ---- Overlay position dropdown ----
+        @Composable
+        fun OverlayPositionDropdown(
+            selectedPosition: OverlayMenuPosition,
+            onPositionSelected: (OverlayMenuPosition) -> Unit
+        ) {
+            val options = listOf(
+                OverlayMenuPosition.BottomMiddle,
+                OverlayMenuPosition.BottomLeft,
+                OverlayMenuPosition.BottomRight,
+                OverlayMenuPosition.TopMiddle,
+                OverlayMenuPosition.TopLeft,
+                OverlayMenuPosition.TopRight
+            )
+
+            DropdownSelector(
+                label = "Overlay Menu Position",
+                selectedValue = selectedPosition,
+                options = options,
+                getDisplayText = { opt ->
+                    when (opt) {
+                        OverlayMenuPosition.BottomMiddle -> "bottom middle"
+                        OverlayMenuPosition.BottomLeft   -> "bottom left"
+                        OverlayMenuPosition.BottomRight  -> "bottom right"
+                        OverlayMenuPosition.TopMiddle    -> "top middle"
+                        OverlayMenuPosition.TopLeft      -> "top left"
+                        OverlayMenuPosition.TopRight     -> "top right"
+                    }
+                },
+                onOptionSelected = onPositionSelected
+            )
         }
 
         // ---- Dropdowns for language & region ----
