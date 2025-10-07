@@ -106,8 +106,8 @@ class SettingViews {
             val enablePptc = remember { mutableStateOf(false) }
             val enableLowPowerPptc = remember { mutableStateOf(false) }
             val enableJitCacheEviction = remember { mutableStateOf(false) }
-            var enableFsIntegrityChecks = remember { mutableStateOf(false) }
-            var fsGlobalAccessLogMode = remember { mutableIntStateOf(0) }
+            val enableFsIntegrityChecks = remember { mutableStateOf(false) }
+            val fsGlobalAccessLogMode = remember { mutableIntStateOf(0) }
             val ignoreMissingServices = remember { mutableStateOf(false) }
             val enableShaderCache = remember { mutableStateOf(false) }
             val enableTextureRecompression = remember { mutableStateOf(false) }
@@ -125,7 +125,7 @@ class SettingViews {
             val showDataImportDialog = remember { mutableStateOf(false) }
             val dataResetState = remember { mutableStateOf(DataResetState.Query) }
             val dataImportState = remember { mutableStateOf(DataImportState.File) }
-            var dataFile = remember { mutableStateOf<DocumentFile?>(null) }
+            val dataFile = remember { mutableStateOf<DocumentFile?>(null) }
             val isGrid = remember { mutableStateOf(true) }
             val useSwitchLayout = remember { mutableStateOf(true) }
             val enableMotion = remember { mutableStateOf(true) }
@@ -1336,7 +1336,7 @@ class SettingViews {
                             )
 
 
-                            var isDriverSelectorOpen = remember { mutableStateOf(false) }
+                            val isDriverSelectorOpen = remember { mutableStateOf(false) }
 
                             Row(
                                 modifier = Modifier

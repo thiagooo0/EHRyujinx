@@ -42,14 +42,15 @@ class GameController(var activity: Activity) {
     companion object {
         private fun init(context: Context, controller: GameController): View {
             val inflater = LayoutInflater.from(context)
-            val view = inflater.inflate(R.layout.game_layout, null)
+            val parent = FrameLayout(context)
+            val view = inflater.inflate(R.layout.game_layout, parent, false)
             view.findViewById<FrameLayout>(R.id.leftcontainer)!!.addView(controller.leftGamePad)
             view.findViewById<FrameLayout>(R.id.rightcontainer)!!.addView(controller.rightGamePad)
             return view
         }
 
         @Composable
-        fun Compose(viewModel: MainViewModel): Unit {
+        fun Compose(viewModel: MainViewModel) {
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
                 factory = { context ->

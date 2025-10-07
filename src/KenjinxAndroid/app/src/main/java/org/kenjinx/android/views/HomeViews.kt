@@ -44,10 +44,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -255,10 +255,14 @@ class HomeViews {
                                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Search") },
                                 singleLine = true,
                                 shape = RoundedCornerShape(8.dp),
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                                )
+                                colors = OutlinedTextFieldDefaults.colors(
+                                        focusedContainerColor = Color.Transparent,
+                                        unfocusedContainerColor = Color.Transparent,
+                                        disabledContainerColor = Color.Transparent,
+                                        errorContainerColor = Color.Transparent,
+                                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                    )
                             )
                         }
                     },
@@ -332,7 +336,7 @@ class HomeViews {
                                                     if (this.isNotEmpty() && (query.value.trim()
                                                             .isEmpty() || this.lowercase(Locale.getDefault())
                                                             .contains(query.value))) {
-                                                        Box(modifier = Modifier.animateItemPlacement()) {
+                                                        Box(modifier = Modifier.animateItem()) {
                                                             ListGameItem(
                                                                 it,
                                                                 viewModel,
@@ -386,7 +390,7 @@ class HomeViews {
                                     viewModel.mainViewModel.loadGameModel.value!!,
                                     true,
                                     viewModel.mainViewModel.forceNceAndPptc.value
-                                ) ?: false
+                                )
                                 if (success == 1) {
                                     launchOnUiThread {
                                         viewModel.mainViewModel.navigateToGame()
@@ -588,7 +592,7 @@ class HomeViews {
                     }
                     Column {
                         Text(text = gameModel.version ?: "")
-                        Text(text = String.format("%.3f", gameModel.fileSize))
+                        Text(text = String.format(Locale.getDefault(), "%.3f", gameModel.fileSize))
                     }
                 }
             }

@@ -28,7 +28,6 @@ import org.kenjinx.android.viewmodels.MainViewModel
 import org.kenjinx.android.viewmodels.QuickSettings
 import org.kenjinx.android.viewmodels.GameModel
 import org.kenjinx.android.views.MainView
-import android.content.Context
 import android.content.pm.ActivityInfo
 import android.hardware.display.DisplayManager
 import android.view.Surface
@@ -231,7 +230,7 @@ class MainActivity : BaseActivity() {
         }
 
         uiHandler = UiHandler()
-        displayManager = getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
+        displayManager = getSystemService(DISPLAY_SERVICE) as DisplayManager
 
         mainViewModel = MainViewModel(this)
         mainViewModel!!.physicalControllerManager = physicalControllerManager

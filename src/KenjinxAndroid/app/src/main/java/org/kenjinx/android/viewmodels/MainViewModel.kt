@@ -33,9 +33,9 @@ class MainViewModel(val activity: MainActivity) {
     var controller: GameController? = null
     var performanceManager: PerformanceManager? = null
     var selected: GameModel? = null
-    val loadGameModel: MutableState<GameModel?> = mutableStateOf<GameModel?>(null)
-    val bootPath: MutableState<String?> = mutableStateOf<String?>(null)
-    val forceNceAndPptc: MutableState<Boolean> = mutableStateOf<Boolean>(false)
+    val loadGameModel: MutableState<GameModel?> = mutableStateOf(null)
+    val bootPath: MutableState<String?> = mutableStateOf(null)
+    val forceNceAndPptc: MutableState<Boolean> = mutableStateOf(false)
     var isMiiEditorLaunched = false
     val userViewModel = UserViewModel()
     val logging = Logging(this)
@@ -114,7 +114,7 @@ class MainViewModel(val activity: MainActivity) {
 
         if(overrideSettings == true)
         {
-            settings.overrideSettings(forceNceAndPptc);
+            settings.overrideSettings(forceNceAndPptc)
         }
 
         var success = KenjinxNative.graphicsInitialize(

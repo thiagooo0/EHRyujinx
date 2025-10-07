@@ -329,6 +329,7 @@ class SettingsViewModel(val activity: MainActivity) {
                     } finally {
                         MainActivity.mainViewModel?.refreshFirmwareVersion()
                         installState.value = FirmwareInstallState.Done
+                        descriptor.close()
                     }
                 }
             }
@@ -401,7 +402,7 @@ class SettingsViewModel(val activity: MainActivity) {
                                 if (!header.isDirectory) {
                                     val bos = BufferedOutputStream(FileOutputStream(filePath))
                                     val bytesIn = ByteArray(4096)
-                                    var read: Int = 0
+                                    var read = 0
                                     while (zip.read(bytesIn).also { read = it } > 0) {
                                         bos.write(bytesIn, 0, read)
                                     }

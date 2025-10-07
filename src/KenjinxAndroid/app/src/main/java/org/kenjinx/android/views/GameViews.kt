@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Popup
-import androidx.compose.ui.draw.alpha // ← NEU
+import androidx.compose.ui.draw.alpha
 import compose.icons.CssGgIcons
 import compose.icons.cssggicons.ToolbarBottom
 import org.kenjinx.android.GameController
@@ -45,6 +46,7 @@ import org.kenjinx.android.viewmodels.MainViewModel
 import org.kenjinx.android.viewmodels.QuickSettings
 import org.kenjinx.android.viewmodels.VSyncMode
 import org.kenjinx.android.widgets.SimpleAlertDialog
+import java.util.Locale
 import kotlin.math.roundToInt
 
 class GameViews {
@@ -82,7 +84,7 @@ class GameViews {
                 val enableMotion = remember { mutableStateOf(QuickSettings(mainViewModel.activity).enableMotion) }
                 val showMore = remember { mutableStateOf(false) }
                 val showLoading = remember { mutableStateOf(true) }
-                val progressValue = remember { mutableStateOf(0.0f) }
+                val progressValue = remember { mutableFloatStateOf(0.0f) }
                 val progress = remember { mutableStateOf("Loading") }
 
                 // --- Read overlay settings
@@ -90,7 +92,7 @@ class GameViews {
                     mutableStateOf(QuickSettings(mainViewModel.activity).overlayMenuPosition)
                 }
                 val overlayOpacityState = remember {
-                    mutableStateOf(QuickSettings(mainViewModel.activity).overlayMenuOpacity.coerceIn(0f, 1f))
+                    mutableFloatStateOf(QuickSettings(mainViewModel.activity).overlayMenuOpacity.coerceIn(0f, 1f))
                 }
 
                 // Auxiliary mapping position → alignment
@@ -160,7 +162,7 @@ class GameViews {
                         modifier = Modifier
                             .align(overlayAlignment())
                             .padding(8.dp)
-                            .alpha(overlayOpacityState.value) // 0f = unsichtbar, aber weiter klickbar
+                            .alpha(overlayOpacityState.floatValue) // 0f = invisible, but still clickable
                     ) {
                         IconButton(modifier = Modifier.padding(4.dp), onClick = {
                             showMore.value = true
@@ -174,7 +176,7 @@ class GameViews {
 
                     if (showMore.value) {
                         Popup(
-                            alignment = overlayAlignment(), // --- NEU: Panel an gleicher Position
+                            alignment = overlayAlignment(), // --- Panel in the same position
                             onDismissRequest = { showMore.value = false }
                         ) {
                             Surface(
@@ -264,7 +266,7 @@ class GameViews {
                 SimpleAlertDialog.Progress(
                     showDialog = showLoading,
                     progressText = progress.value,
-                    progressValue = progressValue.value
+                    progressValue = progressValue.floatValue
                 )
 
                 SimpleAlertDialog.Confirmation(
@@ -302,9 +304,9 @@ class GameViews {
                         var gameTimeVal = 0.0
                         if (!gameTime.doubleValue.isInfinite())
                             gameTimeVal = gameTime.doubleValue
-                        Text(text = "${String.format("%.3f", fifo.doubleValue)} %")
-                        Text(text = "${String.format("%.3f", gameFps.doubleValue)} FPS")
-                        Text(text = "${String.format("%.3f", gameTimeVal)} ms")
+                        Text(text = "${String.format(Locale.getDefault(), "%.3f", fifo.doubleValue)} %")
+                        Text(text = "${String.format(Locale.getDefault(), "%.3f", gameFps.doubleValue)} FPS")
+                        Text(text = "${String.format(Locale.getDefault(), "%.3f", gameTimeVal)} ms")
                         Box(modifier = Modifier.width(96.dp)) {
                             Column {
                                 LazyColumn {
