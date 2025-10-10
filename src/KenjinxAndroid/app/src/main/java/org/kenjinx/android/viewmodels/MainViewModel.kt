@@ -10,16 +10,18 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import org.kenjinx.android.GameController
 import org.kenjinx.android.GameHost
+import org.kenjinx.android.GamepadManager
+import org.kenjinx.android.KenjinxNative
 import org.kenjinx.android.Logging
 import org.kenjinx.android.MainActivity
+import org.kenjinx.android.MainActivity.Companion.mainViewModel
 import org.kenjinx.android.MotionSensorManager
 import org.kenjinx.android.NativeGraphicsInterop
 import org.kenjinx.android.NativeHelpers
 import org.kenjinx.android.PerformanceManager
+import org.kenjinx.android.PerformanceMonitor
 import org.kenjinx.android.PhysicalControllerManager
 import org.kenjinx.android.RegionCode
-import org.kenjinx.android.KenjinxNative
-import org.kenjinx.android.PerformanceMonitor
 import org.kenjinx.android.SystemLanguage
 import org.kenjinx.android.UiHandler
 import java.io.File
@@ -40,6 +42,7 @@ class MainViewModel(val activity: MainActivity) {
     val userViewModel = UserViewModel()
     val logging = Logging(this)
     var firmwareVersion = ""
+    var gamepadManager: GamepadManager? = null
     private var gameTimeState: MutableState<Double>? = null
     private var gameFpsState: MutableState<Double>? = null
     private var fifoState: MutableState<Double>? = null
@@ -50,14 +53,12 @@ class MainViewModel(val activity: MainActivity) {
     private var progressValue: MutableState<Float>? = null
     private var showLoading: MutableState<Boolean>? = null
     private var refreshUser: MutableState<Boolean>? = null
-
     var gameHost: GameHost? = null
         set(value) {
             field = value
             field?.setProgressStates(showLoading, progressValue, progress)
         }
     var navController: NavHostController? = null
-
     var homeViewModel: HomeViewModel = HomeViewModel(activity, this)
 
     init {
@@ -73,6 +74,7 @@ class MainViewModel(val activity: MainActivity) {
         gameHost?.close()
         KenjinxNative.deviceCloseEmulation()
         motionSensorManager?.unregister()
+        mainViewModel?.gamepadManager?.stopSendSensor()
         physicalControllerManager?.disconnect()
         motionSensorManager?.setControllerId(-1)
     }
@@ -90,33 +92,26 @@ class MainViewModel(val activity: MainActivity) {
         return runCatching { RegionCode.valueOf(stored) }.getOrElse { RegionCode.USA }
     }
     // -------------------------------------------------------------------------------
-
     fun loadGame(game: GameModel, overrideSettings: Boolean? = false, forceNceAndPptc: Boolean? = false): Int {
         KenjinxNative.deviceReinitEmulation()
         MainActivity.mainViewModel?.activity?.uiHandler = UiHandler()
-
         val descriptor = game.open()
 
-        if (descriptor == 0)
+        if(descriptor == 0)
             return 0
-
         val update = game.openUpdate()
 
-        if(update == -2)
-        {
+        if(update == -2) {
             return -2
         }
 
         gameModel = game
         isMiiEditorLaunched = false
-
         val settings = QuickSettings(activity)
 
-        if(overrideSettings == true)
-        {
+        if(overrideSettings == true) {
             settings.overrideSettings(forceNceAndPptc)
         }
-
         var success = KenjinxNative.graphicsInitialize(
             enableMacroHLE = settings.enableMacroHLE,
             enableShaderCache = settings.enableShaderCache,
@@ -126,37 +121,34 @@ class MainViewModel(val activity: MainActivity) {
             backendThreading = org.kenjinx.android.BackendThreading.Auto.ordinal
         )
 
-        if (!success)
+        if(!success)
             return 0
-
         val nativeHelpers = NativeHelpers.instance
         val nativeInterop = NativeGraphicsInterop()
 
         nativeInterop.VkRequiredExtensions = arrayOf("VK_KHR_surface", "VK_KHR_android_surface")
         nativeInterop.VkCreateSurface = nativeHelpers.getCreateSurfacePtr()
         nativeInterop.SurfaceHandle = 0
-
         val driverViewModel = VulkanDriverViewModel(activity)
         val drivers = driverViewModel.getAvailableDrivers()
         var driverHandle = 0L
 
-        if (driverViewModel.selected.isNotEmpty()) {
+        if(driverViewModel.selected.isNotEmpty()) {
             val metaData = drivers.find { it.driverPath == driverViewModel.selected }
 
             metaData?.apply {
                 val privatePath = activity.filesDir
                 val privateDriverPath = privatePath.canonicalPath + "/driver/"
                 val pD = File(privateDriverPath)
-                if (pD.exists())
+                if(pD.exists())
                     pD.deleteRecursively()
 
                 pD.mkdirs()
-
                 val driver = File(driverViewModel.selected)
                 val parent = driver.parentFile
-                if (parent != null) {
-                    for (file in parent.walkTopDown()) {
-                        if (file.absolutePath == parent.absolutePath)
+                if(parent != null) {
+                    for(file in parent.walkTopDown()) {
+                        if(file.absolutePath == parent.absolutePath)
                             continue
                         file.copyTo(File(privateDriverPath + file.name), true)
                     }
@@ -168,9 +160,7 @@ class MainViewModel(val activity: MainActivity) {
                     this.libraryName
                 )
             }
-
         }
-
         val extensions = nativeInterop.VkRequiredExtensions
 
         success = KenjinxNative.graphicsInitializeRenderer(
@@ -178,9 +168,8 @@ class MainViewModel(val activity: MainActivity) {
             extensions.size,
             driverHandle
         )
-        if (!success)
+        if(!success)
             return 0
-
         val semaphore = Semaphore(1, 0)
         runBlocking {
             semaphore.acquire()
@@ -213,20 +202,18 @@ class MainViewModel(val activity: MainActivity) {
             semaphore.release()
         }
 
-        if (!success)
+        if(!success)
             return 0
 
         success = KenjinxNative.deviceLoadDescriptor(descriptor, game.type.ordinal, update)
 
-        return if (success) 1 else 0
+        return if(success) 1 else 0
     }
 
     fun loadMiiEditor(): Boolean {
         gameModel = null
         isMiiEditorLaunched = true
-
         val settings = QuickSettings(activity)
-
         var success = KenjinxNative.graphicsInitialize(
             enableMacroHLE = settings.enableMacroHLE,
             enableShaderCache = settings.enableShaderCache,
@@ -236,38 +223,34 @@ class MainViewModel(val activity: MainActivity) {
             backendThreading = org.kenjinx.android.BackendThreading.Auto.ordinal
         )
 
-        if (!success)
+        if(!success)
             return false
-
         val nativeHelpers = NativeHelpers.instance
         val nativeInterop = NativeGraphicsInterop()
 
         nativeInterop.VkRequiredExtensions = arrayOf("VK_KHR_surface", "VK_KHR_android_surface")
         nativeInterop.VkCreateSurface = nativeHelpers.getCreateSurfacePtr()
         nativeInterop.SurfaceHandle = 0
-
         val driverViewModel = VulkanDriverViewModel(activity)
         val drivers = driverViewModel.getAvailableDrivers()
-
         var driverHandle = 0L
 
-        if (driverViewModel.selected.isNotEmpty()) {
+        if(driverViewModel.selected.isNotEmpty()) {
             val metaData = drivers.find { it.driverPath == driverViewModel.selected }
 
             metaData?.apply {
                 val privatePath = activity.filesDir
                 val privateDriverPath = privatePath.canonicalPath + "/driver/"
                 val pD = File(privateDriverPath)
-                if (pD.exists())
+                if(pD.exists())
                     pD.deleteRecursively()
 
                 pD.mkdirs()
-
                 val driver = File(driverViewModel.selected)
                 val parent = driver.parentFile
-                if (parent != null) {
-                    for (file in parent.walkTopDown()) {
-                        if (file.absolutePath == parent.absolutePath)
+                if(parent != null) {
+                    for(file in parent.walkTopDown()) {
+                        if(file.absolutePath == parent.absolutePath)
                             continue
                         file.copyTo(File(privateDriverPath + file.name), true)
                     }
@@ -279,9 +262,7 @@ class MainViewModel(val activity: MainActivity) {
                     this.libraryName
                 )
             }
-
         }
-
         val extensions = nativeInterop.VkRequiredExtensions
 
         success = KenjinxNative.graphicsInitializeRenderer(
@@ -289,9 +270,8 @@ class MainViewModel(val activity: MainActivity) {
             extensions.size,
             driverHandle
         )
-        if (!success)
+        if(!success)
             return false
-
         val semaphore = Semaphore(1, 0)
         runBlocking {
             semaphore.acquire()
@@ -324,7 +304,7 @@ class MainViewModel(val activity: MainActivity) {
             semaphore.release()
         }
 
-        if (!success)
+        if(!success)
             return false
 
         success = KenjinxNative.deviceLaunchMiiEditor()
@@ -333,38 +313,37 @@ class MainViewModel(val activity: MainActivity) {
     }
 
     fun clearPptcCache(titleId: String) {
-        if (titleId.isNotEmpty()) {
+        if(titleId.isNotEmpty()) {
             val basePath = MainActivity.AppPath + "/games/$titleId/cache/cpu"
-            if (File(basePath).exists()) {
+            if(File(basePath).exists()) {
                 var caches = mutableListOf<String>()
-
                 val mainCache = basePath + "${File.separator}0"
                 File(mainCache).listFiles()?.forEach {
-                    if (it.isFile && it.name.endsWith(".cache"))
+                    if(it.isFile && it.name.endsWith(".cache"))
                         caches.add(it.absolutePath)
                 }
                 val backupCache = basePath + "${File.separator}1"
                 File(backupCache).listFiles()?.forEach {
-                    if (it.isFile && it.name.endsWith(".cache"))
+                    if(it.isFile && it.name.endsWith(".cache"))
                         caches.add(it.absolutePath)
                 }
-                for (path in caches)
+                for(path in caches)
                     File(path).delete()
             }
         }
     }
 
     fun purgeShaderCache(titleId: String) {
-        if (titleId.isNotEmpty()) {
+        if(titleId.isNotEmpty()) {
             val basePath = MainActivity.AppPath + "/games/$titleId/cache/shader"
         }
     }
 
     fun deleteCache(titleId: String) {
         fun deleteDirectory(directory: File) {
-            if (directory.exists() && directory.isDirectory) {
+            if(directory.exists() && directory.isDirectory) {
                 directory.listFiles()?.forEach { file ->
-                    if (file.isDirectory) {
+                    if(file.isDirectory) {
                         deleteDirectory(file)
                     } else {
                         file.delete()
@@ -373,9 +352,9 @@ class MainViewModel(val activity: MainActivity) {
                 directory.delete()
             }
         }
-        if (titleId.isNotEmpty()) {
+        if(titleId.isNotEmpty()) {
             val basePath = MainActivity.AppPath + "/games/$titleId/cache"
-            if (File(basePath).exists()) {
+            if(File(basePath).exists()) {
                 deleteDirectory(File(basePath))
             }
         }
@@ -429,8 +408,13 @@ class MainViewModel(val activity: MainActivity) {
     fun navigateToGame() {
         navController?.navigate("game")
         activity.isGameRunning = true
-        if (QuickSettings(activity).enableMotion)
-            motionSensorManager?.register()
+        if(QuickSettings(activity).enableMotion) {
+            if(QuickSettings(activity).useControllerSensor) {
+                gamepadManager?.startSendSensor()
+            } else {
+                motionSensorManager?.register()
+            }
+        }
     }
 
     fun setProgressStates(

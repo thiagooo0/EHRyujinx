@@ -76,7 +76,8 @@ class SettingsViewModel(val activity: MainActivity) {
         enableDebugLogs: MutableState<Boolean>,
         enableGraphicsLogs: MutableState<Boolean>,
         systemLanguage: MutableState<SystemLanguage>,
-        regionCode: MutableState<RegionCode>
+        regionCode: MutableState<RegionCode>,
+        useControllerSensor : MutableState<Boolean>
     ) {
         memoryManagerMode.value = MemoryManagerMode.entries.toTypedArray()[sharedPref.getInt("memoryManagerMode", MemoryManagerMode.HostMappedUnsafe.ordinal)]
         useNce.value = sharedPref.getBoolean("useNce", false)
@@ -110,6 +111,7 @@ class SettingsViewModel(val activity: MainActivity) {
         enableTraceLogs.value = sharedPref.getBoolean("enableTraceLogs", false)
         enableDebugLogs.value = sharedPref.getBoolean("enableDebugLogs", false)
         enableGraphicsLogs.value = sharedPref.getBoolean("enableGraphicsLogs", false)
+        useControllerSensor.value = sharedPref.getBoolean("useControllerSensor", false)
 
         // Load language/region (strings, fallback to defaults, then .valueOf)
         val langName = sharedPref.getString("system_language", "AmericanEnglish") ?: "AmericanEnglish"
@@ -152,7 +154,8 @@ class SettingsViewModel(val activity: MainActivity) {
         enableDebugLogs: MutableState<Boolean>,
         enableGraphicsLogs: MutableState<Boolean>,
         systemLanguage: MutableState<SystemLanguage>,
-        regionCode: MutableState<RegionCode>
+        regionCode: MutableState<RegionCode>,
+        useControllerSensor : MutableState<Boolean>
     ) {
         sharedPref.edit {
 
@@ -188,6 +191,7 @@ class SettingsViewModel(val activity: MainActivity) {
             putBoolean("enableTraceLogs", enableTraceLogs.value)
             putBoolean("enableDebugLogs", enableDebugLogs.value)
             putBoolean("enableGraphicsLogs", enableGraphicsLogs.value)
+            putBoolean("useControllerSensor", useControllerSensor.value)
 
             // Save language/region as string (enum name)
             putString("system_language", systemLanguage.value.name)

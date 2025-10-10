@@ -119,6 +119,7 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
 
         val id = mainViewModel.physicalControllerManager?.connect()
         mainViewModel.motionSensorManager?.setControllerId(id ?: -1)
+        mainViewModel.gamepadManager?.setControllerId(id ?: -1)
 
         // No initial "flip" special case: we give the real rotation downwards
         val currentRot = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

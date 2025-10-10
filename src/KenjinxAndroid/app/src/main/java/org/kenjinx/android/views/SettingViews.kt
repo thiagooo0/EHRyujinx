@@ -141,6 +141,7 @@ class SettingViews {
             val enableDebugLogs = remember { mutableStateOf(true) }
             val enableGraphicsLogs = remember { mutableStateOf(true) }
             val isNavigating = remember { mutableStateOf(false) }
+            val useControllerSensor = remember { mutableStateOf(false) }
 
             // Load orientation from QuickSettings
             val orientationPref = remember {
@@ -194,7 +195,8 @@ class SettingViews {
                     enableDebugLogs,
                     enableGraphicsLogs,
                     systemLanguage,
-                    regionCode
+                    regionCode,
+                    useControllerSensor
                 )
                 loaded.value = true
             }
@@ -240,7 +242,8 @@ class SettingViews {
                                     enableDebugLogs,
                                     enableGraphicsLogs,
                                     systemLanguage,
-                                    regionCode
+                                    regionCode,
+                                    useControllerSensor
                                 )
 
                                 if (!isNavigating.value) {
@@ -1269,6 +1272,7 @@ class SettingViews {
 
                             enableDocked.SwitchSelector(label = "Docked Mode")
                             enableMotion.SwitchSelector(label = "Motion Sensor")
+                            useControllerSensor.SwitchSelector(label = "Use Controller Motion Sensor")
                         }
                     }
                     ExpandableView(onCardArrowClick = { }, title = "System", icon = Icons.Outlined.Settings) {

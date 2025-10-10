@@ -51,6 +51,7 @@ class QuickSettings(val activity: Activity) {
     var isGrid: Boolean
     var useSwitchLayout: Boolean
     var enableMotion: Boolean
+    var useControllerSensor: Boolean
     var enablePerformanceMode: Boolean
     var controllerStickSensitivity: Float
     var enableStubLogs: Boolean
@@ -97,6 +98,7 @@ class QuickSettings(val activity: Activity) {
         isGrid = sharedPref.getBoolean("isGrid", true)
         useSwitchLayout = sharedPref.getBoolean("useSwitchLayout", true)
         enableMotion = sharedPref.getBoolean("enableMotion", true)
+        useControllerSensor = sharedPref.getBoolean("useControllerSensor", false)
         enablePerformanceMode = sharedPref.getBoolean("enablePerformanceMode", true)
         controllerStickSensitivity = sharedPref.getFloat("controllerStickSensitivity", 1.0f)
         enableStubLogs = sharedPref.getBoolean("enableStubLogs", false)
@@ -140,6 +142,7 @@ class QuickSettings(val activity: Activity) {
             putBoolean("isGrid", isGrid)
             putBoolean("useSwitchLayout", useSwitchLayout)
             putBoolean("enableMotion", enableMotion)
+            putBoolean("useControllerSensor", useControllerSensor)
             putBoolean("enablePerformanceMode", enablePerformanceMode)
             putFloat("controllerStickSensitivity", controllerStickSensitivity)
             putBoolean("enableStubLogs", enableStubLogs)

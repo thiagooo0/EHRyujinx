@@ -9,11 +9,11 @@ android {
 
     defaultConfig {
         applicationId "org.kenjinx.android"
-        minSdk 29
+        minSdk 30
         //noinspection EditedTargetSdkVersion
         targetSdk 36
-        versionCode 20005
-        versionName '2.0.5'
+        versionCode 20006
+        versionName '2.0.6'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -34,7 +34,20 @@ android {
             }
         }
     }
-
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("switchEmu.jks")
+            storePassword = "ehangghost"
+            keyAlias = "key"
+            keyPassword = "ehangghost"
+        }
+        create("release") {
+            storeFile = file("switchEmu.jks")
+            storePassword = "ehangghost"
+            keyAlias = "key"
+            keyPassword = "ehangghost"
+        }
+    }
     buildTypes {
         release {
             postprocessing {
