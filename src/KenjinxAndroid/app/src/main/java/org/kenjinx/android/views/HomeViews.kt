@@ -663,7 +663,7 @@ class HomeViews {
                         else NotAvailableIcon()
                     } else NotAvailableIcon()
                     Text(
-                        text = gameModel.titleName ?: "N/A",
+                        text = gameModel.titleName.takeIf { it != null && it != "Unknown" } ?: stringResource(R.string.unknown),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
