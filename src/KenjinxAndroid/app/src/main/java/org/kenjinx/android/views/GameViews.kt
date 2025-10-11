@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.stringResource
 import compose.icons.CssGgIcons
 import compose.icons.cssggicons.ToolbarBottom
 import org.kenjinx.android.GameController
@@ -47,6 +48,7 @@ import org.kenjinx.android.viewmodels.QuickSettings
 import org.kenjinx.android.viewmodels.VSyncMode
 import org.kenjinx.android.widgets.SimpleAlertDialog
 import java.util.Locale
+import org.kenjinx.android.R
 import kotlin.math.roundToInt
 
 class GameViews {
@@ -267,10 +269,10 @@ class GameViews {
 
                 SimpleAlertDialog.Confirmation(
                     showDialog = showBackNotice,
-                    title = "Exit Game",
-                    message = "Are you sure you want to exit the game? All unsaved data will be lost!",
-                    confirmText = "Exit Game",
-                    dismissText = "Dismiss",
+                    title = stringResource(R.string.exit_game),
+                    message = stringResource(R.string.exit_game_tip),
+                    confirmText = stringResource(R.string.exit_game),
+                    dismissText = stringResource(R.string.exit_game_cancel),
                     onConfirm = {
                         mainViewModel.closeGame()
                         mainViewModel.navController?.popBackStack()

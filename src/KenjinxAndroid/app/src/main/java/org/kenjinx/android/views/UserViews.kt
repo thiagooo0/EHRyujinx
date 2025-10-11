@@ -35,7 +35,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import org.kenjinx.android.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -62,7 +64,7 @@ class UserViews {
                 modifier = Modifier.fillMaxSize(),
                 topBar = {
                     TopAppBar(title = {
-                        Text(text = "Users")
+                        Text(text = stringResource(R.string.users))
                     },
                         navigationIcon = {
                             IconButton(onClick = {
@@ -91,7 +93,7 @@ class UserViews {
                             .padding(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(text = "Selected user")
+                        Text(text = stringResource(R.string.selected_user))
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -127,7 +129,7 @@ class UserViews {
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(text = "Available Users")
+                            Text(text = stringResource(R.string.available_users))
                             IconButton(onClick = {
                                 refresh()
                             }) {

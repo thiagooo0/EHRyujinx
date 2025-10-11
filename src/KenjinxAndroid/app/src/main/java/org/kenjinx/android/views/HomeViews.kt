@@ -68,6 +68,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -123,19 +124,16 @@ class HomeViews {
             var refreshUser by remember { mutableStateOf(true) }
             var isFabVisible by remember { mutableStateOf(true) }
             val isNavigating = remember { mutableStateOf(false) }
-
             val context = LocalContext.current
-
             val nestedScrollConnection = remember {
-                object : NestedScrollConnection {
+                object: NestedScrollConnection {
                     override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                        if (available.y < -1) isFabVisible = false
-                        if (available.y > 1) isFabVisible = true
+                        if(available.y < -1) isFabVisible = false
+                        if(available.y > 1) isFabVisible = true
                         return Offset.Zero
                     }
                 }
             }
-
             // --- Box around scaffold so we can overlay the badge
             Box(Modifier.fillMaxSize()) {
                 Scaffold(
@@ -160,7 +158,7 @@ class HomeViews {
                                         .size(56.dp)
                                         .clip(RoundedCornerShape(8.dp))
                                         .background(
-                                            if (refreshUser && viewModel.mainViewModel?.userViewModel?.openedUser?.userPicture?.isNotEmpty() == true) {
+                                            if(refreshUser && viewModel.mainViewModel?.userViewModel?.openedUser?.userPicture?.isNotEmpty() == true) {
                                                 Color.Transparent
                                             } else {
                                                 MaterialTheme.colorScheme.surface
@@ -172,10 +170,10 @@ class HomeViews {
                                             shape = RoundedCornerShape(8.dp)
                                         )
                                         .clickable {
-                                            if (!isNavigating.value) {
+                                            if(!isNavigating.value) {
                                                 isNavigating.value = true
                                                 val currentRoute = navController?.currentDestination?.route
-                                                if (currentRoute != "user") {
+                                                if(currentRoute != "user") {
                                                     navController?.navigate("user") {
                                                         launchSingleTop = true
                                                         restoreState = true
@@ -189,7 +187,7 @@ class HomeViews {
                                         },
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    if (refreshUser && viewModel.mainViewModel?.userViewModel?.openedUser?.userPicture?.isNotEmpty() == true) {
+                                    if(refreshUser && viewModel.mainViewModel?.userViewModel?.openedUser?.userPicture?.isNotEmpty() == true) {
                                         val pic = viewModel.mainViewModel.userViewModel.openedUser.userPicture
                                         Image(
                                             bitmap = BitmapFactory.decodeByteArray(
@@ -210,14 +208,13 @@ class HomeViews {
                                         )
                                     }
                                 }
-
                                 // Settings
                                 IconButton(
                                     onClick = {
-                                        if (!isNavigating.value) {
+                                        if(!isNavigating.value) {
                                             isNavigating.value = true
                                             val currentRoute = navController?.currentDestination?.route
-                                            if (currentRoute != "settings") {
+                                            if(currentRoute != "settings") {
                                                 navController?.navigate("settings") {
                                                     launchSingleTop = true
                                                     restoreState = true
@@ -240,8 +237,7 @@ class HomeViews {
                                 ) {
                                     Icon(Icons.Filled.Settings, contentDescription = "Settings")
                                 }
-
-                        }
+                            }
 
                             OutlinedTextField(
                                 value = query.value,
@@ -250,19 +246,19 @@ class HomeViews {
                                     .weight(1f)
                                     .height(56.dp),
                                 placeholder = {
-                                    Text("Search...", modifier = Modifier.padding(bottom = 4.dp))
+                                    Text(stringResource(R.string.search_hint))
                                 },
                                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Search") },
                                 singleLine = true,
                                 shape = RoundedCornerShape(8.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                        focusedContainerColor = Color.Transparent,
-                                        unfocusedContainerColor = Color.Transparent,
-                                        disabledContainerColor = Color.Transparent,
-                                        errorContainerColor = Color.Transparent,
-                                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                                    )
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    disabledContainerColor = Color.Transparent,
+                                    errorContainerColor = Color.Transparent,
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                )
                             )
                         }
                     },
@@ -289,9 +285,9 @@ class HomeViews {
 
                             viewModel.filter(query.value)
 
-                            if (!isPreview) {
+                            if(!isPreview) {
                                 val settings = QuickSettings(viewModel.activity!!)
-                                if (isLoading.value) {
+                                if(isLoading.value) {
                                     Box(modifier = Modifier.fillMaxSize()) {
                                         CircularProgressIndicator(
                                             modifier = Modifier
@@ -302,7 +298,7 @@ class HomeViews {
                                         )
                                     }
                                 } else {
-                                    if (settings.isGrid) {
+                                    if(settings.isGrid) {
                                         val size = GridImageSize / Resources.getSystem().displayMetrics.density
                                         LazyVerticalGrid(
                                             columns = GridCells.Adaptive(minSize = (size + 4).dp),
@@ -314,7 +310,7 @@ class HomeViews {
                                         ) {
                                             items(list) {
                                                 it.titleName?.apply {
-                                                    if (this.isNotEmpty() && (query.value.trim()
+                                                    if(this.isNotEmpty() && (query.value.trim()
                                                             .isEmpty() || this.lowercase(Locale.getDefault())
                                                             .contains(query.value))) {
                                                         GridGameItem(
@@ -333,7 +329,7 @@ class HomeViews {
                                         LazyColumn(Modifier.fillMaxSize()) {
                                             items(list) {
                                                 it.titleName?.apply {
-                                                    if (this.isNotEmpty() && (query.value.trim()
+                                                    if(this.isNotEmpty() && (query.value.trim()
                                                             .isEmpty() || this.lowercase(Locale.getDefault())
                                                             .contains(query.value))) {
                                                         Box(modifier = Modifier.animateItem()) {
@@ -377,9 +373,9 @@ class HomeViews {
                     }
                 }
 
-                if (viewModel.mainViewModel?.loadGameModel?.value != null)
+                if(viewModel.mainViewModel?.loadGameModel?.value != null)
                     LaunchedEffect(viewModel.mainViewModel.loadGameModel.value) {
-                        if (viewModel.mainViewModel.bootPath.value ==
+                        if(viewModel.mainViewModel.bootPath.value ==
                             "gameItem_${viewModel.mainViewModel.loadGameModel.value!!.titleName}"
                         ) {
                             viewModel.mainViewModel.bootPath.value = null
@@ -391,13 +387,14 @@ class HomeViews {
                                     true,
                                     viewModel.mainViewModel.forceNceAndPptc.value
                                 )
-                                if (success == 1) {
+                                if(success == 1) {
                                     launchOnUiThread {
                                         viewModel.mainViewModel.navigateToGame()
                                     }
                                 } else {
-                                    if (success == -2)
-                                        showError.value = "Error loading update. Please re-add update file"
+                                    if(success == -2)
+                                        showError.value = viewModel.activity?.getString(R.string.error_loading_update)
+                                            ?: "Error loading update. Please re-add update file"
                                     viewModel.mainViewModel.loadGameModel.value!!.close()
                                 }
                                 showLoading.value = false
@@ -405,29 +402,29 @@ class HomeViews {
                         }
                     }
 
-                if (showAppActions.value)
+                if(showAppActions.value)
                     ModalBottomSheet(
                         content = {
                             Row(
                                 modifier = Modifier.padding(8.dp),
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
-                                if (showAppActions.value) {
+                                if(showAppActions.value) {
                                     IconButton(onClick = {
-                                        if (viewModel.mainViewModel?.selected != null) {
+                                        if(viewModel.mainViewModel?.selected != null) {
                                             thread {
                                                 showLoading.value = true
                                                 val success = viewModel.mainViewModel.loadGame(
                                                     viewModel.mainViewModel.selected!!
                                                 )
-                                                if (success == 1) {
+                                                if(success == 1) {
                                                     launchOnUiThread {
                                                         viewModel.mainViewModel.navigateToGame()
                                                     }
                                                 } else {
-                                                    if (success == -2)
-                                                        showError.value =
-                                                            "Error loading update. Please re-add update file"
+                                                    if(success == -2)
+                                                        showError.value = viewModel.activity?.getString(R.string.error_loading_update)
+                                                            ?: "Error loading update. Please re-add update file"
                                                     viewModel.mainViewModel.selected!!.close()
                                                 }
                                                 showLoading.value = false
@@ -449,7 +446,7 @@ class HomeViews {
                                             onDismissRequest = { showAppMenu.value = false }
                                         ) {
                                             DropdownMenuItem(
-                                                text = { Text(text = "Clear PPTC Cache") },
+                                                text = { Text(text = stringResource(R.string.clean_pptc_cache)) },
                                                 onClick = {
                                                     showAppMenu.value = false
                                                     viewModel.mainViewModel?.clearPptcCache(
@@ -458,7 +455,7 @@ class HomeViews {
                                                 }
                                             )
                                             DropdownMenuItem(
-                                                text = { Text(text = "Purge Shader Cache") },
+                                                text = { Text(text = stringResource(R.string.purge_shader_cache)) },
                                                 onClick = {
                                                     showAppMenu.value = false
                                                     viewModel.mainViewModel?.purgeShaderCache(
@@ -467,7 +464,7 @@ class HomeViews {
                                                 }
                                             )
                                             DropdownMenuItem(
-                                                text = { Text(text = "Delete All Cache") },
+                                                text = { Text(text = stringResource(R.string.delete_all_cache)) },
                                                 onClick = {
                                                     showAppMenu.value = false
                                                     viewModel.mainViewModel?.deleteCache(
@@ -476,14 +473,14 @@ class HomeViews {
                                                 }
                                             )
                                             DropdownMenuItem(
-                                                text = { Text(text = "Manage Updates") },
+                                                text = { Text(text = stringResource(R.string.manage_updates)) },
                                                 onClick = {
                                                     showAppMenu.value = false
                                                     openTitleUpdateDialog.value = true
                                                 }
                                             )
                                             DropdownMenuItem(
-                                                text = { Text(text = "Manage DLC") },
+                                                text = { Text(text = stringResource(R.string.manage_dlc)) },
                                                 onClick = {
                                                     showAppMenu.value = false
                                                     openDlcDialog.value = true
@@ -499,7 +496,6 @@ class HomeViews {
                             selectedModel.value = null
                         }
                     )
-
                 // --- Version badge bottom left above the entire content
                 VersionBadge(
                     modifier = Modifier.align(Alignment.BottomStart)
@@ -519,8 +515,7 @@ class HomeViews {
         ) {
             remember { selectedModel }
             val color =
-                if (selectedModel.value == gameModel) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
-
+                if(selectedModel.value == gameModel) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
             val decoder = Base64.getDecoder()
             Surface(
                 shape = MaterialTheme.shapes.medium,
@@ -530,23 +525,23 @@ class HomeViews {
                     .padding(8.dp)
                     .combinedClickable(
                         onClick = {
-                            if (viewModel.mainViewModel?.selected != null) {
+                            if(viewModel.mainViewModel?.selected != null) {
                                 showAppActions.value = false
                                 viewModel.mainViewModel.apply { selected = null }
                                 selectedModel.value = null
-                            } else if (gameModel.titleId.isNullOrEmpty()
+                            } else if(gameModel.titleId.isNullOrEmpty()
                                 || gameModel.titleId != "0000000000000000"
                                 || gameModel.type == FileType.Nro
                             ) {
                                 thread {
                                     showLoading.value = true
                                     val success = viewModel.mainViewModel?.loadGame(gameModel) ?: false
-                                    if (success == 1) {
+                                    if(success == 1) {
                                         launchOnUiThread { viewModel.mainViewModel?.navigateToGame() }
                                     } else {
-                                        if (success == -2)
-                                            showError.value =
-                                                "Error loading update. Please re-add update file"
+                                        if(success == -2)
+                                            showError.value = viewModel.activity?.getString(R.string.error_loading_update)
+                                                ?: "Error loading update. Please re-add update file"
                                         gameModel.close()
                                     }
                                     showLoading.value = false
@@ -567,10 +562,10 @@ class HomeViews {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row {
-                        if (!gameModel.titleId.isNullOrEmpty()
+                        if(!gameModel.titleId.isNullOrEmpty()
                             && (gameModel.titleId != "0000000000000000" || gameModel.type == FileType.Nro)
                         ) {
-                            if (gameModel.icon?.isNotEmpty() == true) {
+                            if(gameModel.icon?.isNotEmpty() == true) {
                                 val pic = decoder.decode(gameModel.icon)
                                 val size = ListImageSize / Resources.getSystem().displayMetrics.density
                                 Image(
@@ -581,7 +576,7 @@ class HomeViews {
                                         .width(size.roundToInt().dp)
                                         .height(size.roundToInt().dp)
                                 )
-                            } else if (gameModel.type == FileType.Nro) NROIcon()
+                            } else if(gameModel.type == FileType.Nro) NROIcon()
                             else NotAvailableIcon()
                         } else NotAvailableIcon()
                         Column {
@@ -610,8 +605,7 @@ class HomeViews {
         ) {
             remember { selectedModel }
             val color =
-                if (selectedModel.value == gameModel) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
-
+                if(selectedModel.value == gameModel) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
             val decoder = Base64.getDecoder()
             Surface(
                 shape = MaterialTheme.shapes.medium,
@@ -621,23 +615,23 @@ class HomeViews {
                     .padding(8.dp)
                     .combinedClickable(
                         onClick = {
-                            if (viewModel.mainViewModel?.selected != null) {
+                            if(viewModel.mainViewModel?.selected != null) {
                                 showAppActions.value = false
                                 viewModel.mainViewModel.apply { selected = null }
                                 selectedModel.value = null
-                            } else if (gameModel.titleId.isNullOrEmpty()
+                            } else if(gameModel.titleId.isNullOrEmpty()
                                 || gameModel.titleId != "0000000000000000"
                                 || gameModel.type == FileType.Nro
                             ) {
                                 thread {
                                     showLoading.value = true
                                     val success = viewModel.mainViewModel?.loadGame(gameModel) ?: false
-                                    if (success == 1) {
+                                    if(success == 1) {
                                         launchOnUiThread { viewModel.mainViewModel?.navigateToGame() }
                                     } else {
-                                        if (success == -2)
-                                            showError.value =
-                                                "Error loading update. Please re-add update file"
+                                        if(success == -2)
+                                            showError.value = viewModel.activity?.getString(R.string.error_loading_update)
+                                                ?: "Error loading update. Please re-add update file"
                                         gameModel.close()
                                     }
                                     showLoading.value = false
@@ -652,10 +646,10 @@ class HomeViews {
                     )
             ) {
                 Column(modifier = Modifier.padding(4.dp)) {
-                    if (!gameModel.titleId.isNullOrEmpty()
+                    if(!gameModel.titleId.isNullOrEmpty()
                         && (gameModel.titleId != "0000000000000000" || gameModel.type == FileType.Nro)
                     ) {
-                        if (gameModel.icon?.isNotEmpty() == true) {
+                        if(gameModel.icon?.isNotEmpty() == true) {
                             val pic = decoder.decode(gameModel.icon)
                             Image(
                                 bitmap = BitmapFactory.decodeByteArray(pic, 0, pic.size).asImageBitmap(),
@@ -665,7 +659,7 @@ class HomeViews {
                                     .clip(RoundedCornerShape(16.dp))
                                     .align(Alignment.CenterHorizontally)
                             )
-                        } else if (gameModel.type == FileType.Nro) NROIcon()
+                        } else if(gameModel.type == FileType.Nro) NROIcon()
                         else NotAvailableIcon()
                     } else NotAvailableIcon()
                     Text(

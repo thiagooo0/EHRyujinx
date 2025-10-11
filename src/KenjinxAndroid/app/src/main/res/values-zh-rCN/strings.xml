@@ -1,0 +1,160 @@
+<resources>
+    <string name="app_name">Switch模拟器</string>
+
+    <!--  Home  -->
+    <string name="search_hint">搜索...</string>
+    <string name="clean_pptc_cache">清除预编译代码缓存</string>
+    <string name="purge_shader_cache">清除着色器缓存</string>
+    <string name="delete_all_cache">清除全部缓存</string>
+    <string name="manage_updates">管理更新</string>
+    <string name="manage_dlc">管理DLC</string>
+    <string name="error_loading_update">加载更新时出错。请重新添加更新文件。</string>
+
+    <!--  User  -->
+    <string name="users">用户列表</string>
+    <string name="selected_user">选定用户</string>
+    <string name="available_users">可选用户</string>
+
+    <!--  Game  -->
+    <string name="exit_game">退出游戏</string>
+    <string name="exit_game_cancel">取消</string>
+    <string name="exit_game_tip">确定要退出游戏吗？未保存的数据将会丢失！</string>
+
+    <!--  Settings  -->
+    <string name="settings">设置</string>
+
+    <string name="settings_user_interface">用户界面</string>
+    <string name="overlay_transparency">界面叠加透明度</string>
+    <string name="use_grid">网格布局</string>
+    <string name="system_firmware">系统固件</string>
+    <string name="install_keys">安装密钥</string>
+    <string name="install_firmware">安装固件</string>
+    <string name="add_game_folder">添加游戏文件夹</string>
+    <string name="reinit_app_data">重新初始化应用数据</string>
+    <string name="import_app_data">导入应用数据</string>
+    <string name="open_app_folder">打开应用文件夹</string>
+    <string name="key_installation">密钥安装</string>
+    <string name="select_key_file">请选择一个密钥文件进行安装。</string>
+    <string name="select_file">选择文件</string>
+    <string name="confirm_install_key">是否安装选中的密钥文件？</string>
+    <string name="installing_key_file">正在安装密钥文件……</string>
+    <string name="key_file_installed">密钥文件已安装。</string>
+    <string name="unknown_error_occurred">发生未知错误，请检查日志。</string>
+    <string name="file_type_not_supported">不支持的文件类型。</string>
+    <string name="firmware_installation">固件安装</string>
+    <string name="select_firmware_file">选择一个 zip 或 xci 文件以安装固件。</string>
+    <string name="confirm_install_firmware">固件 %s 将被安装，是否继续？</string>
+    <string name="verifying_selected_file">正在验证所选文件……</string>
+    <string name="installing_firmware">正在安装固件 %s……</string>
+    <string name="firmware_version_display">固件版本：%s</string>
+    <string name="version_not_found_in_file">无法在所选文件中找到版本信息。</string>
+    <string name="app_data_reinit">重新初始化应用数据</string>
+    <string name="confirm_reinit_app_data">当前的 bis、游戏、配置和系统文件夹将被重置，是否继续？</string>
+    <string name="resetting_app_data">正在重置应用数据……</string>
+    <string name="data_reset_completed">应用数据重置成功。</string>
+    <string name="app_data_import">导入应用数据</string>
+    <string name="select_import_file">选择一个 zip 文件，从其他 Android 安装中导入 bis、游戏、配置文件和系统文件夹。</string>
+    <string name="confirm_import_app_data">当前应用数据将被清除并替换。是否继续？</string>
+    <string name="importing_app_data">正在导入应用数据……</string>
+    <string name="data_import_completed">应用数据导入成功。</string>
+
+    <string name="settings_input">控制器</string>
+    <string name="use_virtual_controller">使用虚拟控制器</string>
+    <string name="use_switch_controller_layout">使用 Switch 控制器布局</string>
+    <string name="controller_stick_sensitivity">摇杆灵敏度</string>
+    <string name="docked_mode">底座模式</string>
+    <string name="motion_sensor">手柄运动传感器</string>
+    <string name="use_controller_motion_sensor">使用手柄运动传感器</string>
+
+    <string name="system">系统</string>
+    <string name="fs_integrity_check">文件系统完整性检查</string>
+    <string name="ignore_missing_services">忽略缺失的服务</string>
+    <string name="performance_mode">性能模式</string>
+
+    <string name="settings_cpu">中央处理器</string>
+    <string name="nce">NCE（原生代码执行）</string>
+    <string name="pptc">PPTC（预编译代码缓存）</string>
+    <string name="low_power_pptc">低功耗PPTC模式</string>
+    <string name="jit_cache_eviction">JIT缓存回收</string>
+
+    <string name="graphics">图形</string>
+    <string name="shader_cache">着色器缓存</string>
+    <string name="texture_recompression">纹理重压缩</string>
+    <string name="macro_hle">宏指令 HLE</string>
+    <string name="stretch_to_fullscreen">拉伸至全屏</string>
+    <string name="install_driver">安装驱动</string>
+
+    <string name="logging">日志</string>
+    <string name="stub_logs">桩函数日志</string>
+    <string name="info_logs">信息日志</string>
+    <string name="warning_logs">警告日志</string>
+    <string name="error_logs">错误日志</string>
+    <string name="guest_logs">游戏端日志</string>
+    <string name="trace_logs">跟踪日志</string>
+    <string name="fs_access_logs">文件访问日志</string>
+    <string name="debug_logs">调试日志</string>
+    <string name="graphics_logs">图形日志</string>
+    <string name="send_logs">发送日志</string>
+
+    <string name="screen_orientation">屏幕方向</string>
+    <string name="orientation_sensor">自动旋转（跟随传感器）</string>
+    <string name="orientation_sensor_landscape">强制横屏</string>
+    <string name="orientation_sensor_portrait">强制竖屏</string>
+
+    <string name="memory_manager_mode">内存管理模式</string>
+    <string name="memory_mode_software">软件模式</string>
+    <string name="memory_mode_host_fast">主机模式（快速）</string>
+    <string name="memory_mode_host_unchecked">主机模式（无检查，最快但不安全）</string>
+
+    <string name="vsync">垂直同步</string>
+    <string name="vsync_switch">Switch模式</string>
+    <string name="vsync_unbounded">无限制</string>
+    <string name="dram_size">系统内存大小</string>
+    <string name="resolution_scale">分辨率缩放</string>
+    <string name="anisotropic_filtering">各向异性过滤</string>
+    <string name="fs_global_access_log_mode">全局文件访问日志模式</string>
+
+    <string name="overlay_menu_position">叠加菜单位置</string>
+    <string name="overlay_menu_position_bottom_middle">底部居中</string>
+    <string name="overlay_menu_position_bottom_left">底部左侧</string>
+    <string name="overlay_menu_position_bottom_right">底部右侧</string>
+    <string name="overlay_menu_position_top_middle">顶部居中</string>
+    <string name="overlay_menu_position_top_left">顶部左侧</string>
+    <string name="overlay_menu_position_top_right">顶部右侧</string>
+
+    <!--  Region And Language  -->
+    <string name="system_language">系统语言</string>
+    <string name="language_japanese">日语</string>
+    <string name="language_english_us">英语（美国）</string>
+    <string name="language_french">法语</string>
+    <string name="language_german">德语</string>
+    <string name="language_italian">意大利语</string>
+    <string name="language_spanish_eu">西班牙语（欧洲）</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_korean">韩语</string>
+    <string name="language_dutch">荷兰语</string>
+    <string name="language_portuguese_eu">葡萄牙语（欧洲）</string>
+    <string name="language_russian">俄语</string>
+    <string name="language_chinese_taiwan">中文（台湾）</string>
+    <string name="language_english_uk">英语（英国）</string>
+    <string name="language_french_canada">法语（加拿大）</string>
+    <string name="language_spanish_latam">西班牙语（拉丁美洲）</string>
+    <string name="language_chinese_simplified">中文（简体）</string>
+    <string name="language_chinese_traditional">中文（繁体）</string>
+    <string name="language_portuguese_brazil">葡萄牙语（巴西）</string>
+    <string name="region">地区</string>
+    <string name="region_japan">日本</string>
+    <string name="region_usa">美国</string>
+    <string name="region_europe">欧洲</string>
+    <string name="region_australia">澳大利亚</string>
+    <string name="region_china">中国</string>
+    <string name="region_korea">韩国</string>
+    <string name="region_taiwan">台湾</string>
+
+    <!--  Common  -->
+    <string name="loading">加载中</string>
+    <string name="confirm_yes">是</string>
+    <string name="confirm_no">否</string>
+    <string name="cancel">取消</string>
+    <string name="close">关闭</string>
+</resources>

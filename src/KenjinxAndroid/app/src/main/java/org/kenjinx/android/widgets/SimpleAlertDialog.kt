@@ -22,25 +22,26 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import org.kenjinx.android.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 object SimpleAlertDialog {
-
     @Composable
     fun Loading(
         showDialog: MutableState<Boolean>,
-        title: String = "Loading",
+        title: String = stringResource(R.string.loading),
         isDeterminate: Boolean = false,
         progress: Float = 0f,
         widthFraction: Float = 0.6f,
         onDismissRequest: (() -> Unit)? = null
     ) {
         val screenWidth = LocalConfiguration.current.screenWidthDp
-        if (showDialog.value) {
+        if(showDialog.value) {
             Dialog(
                 onDismissRequest = {
                     onDismissRequest?.invoke() ?: run { showDialog.value = false }
@@ -71,7 +72,7 @@ object SimpleAlertDialog {
                                 textAlign = TextAlign.Center
                             )
 
-                            if (isDeterminate) {
+                            if(isDeterminate) {
                                 LinearProgressIndicator(
                                     progress = { progress },
                                     modifier = Modifier
@@ -97,14 +98,14 @@ object SimpleAlertDialog {
         showDialog: MutableState<Boolean>,
         title: String,
         message: String,
-        confirmText: String = "Yes",
-        dismissText: String = "No",
+        confirmText: String = stringResource(R.string.confirm_yes),
+        dismissText: String = stringResource(R.string.confirm_no),
         widthFraction: Float = 0.6f,
         onConfirm: () -> Unit,
         onDismiss: () -> Unit = { showDialog.value = false }
     ) {
         val screenWidth = LocalConfiguration.current.screenWidthDp
-        if (showDialog.value) {
+        if(showDialog.value) {
             Dialog(
                 onDismissRequest = { showDialog.value = false },
                 properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -185,7 +186,7 @@ object SimpleAlertDialog {
         content: @Composable () -> Unit
     ) {
         val screenWidth = LocalConfiguration.current.screenWidthDp
-        if (showDialog.value) {
+        if(showDialog.value) {
             Dialog(
                 onDismissRequest = onDismissRequest,
                 properties = properties
@@ -220,7 +221,7 @@ object SimpleAlertDialog {
             showDialog = showDialog,
             title = progressText,
             isDeterminate = isDeterminate,
-            progress = if (isDeterminate) progressValue else 0f,
+            progress = if(isDeterminate) progressValue else 0f,
             onDismissRequest = null
         )
     }

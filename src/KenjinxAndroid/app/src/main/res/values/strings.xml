@@ -1,3 +1,154 @@
 <resources>
-    <string name="app_name">Switch模拟器</string>
+    <string name="app_name">SwitchEmulator</string>
+
+    <!--  Home  -->
+    <string name="search_hint">Search...</string>
+    <string name="clean_pptc_cache">Clear PPTC Cache</string>
+    <string name="purge_shader_cache">Purge Shader Cache</string>
+    <string name="delete_all_cache">Delete All Cache</string>
+    <string name="manage_updates">Manage Updates</string>
+    <string name="manage_dlc">Manage DLC</string>
+    <string name="error_loading_update">Error loading update. Please re-add update file</string>
+
+    <!--  User  -->
+    <string name="users">Users</string>
+    <string name="selected_user">Selected user</string>
+    <string name="available_users">Available Users</string>
+
+    <!--  Game  -->
+    <string name="exit_game">Exit Game</string>
+    <string name="exit_game_cancel">Dismiss</string>
+    <string name="exit_game_tip">Are you sure you want to exit the game? All unsaved data will be lost!</string>
+
+    <!--  Settings  -->
+    <string name="settings">Settings</string>
+
+    <string name="settings_user_interface">User Interface</string>
+    <string name="overlay_transparency">Overlay transparency</string>
+    <string name="use_grid">Use Grid</string>
+    <string name="system_firmware">System Firmware</string>
+    <string name="install_keys">Install Keys</string>
+    <string name="install_firmware">Install Firmware</string>
+    <string name="add_game_folder">Add Game Folder</string>
+    <string name="reinit_app_data">Reinit App Data</string>
+    <string name="import_app_data">Import App Data</string>
+    <string name="open_app_folder">Open App Folder</string>
+    <string name="key_installation">Key Installation</string>
+    <string name="select_key_file">Select a key file to install key from.</string>
+    <string name="select_file">Select File</string>
+    <string name="confirm_install_key">Key file will be installed. Do you want to continue?</string>
+    <string name="installing_key_file">Installing key file...</string>
+    <string name="key_file_installed">Key file installed.</string>
+    <string name="unknown_error_occurred">Unknown Error has occurred. Please check logs.</string>
+    <string name="file_type_not_supported">File type is not supported.</string>
+    <string name="firmware_installation">Firmware Installation</string>
+    <string name="select_firmware_file">Select a zip or xci file to install firmware from.</string>
+    <string name="confirm_install_firmware">Firmware %s will be installed. Do you want to continue?</string>
+    <string name="verifying_selected_file">Verifying selected file...</string>
+    <string name="installing_firmware">Installing firmware %s...</string>
+    <string name="firmware_version_display">Firmware: %s</string>
+    <string name="version_not_found_in_file">Unable to find version in selected file.</string>
+    <string name="app_data_reinit">App Data Reinit</string>
+    <string name="confirm_reinit_app_data">Current bis, games, profiles and system folders will be reset. Do you want to continue?</string>
+    <string name="resetting_app_data">Resetting app data...</string>
+    <string name="data_reset_completed">Data reset completed successfully.</string>
+    <string name="app_data_import">App Data Import</string>
+    <string name="select_import_file">Select a zip file to import bis, games, profiles and system folders from another Android installation.</string>
+    <string name="confirm_import_app_data">Current app data will be wiped and replaced. Do you want to continue?</string>
+    <string name="importing_app_data">Importing app data...</string>
+    <string name="data_import_completed">Data import completed successfully.</string>
+
+    <string name="settings_input">Input</string>
+    <string name="use_virtual_controller">Use Virtual Controller</string>
+    <string name="use_switch_controller_layout">Use Switch Controller Layout</string>
+    <string name="controller_stick_sensitivity">Controller Stick Sensitivity</string>
+    <string name="docked_mode">Docked Mode</string>
+    <string name="motion_sensor">Motion Sensor</string>
+    <string name="use_controller_motion_sensor">Use Controller Motion Sensor</string>
+    <string name="system">System</string>
+    <string name="fs_integrity_check">Fs Integrity Check</string>
+    <string name="ignore_missing_services">Ignore Missing Services</string>
+    <string name="performance_mode">Performance Mode</string>
+
+    <string name="settings_cpu">CPU</string>
+    <string name="nce">NCE (Native Code Execution)</string>
+    <string name="pptc">PPTC (Profiled Persistent Translation Cache)</string>
+    <string name="low_power_pptc">Low-Power PPTC</string>
+    <string name="jit_cache_eviction">Jit Cache Eviction</string>
+    <string name="graphics">Graphics</string>
+    <string name="shader_cache">Shader Cache</string>
+    <string name="texture_recompression">Texture Recompression</string>
+    <string name="macro_hle">Macro HLE</string>
+    <string name="stretch_to_fullscreen">Stretch to Fullscreen</string>
+    <string name="install_driver">Install Driver</string>
+    <string name="logging">Logging</string>
+    <string name="stub_logs">Stub Logs</string>
+    <string name="info_logs">Info Logs</string>
+    <string name="warning_logs">Warning Logs</string>
+    <string name="error_logs">Error Logs</string>
+    <string name="guest_logs">Guest Logs</string>
+    <string name="trace_logs">Trace Logs</string>
+    <string name="fs_access_logs">Fs Access Logs</string>
+    <string name="debug_logs">Debug Logs</string>
+    <string name="graphics_logs">Graphics Logs</string>
+    <string name="send_logs">Send Logs</string>
+    <string name="screen_orientation">Screen Orientation</string>
+    <string name="orientation_sensor">Sensor</string>
+    <string name="orientation_sensor_landscape">Sensor Landscape</string>
+    <string name="orientation_sensor_portrait">Sensor Portrait</string>
+    <string name="memory_manager_mode">Memory Manager Mode</string>
+    <string name="memory_mode_software">Software</string>
+    <string name="memory_mode_host_fast">Host (fast)</string>
+    <string name="memory_mode_host_unchecked">Host Unchecked (fastest, unsafe)</string>
+    <string name="vsync">VSync</string>
+    <string name="vsync_switch">Switch</string>
+    <string name="vsync_unbounded">Unbounded</string>
+    <string name="dram_size">DRAM Size</string>
+    <string name="resolution_scale">Resolution Scale</string>
+    <string name="anisotropic_filtering">Anisotropic Filtering</string>
+    <string name="fs_global_access_log_mode">Fs Global Access Log Mode</string>
+    <string name="overlay_menu_position">Overlay Menu Position</string>
+    <string name="overlay_menu_position_bottom_middle">bottom middle</string>
+    <string name="overlay_menu_position_bottom_left">bottom left</string>
+    <string name="overlay_menu_position_bottom_right">bottom right</string>
+    <string name="overlay_menu_position_top_middle">top middle</string>
+    <string name="overlay_menu_position_top_left">top left</string>
+    <string name="overlay_menu_position_top_right">top right</string>
+
+
+    <!--  Region And Language  -->
+    <string name="system_language">System Language</string>
+    <string name="language_japanese">Japanese</string>
+    <string name="language_english_us">English (US)</string>
+    <string name="language_french">French</string>
+    <string name="language_german">German</string>
+    <string name="language_italian">Italian</string>
+    <string name="language_spanish_eu">Spanish (EU)</string>
+    <string name="language_chinese">Chinese</string>
+    <string name="language_korean">Korean</string>
+    <string name="language_dutch">Dutch</string>
+    <string name="language_portuguese_eu">Portuguese (EU)</string>
+    <string name="language_russian">Russian</string>
+    <string name="language_chinese_taiwan">Chinese (Taiwan)</string>
+    <string name="language_english_uk">English (UK)</string>
+    <string name="language_french_canada">French (Canada)</string>
+    <string name="language_spanish_latam">Spanish (LatAm)</string>
+    <string name="language_chinese_simplified">Chinese (Simplified)</string>
+    <string name="language_chinese_traditional">Chinese (Traditional)</string>
+    <string name="language_portuguese_brazil">Portuguese (Brazil)</string>
+    <string name="region">Region</string>
+    <string name="region_japan">Japan</string>
+    <string name="region_usa">USA</string>
+    <string name="region_europe">Europe</string>
+    <string name="region_australia">Australia</string>
+    <string name="region_china">China</string>
+    <string name="region_korea">Korea</string>
+    <string name="region_taiwan">Taiwan</string>
+
+    <!--  Common  -->
+    <string name="loading">Loading</string>
+    <string name="confirm_yes">Yes</string>
+    <string name="confirm_no">No</string>
+    <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
 </resources>
