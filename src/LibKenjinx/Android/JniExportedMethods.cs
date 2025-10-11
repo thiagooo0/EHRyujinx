@@ -547,13 +547,46 @@ namespace LibKenjinx
         }
 
         [UnmanagedCallersOnly(EntryPoint = "userAddUser")]
-        public static void JniAddUser(IntPtr userNamePtr, IntPtr picturePtr)
+        public static void JniAddUser(IntPtr userNamePtr, IntPtr pictureBytesPtr, int pictureLength)
         {
-            Logger.Trace?.Print(LogClass.Application, "Jni Function Call");
-            var userName = Marshal.PtrToStringAnsi(userNamePtr) ?? "";
-            var picture = Marshal.PtrToStringAnsi(picturePtr) ?? "";
+           // In the function entry, print the log immediately to confirm the function is called
+           Logger.Trace?.Print(LogClass.Application, "JNI ==> JniAddUser: Function called.");
 
-            AddUser(userName, picture);
+            try
+            {
+                // 1. Defensive check: Check if the pointer is null
+                if (userNamePtr == IntPtr.Zero || pictureBytesPtr == IntPtr.Zero)
+                {
+                    Logger.Trace?.Print(LogClass.Application, "JNI ==> JniAddUser: Received a null pointer for username or picture.");
+                    return; // Return directly to avoid a crash
+                }
+
+                // 2. Defensive check: Check if the length is valid
+                if (pictureLength <= 0)
+                {
+                    Logger.Trace?.Print(LogClass.Application, $"JNI ==> JniAddUser: Received an invalid picture length: {pictureLength}");
+                    // Even if the length is 0, we can continue to create an empty array instead of crashing
+                }
+
+                // Print the received original parameter values
+               Logger.Trace?.Print(LogClass.Application, $"JNI ==> JniAddUser: Received params: userNamePtr={userNamePtr}, pictureBytesPtr={pictureBytesPtr}, pictureLength={pictureLength}");
+
+                var userName = Marshal.PtrToStringAnsi(userNamePtr) ?? "";
+                Logger.Trace?.Print(LogClass.Application, $"JNI ==> JniAddUser: Username decoded as: '{userName}'");
+
+                byte[] pictureBytes = new byte[pictureLength];
+                Marshal.Copy(pictureBytesPtr, pictureBytes, 0, pictureLength);
+               Logger.Trace?.Print(LogClass.Application, $"JNI ==> JniAddUser: Successfully copied {pictureLength} bytes for picture.");
+
+                // Call the core business logic
+                SwitchDevice?.AccountManager.AddUser(userName, pictureBytes);
+                Logger.Trace?.Print(LogClass.Application, "JNI ==> JniAddUser: AccountManager.AddUser called successfully.");
+            }
+            catch (Exception ex)
+            {
+                // Catch any exceptions and log them in detail, instead of letting the program crash
+               Logger.Trace?.Print(LogClass.Application, $"JNI ==> JniAddUser: A critical error occurred: {ex.ToString()}");
+            }
         }
 
         [UnmanagedCallersOnly(EntryPoint = "userDeleteUser")]
