@@ -74,7 +74,7 @@ interface KenjinxNativeJna : Library {
     fun userSetUserPicture(userId: String, picture: String)
     fun userGetUserName(userId: String): String
     fun userSetUserName(userId: String, userName: String)
-    fun userAddUser(username: String, picture: String)
+    fun userAddUser(username: String, picture: ByteArray, pictureLength: Int)
     fun userDeleteUser(userId: String)
     fun userOpenUser(userId: String)
     fun userCloseUser(userId: String)

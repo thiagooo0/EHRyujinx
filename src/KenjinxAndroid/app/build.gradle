@@ -101,9 +101,9 @@ android {
     }
 }
 
-tasks.named("preBuild") {
-    dependsOn ':libkenjinx:assemble'
-}
+//tasks.named("preBuild") {
+//    dependsOn ':libkenjinx:assemble'
+//}
 
 dependencies {
     runtimeOnly project(":libkenjinx")
