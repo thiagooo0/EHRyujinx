@@ -8,6 +8,7 @@ import androidx.preference.PreferenceManager
 import com.anggrayudi.storage.extension.launchOnUiThread
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
+import org.kenjinx.android.AndroidControllerRegistry
 import org.kenjinx.android.GameController
 import org.kenjinx.android.GameHost
 import org.kenjinx.android.GamepadManager
@@ -75,7 +76,8 @@ class MainViewModel(val activity: MainActivity) {
         KenjinxNative.deviceCloseEmulation()
         motionSensorManager?.unregister()
         mainViewModel?.gamepadManager?.stopSendSensor()
-        physicalControllerManager?.disconnect()
+        gamepadManager?.reset()
+        AndroidControllerRegistry.releaseAll()
         motionSensorManager?.setControllerId(-1)
     }
 
