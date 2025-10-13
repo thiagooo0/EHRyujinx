@@ -104,13 +104,14 @@ class GameController(var activity: Activity) {
     }
 
     fun connect() {
-        if (controllerId == -1)
-            controllerId = KenjinxNative.inputConnectGamepad(0)
+        if (controllerId == -1) {
+            controllerId = AndroidControllerRegistry.ensureVirtualController()
+        }
     }
 
     private fun handleEvent(ev: Event) {
         if (controllerId == -1)
-            controllerId = KenjinxNative.inputConnectGamepad(0)
+            controllerId = AndroidControllerRegistry.ensureVirtualController()
 
         controllerId.apply {
             when (ev) {

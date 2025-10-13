@@ -6,14 +6,12 @@ import android.view.MotionEvent
 import org.kenjinx.android.viewmodels.QuickSettings
 
 class PhysicalControllerManager(val activity: MainActivity) {
-    private var controllerId: Int = -1
 
     fun onKeyEvent(event: KeyEvent): Boolean {
-        // Make sure we are connected
-        if (controllerId == -1) {
-            controllerId = KenjinxNative.inputConnectGamepad(0)
-        }
+        val device = event.device ?: return false
+        if (!device.isGamepad) return false
 
+        val controllerId = AndroidControllerRegistry.ensurePhysicalController(device.id)
         val id = getGamePadButtonInputId(event.keyCode)
         if (id != GamePadButtonInputId.None) {
             val isNotFallback = (event.flags and KeyEvent.FLAG_FALLBACK) == 0
@@ -36,10 +34,10 @@ class PhysicalControllerManager(val activity: MainActivity) {
 
     fun onMotionEvent(ev: MotionEvent) {
         if (ev.action == MotionEvent.ACTION_MOVE) {
-            if (controllerId == -1) {
-                controllerId = KenjinxNative.inputConnectGamepad(0)
-            }
+            val device = ev.device ?: return
+            if (!device.isGamepad) return
 
+            val controllerId = AndroidControllerRegistry.ensurePhysicalController(device.id)
             val leftStickX = ev.getAxisValue(MotionEvent.AXIS_X)
             val leftStickY = ev.getAxisValue(MotionEvent.AXIS_Y)
             val rightStickX = ev.getAxisValue(MotionEvent.AXIS_Z)
@@ -48,7 +46,7 @@ class PhysicalControllerManager(val activity: MainActivity) {
             KenjinxNative.inputSetStickAxis(1, leftStickX, -leftStickY, controllerId)
             KenjinxNative.inputSetStickAxis(2, rightStickX, -rightStickY, controllerId)
 
-            ev.device?.apply {
+            device.apply {
                 if (sources and InputDevice.SOURCE_DPAD != InputDevice.SOURCE_DPAD) {
                     // Controller uses HAT instead of “real” DPAD
                     val dPadHor = ev.getAxisValue(MotionEvent.AXIS_HAT_X)
@@ -83,15 +81,6 @@ class PhysicalControllerManager(val activity: MainActivity) {
                 }
             }
         }
-    }
-
-    fun connect(): Int {
-        controllerId = KenjinxNative.inputConnectGamepad(0)
-        return controllerId
-    }
-
-    fun disconnect() {
-        controllerId = -1
     }
 
     private fun getGamePadButtonInputId(keycode: Int): GamePadButtonInputId {
