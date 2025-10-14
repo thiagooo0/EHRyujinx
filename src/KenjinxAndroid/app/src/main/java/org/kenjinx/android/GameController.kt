@@ -70,6 +70,7 @@ class GameController(var activity: Activity) {
                     controller.controllerView = c
                     viewModel.setGameController(controller)
                     controller.setVisible(QuickSettings(viewModel.activity).useVirtualController)
+                    viewModel.updateVirtualControllerBindings()
                     c
                 }
             )

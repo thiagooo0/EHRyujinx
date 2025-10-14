@@ -405,6 +405,25 @@ class MainViewModel(val activity: MainActivity) {
 
     fun setGameController(controller: GameController) {
         this.controller = controller
+        updateVirtualControllerBindings()
+    }
+
+    fun updateVirtualControllerBindings() {
+        val currentController = controller
+
+        if (currentController?.isVisible == true) {
+            currentController.connect()
+            val virtualId = currentController.controllerId
+            motionSensorManager?.setControllerId(virtualId)
+            gamepadManager?.setControllerId(virtualId)
+        } else {
+            motionSensorManager?.setControllerId(-1)
+            gamepadManager?.setControllerId(-1)
+            if (currentController != null) {
+                currentController.controllerId = -1
+            }
+            AndroidControllerRegistry.releaseVirtualController()
+        }
     }
 
     fun navigateToGame() {
