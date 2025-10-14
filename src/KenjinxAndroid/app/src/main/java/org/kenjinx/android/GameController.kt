@@ -95,6 +95,21 @@ class GameController(var activity: Activity) {
         leftGamePad.gravityY = 1f
         rightGamePad.gravityX = 1f
         rightGamePad.gravityY = 1f
+
+        // The virtual pads should never grab focus when a real controller is used.
+        // Otherwise Android draws the default focus highlight which shows up as a
+        // grey overlay that covers half of the screen. Disable focus and the
+        // highlight on both pads so that they only react to touch input.
+        leftGamePad.apply {
+            isFocusable = false
+            isFocusableInTouchMode = false
+            defaultFocusHighlightEnabled = false
+        }
+        rightGamePad.apply {
+            isFocusable = false
+            isFocusableInTouchMode = false
+            defaultFocusHighlightEnabled = false
+        }
     }
 
     fun setVisible(isVisible: Boolean) {
