@@ -117,10 +117,7 @@ class GameHost(context: Context?, private val mainViewModel: MainViewModel) : Su
         // Initialize input
         KenjinxNative.inputInitialize(width, height)
 
-        val virtualId = AndroidControllerRegistry.ensureVirtualController()
-        mainViewModel.motionSensorManager?.setControllerId(virtualId)
-        mainViewModel.gamepadManager?.setControllerId(virtualId)
-        mainViewModel.controller?.connect()
+        mainViewModel.updateVirtualControllerBindings()
 
         // No initial "flip" special case: we give the real rotation downwards
         val currentRot = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

@@ -74,6 +74,13 @@ object AndroidControllerRegistry {
         }
     }
 
+    @Synchronized
+    fun releaseVirtualController() {
+        if (virtualControllerId != -1) {
+            releaseSlot(virtualControllerId)
+        }
+    }
+
     private fun acquireFreeSlot(startIndex: Int): Int {
         for (slot in startIndex until MAX_CONTROLLERS) {
             if (!slotUsage[slot]) {

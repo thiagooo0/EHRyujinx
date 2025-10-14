@@ -185,6 +185,7 @@ class GameViews {
                                             showController.value = !showController.value
                                             KenjinxNative.inputReleaseTouchPoint()
                                             mainViewModel.controller?.setVisible(showController.value)
+                                            mainViewModel.updateVirtualControllerBindings()
                                         }) {
                                             Icon(
                                                 imageVector = Icons.videoGame(),
