@@ -415,10 +415,8 @@ class MainViewModel(val activity: MainActivity) {
             currentController.connect()
             val virtualId = currentController.controllerId
             motionSensorManager?.setControllerId(virtualId)
-            gamepadManager?.setControllerId(virtualId)
         } else {
             motionSensorManager?.setControllerId(-1)
-            gamepadManager?.setControllerId(-1)
             if (currentController != null) {
                 currentController.controllerId = -1
             }
