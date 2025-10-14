@@ -63,6 +63,8 @@ interface KenjinxNativeJna : Library {
     fun inputSetButtonPressed(button: Int, id: Int)
     fun inputSetButtonReleased(button: Int, id: Int)
     fun inputConnectGamepad(index: Int): Int
+    fun inputDisconnectGamepad(index: Int): Boolean
+    fun inputGetConnectedGamepadCount(): Int
     fun inputSetStickAxis(stick: Int, x: Float, y: Float, id: Int)
     fun inputSetAccelerometerData(x: Float, y: Float, z: Float, id: Int)
     fun inputSetGyroData(x: Float, y: Float, z: Float, id: Int)

@@ -250,6 +250,18 @@ namespace LibKenjinx
             return ConnectGamepad(index);
         }
 
+        [UnmanagedCallersOnly(EntryPoint = "input_disconnect_gamepad")]
+        public static bool DisconnectGamepadNative(int index)
+        {
+            return DisconnectGamepad(index);
+        }
+
+        [UnmanagedCallersOnly(EntryPoint = "input_get_connected_gamepad_count")]
+        public static int GetConnectedGamepadCountNative()
+        {
+            return GetConnectedGamepadCount();
+        }
+
         [UnmanagedCallersOnly(EntryPoint = "device_get_game_fifo")]
         public static double GetGameInfoNative()
         {
