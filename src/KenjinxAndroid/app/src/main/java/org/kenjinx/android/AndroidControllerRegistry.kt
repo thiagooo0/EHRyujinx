@@ -8,7 +8,6 @@ import android.util.Log
 object AndroidControllerRegistry {
     private const val TAG = "ControllerRegistry"
     private const val MAX_CONTROLLERS = 4
-    private const val VIRTUAL_SLOT_INDEX = 0
 
     private val slotUsage = BooleanArray(MAX_CONTROLLERS)
     private val physicalControllerIds = mutableMapOf<Int, Int>()
@@ -17,15 +16,27 @@ object AndroidControllerRegistry {
 
     @Synchronized
     fun ensureVirtualController(): Int {
-        if (virtualControllerId != -1) {
+        val existingSlot = controllerSlots[virtualControllerId]
+        if (virtualControllerId != -1 && existingSlot != null) {
             return virtualControllerId
         }
 
-        val id = connectController(VIRTUAL_SLOT_INDEX)
+        if (virtualControllerId != -1) {
+            virtualControllerId = -1
+        }
+
+        val slot = acquireVirtualSlot()
+        if (slot == -1) {
+            return -1
+        }
+
+        val id = connectController(slot)
         if (id != -1) {
-            slotUsage[VIRTUAL_SLOT_INDEX] = true
-            controllerSlots[id] = VIRTUAL_SLOT_INDEX
+            slotUsage[slot] = true
+            controllerSlots[id] = slot
             virtualControllerId = id
+        } else {
+            slotUsage[slot] = false
         }
 
         return virtualControllerId
@@ -39,7 +50,9 @@ object AndroidControllerRegistry {
 
         physicalControllerIds[deviceId]?.let { return it }
 
-        val slot = acquireFreeSlot(startIndex = 1)
+        ensureVirtualSlotAvailabilityForPhysical()
+
+        val slot = acquireFreeSlot(startIndex = 0)
         val controllerId = if (slot != -1) connectController(slot) else -1
         if (slot == -1 || controllerId == -1) {
             Log.w(TAG, "Unable to allocate controller slot for device $deviceId")
@@ -107,5 +120,53 @@ object AndroidControllerRegistry {
         if (controllerId == virtualControllerId) {
             virtualControllerId = -1
         }
+    }
+
+    private fun acquireVirtualSlot(): Int {
+        val startIndex = if (physicalControllerIds.isEmpty()) 0 else 1
+        var slot = acquireFreeSlot(startIndex)
+
+        if (slot == -1 && startIndex != 0) {
+            slot = acquireFreeSlot(0)
+        }
+
+        return slot
+    }
+
+    private fun ensureVirtualSlotAvailabilityForPhysical() {
+        val currentVirtualId = virtualControllerId
+        if (currentVirtualId == -1) {
+            return
+        }
+
+        val virtualSlot = controllerSlots[currentVirtualId]
+        if (virtualSlot == null) {
+            virtualControllerId = -1
+            return
+        }
+
+        if (virtualSlot != 0) {
+            return
+        }
+
+        val newSlot = acquireFreeSlot(startIndex = 1)
+        if (newSlot == -1) {
+            releaseSlot(currentVirtualId)
+            return
+        }
+
+        val newId = connectController(newSlot)
+        if (newId == -1) {
+            slotUsage[newSlot] = false
+            releaseSlot(currentVirtualId)
+            return
+        }
+
+        slotUsage[newSlot] = true
+        controllerSlots[newId] = newSlot
+
+        releaseSlot(currentVirtualId)
+
+        virtualControllerId = newId
     }
 }
