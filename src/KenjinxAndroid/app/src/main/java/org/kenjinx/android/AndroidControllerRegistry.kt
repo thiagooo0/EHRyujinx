@@ -27,7 +27,7 @@ object AndroidControllerRegistry {
         if(slot == -1) {
             return -1
         }
-        val id = connectController(slot)
+        val id = connectController(slot, context = "virtual")
         if(id != -1) {
             slotUsage[slot] = true
             controllerSlots[id] = slot
@@ -39,6 +39,10 @@ object AndroidControllerRegistry {
         return virtualControllerId
     }
 
+    /**
+     * Ensures that the provided Android device id is associated with a controller slot inside
+     * the Switch emulation. If the device is already tracked its controller id is returned.
+     */
     @Synchronized
     fun ensurePhysicalController(deviceId: Int): Int {
         if(deviceId == -1) {
@@ -49,7 +53,7 @@ object AndroidControllerRegistry {
 
         ensureVirtualSlotAvailabilityForPhysical()
         val slot = acquireFreeSlot(startIndex = 0)
-        val controllerId = if(slot != -1) connectController(slot) else -1
+        val controllerId = if(slot != -1) connectController(slot, context = "deviceId=$deviceId") else -1
         if(slot == -1 || controllerId == -1) {
             Log.w(TAG, "Unable to allocate controller slot for device $deviceId")
             return ensureVirtualController()
@@ -67,14 +71,22 @@ object AndroidControllerRegistry {
         return physicalControllerIds[deviceId]
     }
 
+    /**
+     * Releases the controller slot backing the provided Android device id.
+     */
     @Synchronized
     fun releasePhysicalController(deviceId: Int) {
         val controllerId = physicalControllerIds.remove(deviceId) ?: return
-        releaseSlot(controllerId)
+        Log.d(TAG, "[releasePhysicalController] releasing: ${deviceId} -> ${controllerId}")
+        releaseSlot(controllerId, context = "deviceId=$deviceId")
     }
 
     @Synchronized
     fun releaseAll() {
+        val controllersToRelease = controllerSlots.toList()
+        for((controllerId, slot) in controllersToRelease) {
+            disconnectController(slot, controllerId, context = "releaseAll")
+        }
         virtualControllerId = -1
         physicalControllerIds.clear()
         controllerSlots.clear()
@@ -86,7 +98,17 @@ object AndroidControllerRegistry {
     @Synchronized
     fun releaseVirtualController() {
         if(virtualControllerId != -1) {
-            releaseSlot(virtualControllerId)
+            releaseSlot(virtualControllerId, context = "virtual")
+        }
+    }
+
+    @Synchronized
+    fun getConnectedControllerCount(): Int {
+        return try {
+            KenjinxNative.inputGetConnectedGamepadCount()
+        } catch(ex: Throwable) {
+            Log.e(TAG, "Failed to query connected controller count", ex)
+            0
         }
     }
 
@@ -99,24 +121,51 @@ object AndroidControllerRegistry {
         return -1
     }
 
-    private fun connectController(slot: Int): Int {
+    private fun connectController(slot: Int, context: String? = null): Int {
         return try {
-            Log.d(TAG, "GamepadManager connectController: ${slot}")
-            KenjinxNative.inputConnectGamepad(slot)
+            val contextSuffix = context?.let { " [$it]" } ?: ""
+            Log.d(TAG, "Connecting controller on slot ${slot}$contextSuffix")
+            val controllerId = KenjinxNative.inputConnectGamepad(slot)
+            if(controllerId != -1) {
+                logControllerPoolState("connected", slot, controllerId, context)
+            }
+            controllerId
         } catch(ex: Throwable) {
             Log.e(TAG, "Failed to connect gamepad on slot $slot", ex)
             -1
         }
     }
 
-    private fun releaseSlot(controllerId: Int) {
+    private fun releaseSlot(controllerId: Int, context: String? = null) {
         val slot = controllerSlots.remove(controllerId) ?: return
         if(slot in slotUsage.indices) {
+            disconnectController(slot, controllerId, context)
             slotUsage[slot] = false
         }
         if(controllerId == virtualControllerId) {
             virtualControllerId = -1
         }
+    }
+
+    private fun disconnectController(slot: Int, controllerId: Int, context: String? = null) {
+        try {
+            val contextSuffix = context?.let { " [$it]" } ?: ""
+            Log.d(TAG, "Disconnecting controller on slot ${slot}$contextSuffix")
+            KenjinxNative.inputDisconnectGamepad(slot)
+            logControllerPoolState("disconnected", slot, controllerId, context)
+        } catch(ex: Throwable) {
+            Log.e(TAG, "Failed to disconnect gamepad on slot $slot", ex)
+        }
+    }
+
+    /**
+     * Emits a log entry with the up-to-date controller count so it is easy to track connection
+     * churn from logcat.
+     */
+    private fun logControllerPoolState(action: String, slot: Int, controllerId: Int, context: String? = null) {
+        val totalControllers = getConnectedControllerCount()
+        val contextSuffix = context?.let { " [$it]" } ?: ""
+        Log.i(TAG, "Controller $action$contextSuffix (slot=$slot, controllerId=$controllerId) -> total controllers: $totalControllers")
     }
 
     private fun acquireVirtualSlot(): Int {
@@ -146,20 +195,20 @@ object AndroidControllerRegistry {
         }
         val newSlot = acquireFreeSlot(startIndex = 1)
         if(newSlot == -1) {
-            releaseSlot(currentVirtualId)
+            releaseSlot(currentVirtualId, context = "virtual")
             return
         }
-        val newId = connectController(newSlot)
+        val newId = connectController(newSlot, context = "virtual-move")
         if(newId == -1) {
             slotUsage[newSlot] = false
-            releaseSlot(currentVirtualId)
+            releaseSlot(currentVirtualId, context = "virtual")
             return
         }
 
         slotUsage[newSlot] = true
         controllerSlots[newId] = newSlot
 
-        releaseSlot(currentVirtualId)
+        releaseSlot(currentVirtualId, context = "virtual")
 
         virtualControllerId = newId
     }

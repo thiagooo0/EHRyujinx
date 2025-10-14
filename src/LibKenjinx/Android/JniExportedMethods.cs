@@ -489,6 +489,20 @@ namespace LibKenjinx
             return ConnectGamepad(index);
         }
 
+        [UnmanagedCallersOnly(EntryPoint = "inputDisconnectGamepad")]
+        public static bool JnaDisconnectGamepad(int index)
+        {
+            Logger.Trace?.Print(LogClass.Application, "Jni Function Call");
+            return DisconnectGamepad(index);
+        }
+
+        [UnmanagedCallersOnly(EntryPoint = "inputGetConnectedGamepadCount")]
+        public static int JnaGetConnectedGamepadCount()
+        {
+            Logger.Trace?.Print(LogClass.Application, "Jni Function Call");
+            return GetConnectedGamepadCount();
+        }
+
         [UnmanagedCallersOnly(EntryPoint = "userGetOpenedUser")]
         public static IntPtr JniGetOpenedUser()
         {

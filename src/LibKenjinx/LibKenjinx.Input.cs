@@ -2,6 +2,7 @@ using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Configuration.Hid.Controller;
 using Ryujinx.Common.Configuration.Hid.Controller.Motion;
+using Ryujinx.Common.Logging;
 using Ryujinx.Input;
 using Ryujinx.Input.HLE;
 using System;
@@ -90,6 +91,10 @@ namespace LibKenjinx
             _gamepadDriver?.SetStickAxis(stick, axes, deviceId);
         }
 
+        /// <summary>
+        /// Connects a virtual gamepad to the requested slot and logs the resulting controller pool
+        /// state so it can be tracked from Android logcat.
+        /// </summary>
         public static int ConnectGamepad(int index)
         {
             var gamepad = _gamepadDriver?.GetGamepad(index);
@@ -103,9 +108,73 @@ namespace LibKenjinx
                 _configs[index] = config;
             }
 
+            _gamepadDriver?.ResetGamepadState(index);
+
             _npadManager?.ReloadConfiguration(_configs.Where(x => x != null).ToList(), false, false);
 
-            return int.TryParse(gamepad?.Id, out var idInt) ? idInt : -1;
+            var controllerId = int.TryParse(gamepad?.Id, out var idInt) ? idInt : -1;
+            var connectedCount = GetConnectedGamepadCount();
+
+            if (controllerId != -1)
+            {
+                Logger.Info?.Print(LogClass.Hid, $"Connected gamepad slot {index} -> controller {controllerId}. Total controllers: {connectedCount}");
+            }
+            else
+            {
+                Logger.Warning?.Print(LogClass.Hid, $"Connected gamepad slot {index} but failed to parse controller id. Total controllers: {connectedCount}");
+            }
+
+            return controllerId;
+        }
+
+        /// <summary>
+        /// Disconnects the virtual gamepad assigned to the slot, resets its state and updates the
+        /// overall controller count log for visibility.
+        /// </summary>
+        public static bool DisconnectGamepad(int index)
+        {
+            if (_configs == null || index < 0 || index >= _configs.Length)
+            {
+                return false;
+            }
+
+            _gamepadDriver?.ResetGamepadState(index);
+
+            if (_configs[index] == null)
+            {
+                Logger.Info?.Print(LogClass.Hid, $"Disconnect requested for empty gamepad slot {index}. Total controllers: {GetConnectedGamepadCount()}");
+                return true;
+            }
+
+            var controllerIdText = _configs[index]?.Id;
+            _configs[index] = null;
+
+            _npadManager?.ReloadConfiguration(_configs.Where(x => x != null).ToList(), false, false);
+
+            var remaining = GetConnectedGamepadCount();
+            if (controllerIdText != null && int.TryParse(controllerIdText, out var controllerId))
+            {
+                Logger.Info?.Print(LogClass.Hid, $"Disconnected gamepad slot {index} (controller {controllerId}). Total controllers: {remaining}");
+            }
+            else
+            {
+                Logger.Info?.Print(LogClass.Hid, $"Disconnected gamepad slot {index}. Total controllers: {remaining}");
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Returns how many virtual controllers currently have active input configurations.
+        /// </summary>
+        public static int GetConnectedGamepadCount()
+        {
+            if (_configs == null)
+            {
+                return 0;
+            }
+
+            return _configs.Count(config => config != null);
         }
 
         private static InputConfig CreateDefaultInputConfig()
@@ -387,6 +456,14 @@ namespace LibKenjinx
             }
         }
 
+        public void ResetGamepadState(int deviceId)
+        {
+            if (_gamePads.TryGetValue(deviceId, out var gamePad))
+            {
+                gamePad.ResetState();
+            }
+        }
+
         public void SetButtonPressed(GamepadButtonInputId button, int deviceId)
         {
             if (_gamePads.TryGetValue(deviceId, out var gamePad))
@@ -454,6 +531,14 @@ namespace LibKenjinx
         public bool IsPressed(GamepadButtonInputId inputId)
         {
             return _buttonInputs[(int)inputId];
+        }
+
+        internal void ResetState()
+        {
+            Array.Clear(_buttonInputs, 0, _buttonInputs.Length);
+            Array.Clear(_stickInputs, 0, _stickInputs.Length);
+            Accelerometer = Vector3.Zero;
+            Gyro = Vector3.Zero;
         }
 
         public (float, float) GetStick(StickInputId inputId)
