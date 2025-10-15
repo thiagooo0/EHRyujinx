@@ -75,15 +75,20 @@ namespace LibKenjinx.Android
 
         public bool DisplayMessageDialog(ControllerAppletUIArgs args)
         {
-            string playerCount = args.PlayerCountMin == args.PlayerCountMax ? $"exactly {args.PlayerCountMin}" : $"{args.PlayerCountMin}-{args.PlayerCountMax}";
+            string playerCount = args.PlayerCountMin == args.PlayerCountMax ? $"{args.PlayerCountMin}" : $"{args.PlayerCountMin}-{args.PlayerCountMax}";
 
-            string message = $"Application requests **{playerCount}** player(s) with:\n\n"
-                           + $"**TYPES:** {args.SupportedStyles}\n\n"
-                           + $"**PLAYERS:** {string.Join(", ", args.SupportedPlayers)}\n\n"
-                           + (args.IsDocked ? "Docked mode set. `Handheld` is also invalid.\n\n" : "")
-                           + "_Please reconfigure Input now and then press OK._";
+//            string message = $"Application requests **{playerCount}** player(s) with:\n\n"
+//                           + $"**TYPES:** {args.SupportedStyles}\n\n"
+//                           + $"**PLAYERS:** {string.Join(", ", args.SupportedPlayers)}\n\n"
+//                           + (args.IsDocked ? "Docked mode set. `Handheld` is also invalid.\n\n" : "")
+//                           + "_Please reconfigure Input now and then press OK._";
+            string message = $"应用需 **{playerCount}** 个手柄:\n\n"
+                           + $"**类型:** {args.SupportedStyles}\n\n"
+                           + $"**玩家:** {string.Join(", ", args.SupportedPlayers)}\n\n"
+                           + (args.IsDocked ? "桌面模式. `手持模式`无效.\n\n" : "")
+                           + "_请配置好手柄，然后点击OK。_";
 
-            return DisplayMessageDialog("Controller Applet", message);
+            return DisplayMessageDialog("控制器小程序", message);
         }
 
         public bool DisplayCabinetDialog(out string userText)
