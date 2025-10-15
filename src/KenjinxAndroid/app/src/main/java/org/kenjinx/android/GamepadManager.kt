@@ -84,6 +84,19 @@ class GamepadManager(context: Context): InputManager.InputDeviceListener {
     }
 
     /**
+     * Forces every currently tracked controller to disconnect and immediately re-register so
+     * LibKenjinx sees the pads even if they have been idle since the last session.
+     */
+    fun reregisterConnectedGamepads() {
+        Log.d("ControllerRegistry", "reregisterConnectedGamepads")
+        val trackedIds = connectedGamepads.keys.toList()
+        for(deviceId in trackedIds) {
+            unregisterGamepad(deviceId)
+        }
+        checkForConnectedGamepads()
+    }
+
+    /**
      * Walks through the currently reported devices and registers/unregisters gamepads to keep
      * LibKenjinx in sync with Android's view of the world.
      */
@@ -100,7 +113,6 @@ class GamepadManager(context: Context): InputManager.InputDeviceListener {
                 }
             }
         }
-
         val disconnected = connectedGamepads.keys - seenDevices
         for(deviceId in disconnected) {
             unregisterGamepad(deviceId)
@@ -132,7 +144,6 @@ class GamepadManager(context: Context): InputManager.InputDeviceListener {
             Log.w(tag, "Failed to allocate controller for device ${device.id}")
             return
         }
-
         val connectedGamepad = ConnectedGamepad(device, controllerId)
         connectedGamepads[device.id] = connectedGamepad
         Log.d(tag, "Gamepad connected(${device.id}) -> controller ${controllerId}")
@@ -182,7 +193,6 @@ class GamepadManager(context: Context): InputManager.InputDeviceListener {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             return
         }
-
         val listener = sensorEventListeners.remove(connectedGamepad.device.id) ?: return
         connectedGamepad.device.sensorManager.unregisterListener(listener)
         connectedGamepad.sensors.clear()

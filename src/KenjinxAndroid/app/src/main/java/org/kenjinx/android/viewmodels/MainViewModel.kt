@@ -6,6 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.NavHostController
 import androidx.preference.PreferenceManager
 import com.anggrayudi.storage.extension.launchOnUiThread
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import org.kenjinx.android.AndroidControllerRegistry
@@ -426,6 +429,11 @@ class MainViewModel(val activity: MainActivity) {
 
     fun navigateToGame() {
         navController?.navigate("game")
+        GlobalScope.launch {
+            delay(1000)
+            //after enter game, wait 1s to register gamepad again to let all gamepad register success
+            gamepadManager?.reregisterConnectedGamepads()
+        }
         activity.isGameRunning = true
         if(QuickSettings(activity).enableMotion) {
             if(QuickSettings(activity).useControllerSensor) {
