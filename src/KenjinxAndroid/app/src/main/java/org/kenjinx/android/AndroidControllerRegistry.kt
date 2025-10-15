@@ -55,7 +55,7 @@ object AndroidControllerRegistry {
         val slot = acquireFreeSlot(startIndex = 0)
         val controllerId = if(slot != -1) connectController(slot, context = "deviceId=$deviceId") else -1
         if(slot == -1 || controllerId == -1) {
-            Log.w(TAG, "Unable to allocate controller slot for device $deviceId")
+            Log.w(TAG, "Unable to allocate controller slot for device. deviceId:$deviceId, slot:$slot controllerId:$controllerId")
             return ensureVirtualController()
         }
 
@@ -129,6 +129,7 @@ object AndroidControllerRegistry {
             if(controllerId != -1) {
                 logControllerPoolState("connected", slot, controllerId, context)
             }
+            Log.d(TAG, "Connecting controller. controllerId: ${controllerId}")
             controllerId
         } catch(ex: Throwable) {
             Log.e(TAG, "Failed to connect gamepad on slot $slot", ex)

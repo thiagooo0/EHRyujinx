@@ -289,12 +289,18 @@ class MainActivity: BaseActivity() {
 
     @SuppressLint("RestrictedApi")
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        event.apply { if(physicalControllerManager.onKeyEvent(this)) return true }
+        if(isGameRunning) {
+            //send event to switch when game running only
+            event.apply { if(physicalControllerManager.onKeyEvent(this)) return true }
+        }
         return super.dispatchKeyEvent(event)
     }
 
     override fun dispatchGenericMotionEvent(ev: MotionEvent?): Boolean {
-        ev?.apply { physicalControllerManager.onMotionEvent(this) }
+        if(isGameRunning) {
+            //send event to switch when game running only
+            ev?.apply { physicalControllerManager.onMotionEvent(this) }
+        }
         return super.dispatchGenericMotionEvent(ev)
     }
 
