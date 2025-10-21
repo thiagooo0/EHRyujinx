@@ -67,6 +67,7 @@ import kotlinx.coroutines.launch
 import kotlin.concurrent.thread
 import org.kenjinx.android.MainActivity
 import org.kenjinx.android.providers.DocumentProvider
+import org.kenjinx.android.controllers.ControllerMatchingManager
 import org.kenjinx.android.viewmodels.DataImportState
 import org.kenjinx.android.viewmodels.DataResetState
 import org.kenjinx.android.viewmodels.FirmwareInstallState
@@ -124,6 +125,7 @@ class SettingViews {
             val firmwareVersion = remember { mutableStateOf(mainViewModel.firmwareVersion) }
             val showDataResetDialog = remember { mutableStateOf(false) }
             val showDataImportDialog = remember { mutableStateOf(false) }
+            val showControllerMatchingDialog = remember { mutableStateOf(false) }
             val dataResetState = remember { mutableStateOf(DataResetState.Query) }
             val dataImportState = remember { mutableStateOf(DataImportState.File) }
             val dataFile = remember { mutableStateOf<DocumentFile?>(null) }
@@ -1280,7 +1282,37 @@ class SettingViews {
                             enableDocked.SwitchSelector(label = stringResource(R.string.docked_mode))
                             enableMotion.SwitchSelector(label = stringResource(R.string.motion_sensor))
                             useControllerSensor.SwitchSelector(label = stringResource(R.string.use_controller_motion_sensor))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp)
+                                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                ActionButton(
+                                    onClick = {
+                                        showControllerMatchingDialog.value = true
+                                    },
+                                    text = stringResource(R.string.controller_matching_title),
+                                    icon = Icons.Outlined.VideogameAsset,
+                                    modifier = Modifier.weight(1f),
+                                    isFullWidth = false,
+                                )
+                            }
                         }
+                    }
+                    SimpleAlertDialog.Custom(
+                        showDialog = showControllerMatchingDialog,
+                        onDismissRequest = {
+                            showControllerMatchingDialog.value = false
+                            ControllerMatchingManager.cancelJoyConPairing()
+                        },
+                        properties = DialogProperties(usePlatformDefaultWidth = false),
+                    ) {
+                        ControllerMatchingViews.Dialog(onClose = {
+                            ControllerMatchingManager.cancelJoyConPairing()
+                            showControllerMatchingDialog.value = false
+                        })
                     }
                     ExpandableView(onCardArrowClick = { }, title = stringResource(R.string.system), icon = Icons.Outlined.Settings) {
                         Column(modifier = Modifier.fillMaxWidth()) {

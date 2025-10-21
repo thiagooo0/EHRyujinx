@@ -31,6 +31,8 @@ import org.kenjinx.android.viewmodels.GameModel
 import org.kenjinx.android.viewmodels.MainViewModel
 import org.kenjinx.android.viewmodels.QuickSettings
 import org.kenjinx.android.views.MainView
+import org.kenjinx.android.controllers.ControllerMatchingManager
+import org.kenjinx.android.*
 
 class MainActivity: BaseActivity() {
     private var physicalControllerManager: PhysicalControllerManager =
@@ -289,9 +291,12 @@ class MainActivity: BaseActivity() {
 
     @SuppressLint("RestrictedApi")
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if(ControllerMatchingManager.handlePairingKey(event)) {
+            return true
+        }
         if(isGameRunning) {
             //send event to switch when game running only
-            event.apply { if(physicalControllerManager.onKeyEvent(this)) return true }
+            if(physicalControllerManager.onKeyEvent(event)) return true
         }
         return super.dispatchKeyEvent(event)
     }

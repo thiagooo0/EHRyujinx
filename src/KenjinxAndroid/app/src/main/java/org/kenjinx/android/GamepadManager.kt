@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.InputDevice
+import org.kenjinx.android.controllers.ControllerMatchingManager
 
 /**
  * is current input device is gamepad
@@ -53,6 +54,10 @@ class GamepadManager(context: Context): InputManager.InputDeviceListener {
         val controllerId: Int,
         val sensors: MutableList<Sensor> = mutableListOf()
     )
+
+    init {
+        ControllerMatchingManager.setGamepadManager(this)
+    }
 
     /**
      * start listening gamepad change
@@ -106,8 +111,9 @@ class GamepadManager(context: Context): InputManager.InputDeviceListener {
         for(deviceId in deviceIds) {
             InputDevice.getDevice(deviceId)?.let { device ->
                 if(device.isGamepad) {
+                    ControllerMatchingManager.onDeviceSeen(device)
                     seenDevices.add(device.id)
-                    if(!connectedGamepads.containsKey(device.id)) {
+                    if(ControllerMatchingManager.shouldRegisterDevice(device) && !connectedGamepads.containsKey(device.id)) {
                         registerGamepad(device)
                     }
                 }
@@ -126,6 +132,7 @@ class GamepadManager(context: Context): InputManager.InputDeviceListener {
 
     override fun onInputDeviceRemoved(deviceId: Int) {
         Log.d(tag, "Gamepad removed: $deviceId")
+        ControllerMatchingManager.onDeviceDisconnected(deviceId)
         checkForConnectedGamepads()
     }
 
@@ -146,6 +153,7 @@ class GamepadManager(context: Context): InputManager.InputDeviceListener {
         }
         val connectedGamepad = ConnectedGamepad(device, controllerId)
         connectedGamepads[device.id] = connectedGamepad
+        ControllerMatchingManager.onControllerAllocated(device, controllerId)
         Log.d(tag, "Gamepad connected(${device.id}) -> controller ${controllerId}")
         registerSensorsForDevice(device, connectedGamepad)
         logGamepadState("registered", device.id, controllerId)
@@ -157,6 +165,7 @@ class GamepadManager(context: Context): InputManager.InputDeviceListener {
     private fun unregisterGamepad(deviceId: Int) {
         val connected = connectedGamepads.remove(deviceId)
         connected?.let { unregisterSensorsForDevice(it) }
+        ControllerMatchingManager.onControllerReleased(deviceId)
         AndroidControllerRegistry.releasePhysicalController(deviceId)
         Log.d(tag, "Gamepad disconnected(${deviceId})")
         val controllerId = connected?.controllerId ?: -1
